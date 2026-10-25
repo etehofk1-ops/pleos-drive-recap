@@ -38,7 +38,9 @@ enum class Indicator { OFF, LEFT, RIGHT }
 enum class SteeringConvention { UNKNOWN, POSITIVE_LEFT, POSITIVE_RIGHT }
 enum class ManeuverDirection { UNKNOWN, LEFT, RIGHT }
 enum class ReviewKind { STEERING, LANE_CHANGE, LANE_SIGNALLED, LANE_NO_SIGNAL, LANE_LATE_SIGNAL, TURN, CURVE, HARD_BRAKE, BRAKE_UNVERIFIED, UNSURE,
-    TURN_NO_SIGNAL, TURN_LATE_SIGNAL, TURN_SIGNALLED }
+    TURN_NO_SIGNAL, TURN_LATE_SIGNAL, TURN_SIGNALLED,
+    /** 1.7.0: appended last. RecapCodec stores kinds by name, so older records keep decoding. */
+    BLINKER_LEFT_ON }
 enum class SignalTiming { BEFORE, DURING, NONE, UNKNOWN }
 enum class Uncertainty { SPEED_MISSING, DEMO_SPEED_MISSING, SIGNAL_GAP, INPUT_GAP, INCOMPLETE, SHAPE_AMBIGUOUS, NAV_CONFLICT, WEAK_LANE_EVIDENCE }
 enum class Feedback { NONE, YES, NO }
@@ -52,8 +54,11 @@ data class RecapPolicy(
 /** Only verified manoeuvre semantics + distance, never coordinates, road/destination names or route objects. */
 data class TurnHint(val isTurn: Boolean?, val distanceMeters: Float?, val receivedAtMs: Long)
 
-/** Reduced per-direction signal evidence. Needed because steering sign is still unverified. */
-data class DirectionalTiming(val timing: SignalTiming, val lateMs: Long? = null)
+/** Reduced per-direction signal evidence. Needed because steering sign is still unverified.
+ * [leadMeters]/[leadMs] (1.7.0): distance driven / time between switching this side on and the manoeuvre start,
+ * only for [SignalTiming.BEFORE]; null when the speed series cannot support an integral. */
+data class DirectionalTiming(val timing: SignalTiming, val lateMs: Long? = null,
+    val leadMeters: Float? = null, val leadMs: Long? = null)
 
 data class SegmentSummary(
     val startMs: Long, val endMs: Long, val wallStartMs: Long,
@@ -64,6 +69,15 @@ data class SegmentSummary(
     val incomplete: Boolean = false, val inputGap: Boolean = false,
     val leftSignal: DirectionalTiming? = null, val rightSignal: DirectionalTiming? = null,
     val lateral: LateralSummary? = null,
+    /** 1.7.0 A: metres driven from switching the manoeuvre's side on to [startMs] (speed integral); null = unknown. */
+    val signalLeadMeters: Float? = null, val signalLeadMs: Long? = null,
+    /** 1.7.0 B ([ReviewKind.BLINKER_LEFT_ON] only): time and distance driven at >=30km/h with the blinker left on. */
+    val blinkerOnMs: Long? = null, val blinkerOnMeters: Float? = null,
+    /** 1.7.1: where the steering manoeuvre actually begins (delayed lane window: first sample above 10% of the peak
+     * residual, see [LaneWindowPolicy.LEAD_ONSET_FRACTION]). Used ONLY to end the blinker lead distance;
+     * [startMs] (20% crossing, card timing/classification) is untouched. Memory only: RecapCodec does not persist it.
+     * null = no better estimate than [startMs] (reducer-path cards, restored records). */
+    val maneuverOnsetMs: Long? = null,
 ) { val durationMs: Long get() = (endMs - startMs).coerceAtLeast(0) }
 
 data class ReviewCard(

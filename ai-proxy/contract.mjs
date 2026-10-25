@@ -1,6 +1,6 @@
 // AI_CONTRACT.md v2 (v1 count compatibility): closed schemas, no body/error/upstream logging.
 export const LABELS = ["차선 변경", "교차로 회전", "굽은 길", "판단 보류"];
-export const KINDS = ["STEERING", "LANE_CHANGE", "LANE_SIGNALLED", "LANE_NO_SIGNAL", "LANE_LATE_SIGNAL", "TURN", "CURVE", "HARD_BRAKE", "BRAKE_UNVERIFIED", "UNSURE", "TURN_NO_SIGNAL", "TURN_LATE_SIGNAL", "TURN_SIGNALLED"];
+export const KINDS = ["STEERING", "LANE_CHANGE", "LANE_SIGNALLED", "LANE_NO_SIGNAL", "LANE_LATE_SIGNAL", "TURN", "CURVE", "HARD_BRAKE", "BRAKE_UNVERIFIED", "UNSURE", "TURN_NO_SIGNAL", "TURN_LATE_SIGNAL", "TURN_SIGNALLED", "BLINKER_LEFT_ON"];
 export class ContractError extends Error {}
 const fail = () => { throw new ContractError("invalid_request"); };
 const obj = (v, keys) => {

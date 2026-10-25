@@ -193,7 +193,7 @@ class RecapRecordingSession(context: Context, demo: Boolean, private val parked:
         val now = SystemClock.elapsedRealtime()
         state = state.copy(lastMs = now, active = null, missingBrakeStart = null, lastHardBrakeMs = null,
             brakeWindow = null, recentDecelerations = emptyList(), decelerationAnchor = null, inputTimes = emptyMap(),
-            lateralFilter = LateralFilter(), lastSpeedDropMs = null, delayedLane = DelayedLaneState(),
+            lateralFilter = LateralFilter(), lastSpeedDropMs = null, delayedLane = DelayedLaneState(), blinker = BlinkerState(),
             indicatorKnownSince = if (state.indicator == null) null else now,
             left = if (state.indicator == Indicator.LEFT) IndicatorWindow(now) else IndicatorWindow(),
             right = if (state.indicator == Indicator.RIGHT) IndicatorWindow(now) else IndicatorWindow(), hint = null)

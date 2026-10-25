@@ -71,7 +71,7 @@ Jev 업스트림은 `POST https://api.typesafe.ai/v1/systemone`, Bearer 환경 �
 ```
 
 - today는 오늘의 표시 대상 규칙 카드 전체, 최대 500개다. 화면 페이지(100개)와 무관하다. 500개를 넘으면 임의 표본을 전송하지 않고 템플릿을 사용한다.
-- kind: `STEERING|LANE_CHANGE|LANE_SIGNALLED|LANE_NO_SIGNAL|LANE_LATE_SIGNAL|TURN|CURVE|HARD_BRAKE|BRAKE_UNVERIFIED|UNSURE|TURN_NO_SIGNAL|TURN_LATE_SIGNAL|TURN_SIGNALLED`. 회전3종은 내비와 조향의 로컬 융합 결과다. AI 분류를 규칙 kind로 덮어쓰지 않는다. 기존 순수 조향의 숨긴 회전은 포함하지 않는다.
+- kind: `STEERING|LANE_CHANGE|LANE_SIGNALLED|LANE_NO_SIGNAL|LANE_LATE_SIGNAL|TURN|CURVE|HARD_BRAKE|BRAKE_UNVERIFIED|UNSURE|TURN_NO_SIGNAL|TURN_LATE_SIGNAL|TURN_SIGNALLED|BLINKER_LEFT_ON`. BLINKER_LEFT_ON(1.7.0, 깜빡이를 켠 채 주행)은 kind 이름만 전달되고 새 필드는 없다. 회전3종은 내비와 조향의 로컬 융합 결과다. AI 분류를 규칙 kind로 덮어쓰지 않는다. 기존 순수 조향의 숨긴 회전은 포함하지 않는다.
 - hourBucket: 기기 현지 시간대의 0..23 정수. 분·초·epoch 없음.
 - speedBand: max 속도 기준 `low`(<30km/h), `mid`(30 이상60 미만), `high`(60 이상). **미수신을 저속으로 꾸미지 않기 위해 `unknown`을 추가**했다.
 - indicator: `none|before|late|unknown`. 분류 입력과 달리 오늘의 불확실한 규칙 카드도 요약하므로 unknown을 허용한다.

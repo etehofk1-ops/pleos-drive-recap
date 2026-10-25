@@ -64,12 +64,12 @@ test('local secrets and dev notes are excluded but a secret file in submission s
 test('default final check fails when no APK exists', () => {
   const r = run(fixture(), []); assert.equal(r.code, 1); assert.match(r.output, /Exactly one signed release APK/);
 });
-function mockApkTools(root, { debug = false, version = '21', debugCertificate = false } = {}) {
+function mockApkTools(root, { debug = false, version = '23', debugCertificate = false } = {}) {
   const apk = join(root, 'apk', '시연팀_오운복_release.apk');
   writeFileSync(apk, 'fixture only - not an actual APK');
   const aapt = join(root, '.local', 'aapt.cmd'), signer = join(root, '.local', 'signer.cmd');
   writeFileSync(aapt, '@echo off\r\necho package: name=\'lab.pleos.observe\' versionCode=\'' + version +
-    '\' versionName=\'1.6.0\'\r\n' + (debug ? 'echo application-debuggable\r\n' : '') + 'exit /b 0\r\n');
+    '\' versionName=\'1.8.0\'\r\n' + (debug ? 'echo application-debuggable\r\n' : '') + 'exit /b 0\r\n');
   writeFileSync(signer, '@echo off\r\necho Signer #1 certificate DN: CN=' + (debugCertificate ? 'Android Debug' : 'Submission') + '\r\nexit /b 0\r\n');
   return ['-Aapt2Path', aapt, '-ApkSignerPath', signer];
 }

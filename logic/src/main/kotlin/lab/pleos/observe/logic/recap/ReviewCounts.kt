@@ -5,13 +5,15 @@ import java.time.LocalDate
 
 /** Seven days of rule-only counts. No IDs, timestamps, location or segment evidence. */
 data class ReviewCounts(val missing: Int = 0, val late: Int = 0, val good: Int = 0, val hardBrake: Int = 0,
-    val turnMissing: Int = 0, val turnLate: Int = 0, val turnGood: Int = 0)
+    val turnMissing: Int = 0, val turnLate: Int = 0, val turnGood: Int = 0,
+    /** 1.7.0: blinker left on while driving. A missed moment (shown with the "놓침" tile), not a lane/turn count. */
+    val blinkerOn: Int = 0)
 data class CountDay(val date: String, val counts: ReviewCounts)
 fun reviewCounts(cards: List<ReviewCard>) = ReviewCounts(
     cards.count { it.kind == ReviewKind.LANE_NO_SIGNAL }, cards.count { it.kind == ReviewKind.LANE_LATE_SIGNAL },
     cards.count { it.kind == ReviewKind.LANE_SIGNALLED }, cards.count { it.kind == ReviewKind.HARD_BRAKE },
     cards.count { it.kind == ReviewKind.TURN_NO_SIGNAL }, cards.count { it.kind == ReviewKind.TURN_LATE_SIGNAL },
-    cards.count { it.kind == ReviewKind.TURN_SIGNALLED })
+    cards.count { it.kind == ReviewKind.TURN_SIGNALLED }, cards.count { it.kind == ReviewKind.BLINKER_LEFT_ON })
 
 /** Whole-day, rule-only counts. An uncertain hypothesis never inflates a confirmed count. */
 fun recapSummary(cards: List<ReviewCard>): String {
@@ -25,7 +27,8 @@ fun recapSummary(cards: List<ReviewCard>): String {
         }} 깜빡이 놓침 $missing · 늦게 켬 $late"
     }
     return "오늘 차선 변경 ${c.good + c.missing + c.late}번 · 깜빡이 놓침 ${c.missing} · 늦게 켬 ${c.late} · 급제동 ${c.hardBrake}" +
-        (if (turns.isNotEmpty()) " · ${turns.joinToString(" · ")}" else "") + (if (unsure > 0) " · 애매함 $unsure" else "")
+        (if (turns.isNotEmpty()) " · ${turns.joinToString(" · ")}" else "") +
+        (if (c.blinkerOn > 0) " · 켜 둔 채 주행 ${c.blinkerOn}" else "") + (if (unsure > 0) " · 애매함 $unsure" else "")
 }
 fun retainedCountDate(date: String, today: String): Boolean = runCatching {
     val day = LocalDate.parse(date); val now = LocalDate.parse(today)
@@ -41,17 +44,20 @@ object CountCodec {
         DataOutputStream(bytes).use { out ->
             val turns = listOf(day.counts.turnMissing, day.counts.turnLate, day.counts.turnGood)
             val extended = turns.any { it != 0 }
-            out.writeInt(if (extended) 0x434E5432 else 0x434E5431); out.writeUTF(day.date)
+            val withBlinker = day.counts.blinkerOn != 0 // 0x434E5433 (1.7.0); days without it stay byte-identical to 1.6.0
+            out.writeInt(if (withBlinker) 0x434E5433 else if (extended) 0x434E5432 else 0x434E5431); out.writeUTF(day.date)
             listOf(day.counts.missing, day.counts.late, day.counts.good, day.counts.hardBrake).forEach { require(it in 0..100_000); out.writeInt(it) }
-            if (extended) turns.forEach { require(it in 0..100_000); out.writeInt(it) }
+            if (extended || withBlinker) turns.forEach { require(it in 0..100_000); out.writeInt(it) }
+            if (withBlinker) { require(day.counts.blinkerOn in 0..100_000); out.writeInt(day.counts.blinkerOn) }
         }; bytes.toByteArray()
     }
     fun decode(bytes: ByteArray): CountDay = DataInputStream(ByteArrayInputStream(bytes)).use { input ->
-        val version = input.readInt(); require(version in 0x434E5431..0x434E5432)
+        val version = input.readInt(); require(version in 0x434E5431..0x434E5433)
         val date = input.readUTF().also { LocalDate.parse(it) }
         val values = List(4) { input.readInt().also { require(it in 0..100_000) } }
-        val turns = if (version == 0x434E5432) List(3) { input.readInt().also { require(it in 0..100_000) } } else listOf(0, 0, 0)
+        val turns = if (version >= 0x434E5432) List(3) { input.readInt().also { require(it in 0..100_000) } } else listOf(0, 0, 0)
+        val blinker = if (version >= 0x434E5433) input.readInt().also { require(it in 0..100_000) } else 0
         require(input.available() == 0)
-        CountDay(date, ReviewCounts(values[0], values[1], values[2], values[3], turns[0], turns[1], turns[2]))
+        CountDay(date, ReviewCounts(values[0], values[1], values[2], values[3], turns[0], turns[1], turns[2], blinker))
     }
 }

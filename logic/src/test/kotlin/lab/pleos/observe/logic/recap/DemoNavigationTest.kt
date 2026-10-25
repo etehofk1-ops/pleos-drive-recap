@@ -93,7 +93,7 @@ class DemoNavigationTest {
         assertEquals(day, RecapCodec.decode(bytes))
         for (key in listOf("runId", "sequence", "distanceMeters", "TURN_RIGHT", "receivedAtMs"))
             assertFalse(bytes.toString(Charsets.ISO_8859_1).contains(key))
-        val v2 = bytes.copyOf(bytes.size - 2); v2[7] = 2 // v3 provenance + v4 absent geometry, one-card fixture
+        val v2 = bytes.copyOf(bytes.size - 2 - 4); v2[7] = 2 // v3 provenance + v4 absent geometry + v7 four absent nullable fields, one-card fixture
         assertFalse(RecapCodec.decode(v2).cards.single().demoNavigation)
     }
     @Test fun realAndDemoObservationsCannotBeCombinedToPromoteConfidence() {

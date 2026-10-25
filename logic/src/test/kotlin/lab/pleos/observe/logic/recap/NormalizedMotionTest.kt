@@ -119,7 +119,7 @@ class NormalizedMotionTest {
     @Test fun populatedVersionThreeFileStillReadsExactly() {
         val s = SegmentSummary(0,4_000,0,-14f,14f,1,1,15f,15f,false,SignalTiming.NONE,true)
         val day = DayRecap("2026-10-24", cards = listOf(classifySegment(s)!!.copy(demoNavigation=true)))
-        val bytes = RecapCodec.encode(day).dropLast(1).toByteArray().apply { this[7] = 3 }
+        val bytes = RecapCodec.encode(day).dropLast(1 + 4).toByteArray().apply { this[7] = 3 } // + v7 four absent nullable fields
         assertEquals(day, RecapCodec.decode(bytes))
     }
     @Test fun shortSpeedSpikeDoesNotPassFourHundredMillisecondAverage() {

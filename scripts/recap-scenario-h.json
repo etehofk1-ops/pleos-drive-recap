@@ -1,0 +1,1506 @@
+{
+ "name": "H — G + 깜빡이 켜 둔 채 주행(1.7.0)",
+ "runner": "demo-navi-feed.ps1",
+ "requiresDemoNavi": true,
+ "note": "G에 E7(차선 변경 뒤 깜빡이를 20초 켜 둔 채 60km/h)을 끼웠다. 1.7.0 켬 거리(E1)와 켜 둔 채 주행 카드 확인용.",
+ "expected": [
+  "LANE_SIGNALLED 좋아요",
+  "LANE_NO_SIGNAL",
+  "LANE_LATE_SIGNAL",
+  "TURN_SIGNALLED 우회전 내비 확인(모의)",
+  "TURN_NO_SIGNAL 유턴 내비 확인(모의)",
+  "HARD_BRAKE",
+  "BLINKER_LEFT_ON 약 20초"
+ ],
+ "steps": [
+  {
+   "atMs": 0,
+   "controls": {
+    "gear": "P",
+    "speedKph": 0,
+    "steering": 0,
+    "brake": 0,
+    "turnSignal": "Off"
+   },
+   "caption": "[P] 출발 전 정차",
+   "navi": {
+    "guiding": false,
+    "action": null,
+    "distanceMeters": null
+   }
+  },
+  {
+   "atMs": 2000,
+   "controls": {
+    "gear": "D",
+    "speedKph": 60,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[GO] 출발 · 시속 60km",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_STRAIGHT",
+    "distanceMeters": 1200
+   },
+   "waitForSpeedKph": {
+    "min": 58,
+    "max": 62,
+    "timeoutMs": 30000,
+    "holdMs": 1000
+   }
+  },
+  {
+   "atMs": 4500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[..] 순항"
+  },
+  {
+   "atMs": 6000,
+   "controls": {
+    "speedKph": 60,
+    "turnSignal": "Blink left"
+   },
+   "caption": "[E1] 깜빡이 먼저 켬"
+  },
+  {
+   "atMs": 8000,
+   "controls": {
+    "speedKph": 60,
+    "steering": 3
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 8350,
+   "controls": {
+    "speedKph": 60,
+    "steering": 5
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 8700,
+   "controls": {
+    "speedKph": 60,
+    "steering": 7
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 9050,
+   "controls": {
+    "speedKph": 60,
+    "steering": 7
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 9400,
+   "controls": {
+    "speedKph": 60,
+    "steering": 6
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 9750,
+   "controls": {
+    "speedKph": 60,
+    "steering": 4
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 10100,
+   "controls": {
+    "speedKph": 60,
+    "steering": 1
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 10450,
+   "controls": {
+    "speedKph": 60,
+    "steering": -2
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 10800,
+   "controls": {
+    "speedKph": 60,
+    "steering": -5
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 11150,
+   "controls": {
+    "speedKph": 60,
+    "steering": -6
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 11500,
+   "controls": {
+    "speedKph": 60,
+    "steering": -6
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 11600,
+   "controls": {
+    "speedKph": 60,
+    "turnSignal": "Off"
+   },
+   "caption": "[..] 깜빡이 끔(되돌아오는 중 자동 해제 — 다음 차선 변경 3.5초 전)"
+  },
+  {
+   "atMs": 11850,
+   "controls": {
+    "speedKph": 60,
+    "steering": -5
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 12200,
+   "controls": {
+    "speedKph": 60,
+    "steering": -3
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 12550,
+   "controls": {
+    "speedKph": 60,
+    "steering": -1
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 12900,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0
+   },
+   "caption": "[E1] 차선 변경"
+  },
+  {
+   "atMs": 15000,
+   "controls": {
+    "speedKph": 60,
+    "steering": -3
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 15350,
+   "controls": {
+    "speedKph": 60,
+    "steering": -5
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 15700,
+   "controls": {
+    "speedKph": 60,
+    "steering": -7
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 16050,
+   "controls": {
+    "speedKph": 60,
+    "steering": -7
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 16400,
+   "controls": {
+    "speedKph": 60,
+    "steering": -5
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 16750,
+   "controls": {
+    "speedKph": 60,
+    "steering": -3
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 17100,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 17450,
+   "controls": {
+    "speedKph": 60,
+    "steering": 3
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 17800,
+   "controls": {
+    "speedKph": 60,
+    "steering": 5
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 18150,
+   "controls": {
+    "speedKph": 60,
+    "steering": 6
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 18500,
+   "controls": {
+    "speedKph": 60,
+    "steering": 6
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 18850,
+   "controls": {
+    "speedKph": 60,
+    "steering": 5
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 19200,
+   "controls": {
+    "speedKph": 60,
+    "steering": 3
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 19550,
+   "controls": {
+    "speedKph": 60,
+    "steering": 1
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 19900,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0
+   },
+   "caption": "[E2] 깜빡이 없이 차선 변경"
+  },
+  {
+   "atMs": 22000,
+   "controls": {
+    "speedKph": 60,
+    "steering": 3
+   },
+   "caption": "[E3] 핸들 먼저"
+  },
+  {
+   "atMs": 22350,
+   "controls": {
+    "speedKph": 60,
+    "steering": 6
+   },
+   "caption": "[E3] 핸들 먼저"
+  },
+  {
+   "atMs": 22600,
+   "controls": {
+    "speedKph": 60,
+    "turnSignal": "Blink left"
+   },
+   "caption": "[E3] 깜빡이 늦게 켬"
+  },
+  {
+   "atMs": 22700,
+   "controls": {
+    "speedKph": 60,
+    "steering": 7
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 23050,
+   "controls": {
+    "speedKph": 60,
+    "steering": 7
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 23400,
+   "controls": {
+    "speedKph": 60,
+    "steering": 5
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 23750,
+   "controls": {
+    "speedKph": 60,
+    "steering": 2
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 24100,
+   "controls": {
+    "speedKph": 60,
+    "steering": -1
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 24450,
+   "controls": {
+    "speedKph": 60,
+    "steering": -4
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 24800,
+   "controls": {
+    "speedKph": 60,
+    "steering": -6
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 25150,
+   "controls": {
+    "speedKph": 60,
+    "steering": -6
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 25500,
+   "controls": {
+    "speedKph": 60,
+    "steering": -5
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 25850,
+   "controls": {
+    "speedKph": 60,
+    "steering": -4
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 26200,
+   "controls": {
+    "speedKph": 60,
+    "steering": -2
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 26550,
+   "controls": {
+    "speedKph": 60,
+    "steering": -1
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 26900,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0
+   },
+   "caption": "[E3] 차선 변경"
+  },
+  {
+   "atMs": 27500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[E7] 깜빡이 켜 둔 채 주행"
+  },
+  {
+   "atMs": 32500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[E7] 깜빡이 켜 둔 채 주행"
+  },
+  {
+   "atMs": 37500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[E7] 깜빡이 켜 둔 채 주행"
+  },
+  {
+   "atMs": 42500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[E7] 깜빡이 켜 둔 채 주행"
+  },
+  {
+   "atMs": 47500,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[E7] 깜빡이 켜 둔 채 주행"
+  },
+  {
+   "atMs": 49500,
+   "controls": {
+    "speedKph": 60,
+    "turnSignal": "Off"
+   },
+   "caption": "[..] 깜빡이 끔"
+  },
+  {
+   "atMs": 50000,
+   "controls": {
+    "speedKph": 59,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 50250,
+   "controls": {
+    "speedKph": 58,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 50500,
+   "controls": {
+    "speedKph": 57,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 50750,
+   "controls": {
+    "speedKph": 56,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 51000,
+   "controls": {
+    "speedKph": 55,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 51250,
+   "controls": {
+    "speedKph": 54,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 51500,
+   "controls": {
+    "speedKph": 53,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 51750,
+   "controls": {
+    "speedKph": 52,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 52000,
+   "controls": {
+    "speedKph": 51,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 52250,
+   "controls": {
+    "speedKph": 50,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 52500,
+   "controls": {
+    "speedKph": 49,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 52750,
+   "controls": {
+    "speedKph": 48,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 53000,
+   "controls": {
+    "speedKph": 47,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 53250,
+   "controls": {
+    "speedKph": 46,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 53500,
+   "controls": {
+    "speedKph": 45,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 53750,
+   "controls": {
+    "speedKph": 44,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 54000,
+   "controls": {
+    "speedKph": 43,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 54250,
+   "controls": {
+    "speedKph": 42,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 54500,
+   "controls": {
+    "speedKph": 41,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 54750,
+   "controls": {
+    "speedKph": 40,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 55000,
+   "controls": {
+    "speedKph": 39,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 55250,
+   "controls": {
+    "speedKph": 38,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 55500,
+   "controls": {
+    "speedKph": 37,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 55750,
+   "controls": {
+    "speedKph": 36,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 56000,
+   "controls": {
+    "speedKph": 35,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 56250,
+   "controls": {
+    "speedKph": 34,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 56500,
+   "controls": {
+    "speedKph": 33,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 56750,
+   "controls": {
+    "speedKph": 32,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 57000,
+   "controls": {
+    "speedKph": 31,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 57250,
+   "controls": {
+    "speedKph": 30,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 57500,
+   "controls": {
+    "speedKph": 29,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 57750,
+   "controls": {
+    "speedKph": 28,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 58000,
+   "controls": {
+    "speedKph": 27,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 58250,
+   "controls": {
+    "speedKph": 26,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 58500,
+   "controls": {
+    "speedKph": 25,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 58750,
+   "controls": {
+    "speedKph": 24,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 59000,
+   "controls": {
+    "speedKph": 23,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 59250,
+   "controls": {
+    "speedKph": 22,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 59500,
+   "controls": {
+    "speedKph": 21,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 59750,
+   "controls": {
+    "speedKph": 20,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 60000,
+   "controls": {
+    "speedKph": 19,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 60250,
+   "controls": {
+    "speedKph": 18,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 60500,
+   "controls": {
+    "speedKph": 17,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 60750,
+   "controls": {
+    "speedKph": 16,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 61000,
+   "controls": {
+    "speedKph": 15,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 61250,
+   "controls": {
+    "speedKph": 14,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 61500,
+   "controls": {
+    "speedKph": 13,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 61750,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[DEC] 완만한 감속"
+  },
+  {
+   "atMs": 64000,
+   "controls": {
+    "speedKph": 12
+   },
+   "caption": "[E4] 내비: 200m 앞 우회전",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_RIGHT",
+    "distanceMeters": 200
+   }
+  },
+  {
+   "atMs": 66000,
+   "controls": {
+    "speedKph": 12,
+    "turnSignal": "Blink right"
+   },
+   "caption": "[E4] 50m 앞 · 깜빡이 켬",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_RIGHT",
+    "distanceMeters": 50
+   }
+  },
+  {
+   "atMs": 68000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 20
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 68400,
+   "controls": {
+    "speedKph": 12,
+    "steering": 50
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 68800,
+   "controls": {
+    "speedKph": 12,
+    "steering": 80
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 69200,
+   "controls": {
+    "speedKph": 12,
+    "steering": 90
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 69600,
+   "controls": {
+    "speedKph": 12,
+    "steering": 90
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 70000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 90
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 70400,
+   "controls": {
+    "speedKph": 12,
+    "steering": 90
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 70800,
+   "controls": {
+    "speedKph": 12,
+    "steering": 70
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 71200,
+   "controls": {
+    "speedKph": 12,
+    "steering": 40
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 71600,
+   "controls": {
+    "speedKph": 12,
+    "steering": 10
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 72000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0
+   },
+   "caption": "[E4] 우회전"
+  },
+  {
+   "atMs": 74000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0,
+    "turnSignal": "Off"
+   },
+   "caption": "[..] 우회전 마침",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_STRAIGHT",
+    "distanceMeters": 600
+   }
+  },
+  {
+   "atMs": 78000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0
+   },
+   "caption": "[E5] 내비: 200m 앞 유턴",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_UTURN",
+    "distanceMeters": 200
+   }
+  },
+  {
+   "atMs": 80000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0
+   },
+   "caption": "[E5] 50m 앞 · 깜빡이 없음",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_UTURN",
+    "distanceMeters": 50
+   }
+  },
+  {
+   "atMs": 82000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 30
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 82400,
+   "controls": {
+    "speedKph": 12,
+    "steering": 65
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 82800,
+   "controls": {
+    "speedKph": 12,
+    "steering": 100
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 83200,
+   "controls": {
+    "speedKph": 12,
+    "steering": 120
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 83600,
+   "controls": {
+    "speedKph": 12,
+    "steering": 120
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 84000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 120
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 84400,
+   "controls": {
+    "speedKph": 12,
+    "steering": 120
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 84800,
+   "controls": {
+    "speedKph": 12,
+    "steering": 90
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 85200,
+   "controls": {
+    "speedKph": 12,
+    "steering": 50
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 85600,
+   "controls": {
+    "speedKph": 12,
+    "steering": 15
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 86000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0
+   },
+   "caption": "[E5] 유턴"
+  },
+  {
+   "atMs": 88000,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0
+   },
+   "caption": "[..] 유턴 마침",
+   "navi": {
+    "guiding": true,
+    "action": "TURN_STRAIGHT",
+    "distanceMeters": 900
+   }
+  },
+  {
+   "atMs": 90000,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[GO] 다시 시속 60km",
+   "waitForSpeedKph": {
+    "min": 58,
+    "max": 62,
+    "timeoutMs": 30000,
+    "holdMs": 1000
+   }
+  },
+  {
+   "atMs": 93000,
+   "controls": {
+    "speedKph": 60
+   },
+   "caption": "[..] 순항"
+  },
+  {
+   "atMs": 95000,
+   "controls": {
+    "speedKph": 60,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95100,
+   "controls": {
+    "speedKph": 57,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95200,
+   "controls": {
+    "speedKph": 54,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95300,
+   "controls": {
+    "speedKph": 51,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95400,
+   "controls": {
+    "speedKph": 48,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95500,
+   "controls": {
+    "speedKph": 45,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95600,
+   "controls": {
+    "speedKph": 42,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95700,
+   "controls": {
+    "speedKph": 39,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95800,
+   "controls": {
+    "speedKph": 36,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 95900,
+   "controls": {
+    "speedKph": 33,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96000,
+   "controls": {
+    "speedKph": 30,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96100,
+   "controls": {
+    "speedKph": 27,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96200,
+   "controls": {
+    "speedKph": 24,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96300,
+   "controls": {
+    "speedKph": 21,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96400,
+   "controls": {
+    "speedKph": 18,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96500,
+   "controls": {
+    "speedKph": 15,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 급제동"
+  },
+  {
+   "atMs": 96750,
+   "controls": {
+    "speedKph": 14,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 97000,
+   "controls": {
+    "speedKph": 13,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 97250,
+   "controls": {
+    "speedKph": 12,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 97500,
+   "controls": {
+    "speedKph": 11,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 97750,
+   "controls": {
+    "speedKph": 10,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 98000,
+   "controls": {
+    "speedKph": 9,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 98250,
+   "controls": {
+    "speedKph": 8,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 98500,
+   "controls": {
+    "speedKph": 7,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 98750,
+   "controls": {
+    "speedKph": 6,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 99000,
+   "controls": {
+    "speedKph": 5,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 99250,
+   "controls": {
+    "speedKph": 4,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 99500,
+   "controls": {
+    "speedKph": 3,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 99750,
+   "controls": {
+    "speedKph": 2,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 100000,
+   "controls": {
+    "speedKph": 1,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속"
+  },
+  {
+   "atMs": 100250,
+   "controls": {
+    "speedKph": 0,
+    "steering": 0,
+    "brake": 90
+   },
+   "caption": "[E6] 정지까지 감속",
+   "waitForSpeedKph": {
+    "min": 0,
+    "max": 0.1,
+    "timeoutMs": 20000,
+    "holdMs": 400
+   }
+  },
+  {
+   "atMs": 101750,
+   "controls": {
+    "speedKph": 0,
+    "steering": 0,
+    "brake": 0
+   },
+   "caption": "[..] 브레이크 뗌 · 안내 종료",
+   "navi": {
+    "guiding": false,
+    "action": null,
+    "distanceMeters": null
+   }
+  },
+  {
+   "atMs": 103750,
+   "controls": {
+    "gear": "P",
+    "speedKph": 0,
+    "steering": 0,
+    "brake": 0,
+    "turnSignal": "Off"
+   },
+   "caption": "[PARK] 정차 · P"
+  }
+ ]
+}

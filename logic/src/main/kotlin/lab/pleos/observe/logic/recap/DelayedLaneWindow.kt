@@ -36,6 +36,12 @@ object LaneWindowPolicy {
     const val LOBE_PAIR_FRACTION = 0.8
     const val CORR_MIN = 0.7
     const val ONSET_FRACTION = 0.2
+    /** 1.7.1: the manoeuvre onset used ONLY to end the blinker lead distance (SegmentSummary.maneuverOnsetMs): first
+     * sample of the window with |residual| above this fraction of the peak residual. ONSET_FRACTION (the card start)
+     * lags the real steering start by ~0.25s (median, synthetic lane waves and gyro-verified real lane changes);
+     * 10% lags ~0.1s. Chosen with spikes/w17b/onset_eval.py (docs/WEEK17B_LEAD_ONSET_REPORT.md). Looking back before the
+     * window start was tested and rejected: real pre-window steering wander made most windows worse, not better. */
+    const val LEAD_ONSET_FRACTION = 0.10
     /** Spec value for "missed indicator is a visible warning". NOT wired into visibleReviewCards:
      * it would hide the AVD scenario G no-indicator lane (2.1~2.9m) that the required regression
      * expects. Apply it from card.summary.lateral.displacementM when scoring (see W16c report). */
@@ -192,13 +198,17 @@ private fun evaluateStart(a: Long, point: (Long) -> LanePoint?, signals: List<La
         var on = 0
         for (i in 0 until len) if (abs(r[i]) > LaneWindowPolicy.ONSET_FRACTION * rMax) { on = i; break }
         val coreStart = win[on].atMs; val coreEnd = endPoint.atMs
+        // Lead-only onset: same residual, lower fraction. Always at or before [on] (0.10 < 0.2 of the same peak).
+        var lead = 0
+        for (i in 0 until len) if (abs(r[i]) > LaneWindowPolicy.LEAD_ONSET_FRACTION * rMax) { lead = i; break }
         var absolute = 0.0; for (i in 0 until len) absolute += abs(r[i]) * 0.1
         var travel = 0.0; for (p in win) travel += p.speed * 0.1
         val summary = SegmentSummary(coreStart, coreEnd, input.wallMs - (input.atMs - coreStart), minAngle, maxAngle,
             if (r[on] >= 0) 1 else -1, lobes.size - 1, minSpeed, maxSpeed, false, SignalTiming.UNKNOWN, false,
             // Same rule as the reducer's nearTurn(): a hint is fresh for 3s after receipt.
             nearNavigationTurn = nearTurns.any { it <= coreEnd && it + RecapThresholds.NAV_FRESH_MS >= coreStart },
-            lateral = LateralSummary(psiEnd, peak, absolute, 0.0, lat, travel, windowDurationMs = len * 100))
+            lateral = LateralSummary(psiEnd, peak, absolute, 0.0, lat, travel, windowDurationMs = len * 100),
+            maneuverOnsetMs = win[lead].atMs)
         out += LaneWindowGroup(coreStart, coreEnd, summary.wallStartMs, summary, score,
             signalProof(signals, coreStart, coreEnd), startPoint.atMs, startPoint.atMs + len * 100L)
     }

@@ -7,6 +7,8 @@ import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.StateListDrawable
+import android.graphics.text.LineBreakConfig
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.Layout
@@ -74,7 +76,7 @@ fun ScrollView.restoreAnchor(anchor: ScrollAnchor) {
  * Re-measures on window/font/density change. All font sizes are sp, spacing is dp.
  */
 class VehicleParagraph(context: Context, private val value: String, private val sizeSp: Float,
-    private val color: Int, private val bold: Boolean = false) : LinearLayout(context) {
+    private val color: Int, private val bold: Boolean = false, private val wordBreaks: Boolean = false) : LinearLayout(context) {
     private var measuredFor = -1
     init { orientation = VERTICAL; isSaveEnabled = false; isSaveFromParentEnabled = false }
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -88,7 +90,11 @@ class VehicleParagraph(context: Context, private val value: String, private val 
             }
             val layout = StaticLayout.Builder.obtain(value, 0, value.length, paint, width)
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL).setBreakStrategy(Layout.BREAK_STRATEGY_SIMPLE)
-                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE).setIncludePad(true).build()
+                .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NONE).setIncludePad(true).apply {
+                    // 큰 제목은 한국어 낱말 한가운데서 줄이 꺾이지 않게(Android 13+). 그 아래 버전은 기존과 같다.
+                    if (wordBreaks && Build.VERSION.SDK_INT >= 33) setLineBreakConfig(
+                        LineBreakConfig.Builder().setLineBreakWordStyle(LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE).build())
+                }.build()
             var start = 0
             for (line in 0 until layout.lineCount step 3) {
                 val end = layout.getLineEnd(minOf(line + 2, layout.lineCount - 1))
@@ -96,6 +102,7 @@ class VehicleParagraph(context: Context, private val value: String, private val 
                 addView(TextView(context).apply {
                     text = part; pleosText(sizeSp, color, if (bold) 700 else 400)
                     breakStrategy = Layout.BREAK_STRATEGY_SIMPLE; hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
+                    if (wordBreaks && Build.VERSION.SDK_INT >= 33) lineBreakWordStyle = LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
                     isSaveEnabled = false; isSaveFromParentEnabled = false
                 }, LayoutParams(-1, -2).apply { if (line > 0) topMargin = context.dp(8) })
             }
@@ -164,7 +171,7 @@ fun View.installPleosPress() {
     }
 }
 
-private fun Context.pleosStates(normal: Int, pressed: Int, radius: Int = 0, outlined: Boolean = false, disabled: Int = normal): StateListDrawable {
+internal fun Context.pleosStates(normal: Int, pressed: Int, radius: Int = 0, outlined: Boolean = false, disabled: Int = normal): StateListDrawable {
     val p = vehicleColors()
     fun shape(color: Int, focus: Int? = null) = vehicleSurface(color, radius).apply {
         if (focus != null) setStroke(dp(3), focus) else if (outlined) setStroke(1, p.dividerTertiary)

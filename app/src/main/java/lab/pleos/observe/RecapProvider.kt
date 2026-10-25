@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import lab.pleos.observe.logic.recap.*
-import lab.pleos.observe.logic.recapTileCounts
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -44,9 +43,11 @@ class RecapProvider : ContentProvider() {
                 result.putInt("total", day.cards.size)
                 result.putString("recapSummary", recapSummary(stored.cards))
                 // Presentation only: whole-day counters, never the paginated 100-card subset.
-                val tiles = recapTileCounts(reviewCounts(stored.cards))
-                result.putInt("tileMissing", tiles.missing); result.putInt("tileLate", tiles.late)
-                result.putInt("tileHardBrake", tiles.hardBrake); result.putInt("tileGood", tiles.good)
+                // 1.8.0: 종류별로 따로 센다. 켜 둔 채 주행은 놓친 순간에 합치지 않는다.
+                val glance = recapGlance(reviewCounts(stored.cards))
+                result.putInt("glanceGood", glance.good); result.putInt("glanceMissed", glance.missed)
+                result.putInt("glanceLate", glance.late); result.putInt("glanceLeftOn", glance.leftOn)
+                result.putInt("glanceHardBrake", glance.hardBrake)
                 result.putInt("unsure", day.cards.count { it.kind == ReviewKind.UNSURE })
                 result.putBoolean("recording", repo.recording)
                 result.putBoolean("demo", repo.demoMissingSpeed)

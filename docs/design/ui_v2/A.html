@@ -1,0 +1,65 @@
+<!doctype html><html lang='ko'><head><meta charset='utf-8'><style>
+@font-face { font-family: Asta; src: url("file:///D:/Projects/pleos-observe-lab/motion/demo-v6/assets/fonts/AstaSansOTF-Regular.otf"); font-weight: 400; }
+@font-face { font-family: Asta; src: url("file:///D:/Projects/pleos-observe-lab/motion/demo-v6/assets/fonts/AstaSansOTF-Bold.otf"); font-weight: 700; }
+@font-face { font-family: Asta; src: url("file:///D:/Projects/pleos-observe-lab/motion/demo-v6/assets/fonts/AstaSansOTF-ExtraBold.otf"); font-weight: 800; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1706px; height: 1209px; overflow: hidden; background: #F7F8FA; color: #131417; font-family: Asta, sans-serif; }
+.app { position: absolute; inset: 0; padding: 34px 44px; }
+.t1 { font-size: 40px; font-weight: 800; letter-spacing: -0.01em; }
+.sub { font-size: 26px; color: rgba(19,20,23,.64); margin-top: 8px; }
+.card { background: #fff; border-radius: 24px; }
+.cap { font-size: 24px; color: rgba(19,20,23,.64); }
+.num { font-weight: 800; letter-spacing: -0.02em; }
+.chip { display: inline-block; padding: 8px 18px; border-radius: 999px; background: rgba(19,20,23,.05); font-size: 24px; color: rgba(19,20,23,.84); margin-right: 10px; }
+.btn { flex: 1; height: 96px; border-radius: 16px; background: rgba(19,20,23,.05); font-size: 30px; font-weight: 700;
+        display: flex; align-items: center; justify-content: center; color: rgba(19,20,23,.84); }
+.dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; }
+.up { color: #0064FF; font-weight: 700; }
+</style></head><body><div class='app'><div style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div><div class="t1">오운복</div><div class="sub">10월 25일 토요일 · 주행 34분 · 18.4 km</div></div></div>
+    <div style="display:flex;gap:28px;margin-top:30px">
+      <div class="card" style="width:500px;padding:30px;display:flex;flex-direction:column;align-items:center">
+        <div class="cap" style="align-self:flex-start">오늘의 순간</div>
+        <div style="position:relative;margin-top:6px"><svg width="360" height="360"><path d="M234.0,31.5 A158.0,158.0 0 1,1 126.0,31.5" fill="none" stroke="rgba(19,20,23,.08)" stroke-width="26" stroke-linecap="round"/><path d="M234.0,31.5 A158.0,158.0 0 0,1 241.4,325.6" fill="none" stroke="#0064FF" stroke-width="26" stroke-linecap="round"/>
+      <circle cx="180.0" cy="22.0" r="11" fill="#0064FF"/></svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div><span class="num" style="font-size:110px">3</span><span style="font-size:40px;font-weight:700;color:rgba(19,20,23,.5)"> / 7</span></div>
+            <div style="font-size:28px;font-weight:700;margin-top:-6px">잘한 순간</div></div></div>
+        <div style="margin-top:14px;font-size:24px;color:rgba(19,20,23,.84);text-align:center">놓침 1 · 늦게 켬 1 · 켜 둔 채 1 · 급제동 1</div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:28px">
+        <div style="display:flex;gap:28px"><div class="card" style="flex:1;padding:30px 32px">
+        <div class="cap">깜빡이 켬 거리</div>
+        <div style="margin-top:14px"><span class="num" style="font-size:72px">40</span><span style="font-size:32px;font-weight:700;margin-left:4px">m</span>
+        <span class="cap" style="margin-left:10px">평균</span></div>
+        <div style="font-size:24px;margin-top:10px;color:rgba(19,20,23,.84)">지난주보다 <span class='up'>12m 일찍</span></div></div><div class="card" style="flex:1;padding:30px 32px">
+        <div class="cap">놓친 순간</div>
+        <div style="margin-top:14px"><span class="num" style="font-size:72px">1</span><span style="font-size:32px;font-weight:700;margin-left:4px">번</span>
+        <span class="cap" style="margin-left:10px"></span></div>
+        <div style="font-size:24px;margin-top:10px;color:rgba(19,20,23,.84)">지난주 평균 <span class='up'>2.4번 → 1번</span></div></div><div class="card" style="flex:1;padding:30px 32px">
+        <div class="cap">급제동</div>
+        <div style="margin-top:14px"><span class="num" style="font-size:72px">1</span><span style="font-size:32px;font-weight:700;margin-left:4px">번</span>
+        <span class="cap" style="margin-left:10px"></span></div>
+        <div style="font-size:24px;margin-top:10px;color:rgba(19,20,23,.84)">지난주와 같아요</div></div></div>
+        <div class="card" style="flex:1;padding:24px 32px">
+          <div class="cap" style="margin-bottom:10px">주행 흐름 · 속도와 순간</div><svg width="1040" height="220" viewBox="0 0 1040 220" style="overflow:visible">
+      <path d="M0,196 L0.0,196.0 L30.6,162.2 L61.2,132.2 L91.8,98.5 L122.4,87.2 L152.9,81.6 L183.5,79.8 L214.1,92.9 L244.7,121.0 L275.3,154.8 L305.9,173.5 L336.5,139.8 L367.1,113.5 L397.6,107.9 L428.2,102.2 L458.8,72.2 L489.4,64.8 L520.0,62.9 L550.6,68.5 L581.2,98.5 L611.8,124.8 L642.4,173.5 L672.9,158.5 L703.5,130.4 L734.1,106.0 L764.7,83.5 L795.3,68.5 L825.9,61.0 L856.5,57.2 L887.1,61.0 L917.6,62.9 L948.2,83.5 L978.8,117.2 L1009.4,158.5 L1040.0,196.0 L1040,196 Z" fill="rgba(19,20,23,.06)"/>
+      <polyline points="0.0,196.0 30.6,162.2 61.2,132.2 91.8,98.5 122.4,87.2 152.9,81.6 183.5,79.8 214.1,92.9 244.7,121.0 275.3,154.8 305.9,173.5 336.5,139.8 367.1,113.5 397.6,107.9 428.2,102.2 458.8,72.2 489.4,64.8 520.0,62.9 550.6,68.5 581.2,98.5 611.8,124.8 642.4,173.5 672.9,158.5 703.5,130.4 734.1,106.0 764.7,83.5 795.3,68.5 825.9,61.0 856.5,57.2 887.1,61.0 917.6,62.9 948.2,83.5 978.8,117.2 1009.4,158.5 1040.0,196.0" fill="none" stroke="rgba(19,20,23,.25)" stroke-width="3"/>
+      <line x1="61.2" y1="132.2" x2="61.2" y2="196" stroke="#0064FF" stroke-width="2" opacity=".35"/><circle cx="61.2" cy="132.2" r="12" fill="#0064FF" stroke="#fff" stroke-width="4"/><line x1="152.9" y1="81.6" x2="152.9" y2="196" stroke="#E5482C" stroke-width="2" opacity=".35"/><circle cx="152.9" cy="81.6" r="12" fill="#E5482C" stroke="#fff" stroke-width="4"/><line x1="275.3" y1="154.8" x2="275.3" y2="196" stroke="#0064FF" stroke-width="2" opacity=".35"/><circle cx="275.3" cy="154.8" r="12" fill="#0064FF" stroke="#fff" stroke-width="4"/><line x1="397.6" y1="107.9" x2="397.6" y2="196" stroke="#E89A00" stroke-width="2" opacity=".35"/><circle cx="397.6" cy="107.9" r="12" fill="#E89A00" stroke="#fff" stroke-width="4"/><line x1="520.0" y1="62.9" x2="520.0" y2="196" stroke="#8A5CF6" stroke-width="2" opacity=".35"/><circle cx="520.0" cy="62.9" r="12" fill="#8A5CF6" stroke="#fff" stroke-width="4"/><line x1="642.4" y1="173.5" x2="642.4" y2="196" stroke="#131417" stroke-width="2" opacity=".35"/><circle cx="642.4" cy="173.5" r="12" fill="#131417" stroke="#fff" stroke-width="4"/><line x1="917.6" y1="62.9" x2="917.6" y2="196" stroke="#0064FF" stroke-width="2" opacity=".35"/><circle cx="917.6" cy="62.9" r="12" fill="#0064FF" stroke="#fff" stroke-width="4"/><text x="0.0" y="220" font-size="20" text-anchor="middle" fill="rgba(19,20,23,.5)" font-family="Asta">08:10</text><text x="305.9" y="220" font-size="20" text-anchor="middle" fill="rgba(19,20,23,.5)" font-family="Asta">08:20</text><text x="611.8" y="220" font-size="20" text-anchor="middle" fill="rgba(19,20,23,.5)" font-family="Asta">08:30</text><text x="917.6" y="220" font-size="20" text-anchor="middle" fill="rgba(19,20,23,.5)" font-family="Asta">08:40</text></svg></div>
+      </div></div>
+    <div class="card" style="margin-top:28px;padding:10px 32px 4px"><div style="display:flex;align-items:center;padding:20px 8px;border-top:2px solid rgba(19,20,23,.06)">
+        <span class="cap" style="width:96px">08:12</span><span class="dot" style="background:#0064FF;margin-right:18px"></span>
+        <span style="font-size:28px;font-weight:700;width:420px">깜빡이 켜고 차선 변경</span><span class="cap">켜고 45m 뒤 진입 · 58 km/h</span>
+        <span style="margin-left:auto;font-size:24px;color:#0064FF;font-weight:700">잘한 순간</span></div><div style="display:flex;align-items:center;padding:20px 8px;border-top:2px solid rgba(19,20,23,.06)">
+        <span class="cap" style="width:96px">08:15</span><span class="dot" style="background:#E5482C;margin-right:18px"></span>
+        <span style="font-size:28px;font-weight:700;width:420px">깜빡이 없이 차선 변경</span><span class="cap">62 km/h · 핸들 5.4초</span>
+        <span style="margin-left:auto;font-size:24px;color:#E5482C;font-weight:700">놓친 순간</span></div><div style="display:flex;align-items:center;padding:20px 8px;border-top:2px solid rgba(19,20,23,.06)">
+        <span class="cap" style="width:96px">08:19</span><span class="dot" style="background:#0064FF;margin-right:18px"></span>
+        <span style="font-size:28px;font-weight:700;width:420px">안내 따라 우회전</span><span class="cap">교차로 40m 전 깜빡이</span>
+        <span style="margin-left:auto;font-size:24px;color:#0064FF;font-weight:700">잘한 순간</span></div><div style="display:flex;align-items:center;padding:20px 8px;border-top:2px solid rgba(19,20,23,.06)">
+        <span class="cap" style="width:96px">08:23</span><span class="dot" style="background:#E89A00;margin-right:18px"></span>
+        <span style="font-size:28px;font-weight:700;width:420px">핸들이 먼저 돌았어요</span><span class="cap">깜빡이 1.2초 늦게 · 47 km/h</span>
+        <span style="margin-left:auto;font-size:24px;color:#E89A00;font-weight:700">늦게 켬</span></div><div style="display:flex;align-items:center;padding:20px 8px;border-top:2px solid rgba(19,20,23,.06)">
+        <span class="cap" style="width:96px">08:27</span><span class="dot" style="background:#8A5CF6;margin-right:18px"></span>
+        <span style="font-size:28px;font-weight:700;width:420px">깜빡이 켜 둔 채 주행</span><span class="cap">22초 · 약 310m</span>
+        <span style="margin-left:auto;font-size:24px;color:#8A5CF6;font-weight:700">켜 둔 채</span></div></div></div></body></html>

@@ -32,7 +32,8 @@ class MainActivity : Activity() {
         val dialog: DialogKind, val address: String, val addressCursor: Int, val addressError: String?,
         val demoDraft: Boolean, val speedDemo: Boolean, val askedSpeed: Boolean, val askedNotification: Boolean,
         val startAt: Long?, val aiEnabled: Boolean, val aiChoice: Boolean?, val proxyUrl: String,
-        val decisions: Map<String, AiDecision>, val attempts: Map<String, ClassifyFeatures>, val capturedAtMs: Long)
+        val decisions: Map<String, AiDecision>, val attempts: Map<String, ClassifyFeatures>, val capturedAtMs: Long,
+        val cardId: String? = null)
     private var frozenUi: Checkpoint? = null
     private var pendingUi: Checkpoint? = null
     private var pendingRoute: RecapUiRoute? = null
@@ -52,7 +53,7 @@ class MainActivity : Activity() {
     private lateinit var paneHost: LinearLayout
     private lateinit var cardsContent: LinearLayout
     private lateinit var cardsScroll: ScrollView
-    private lateinit var cardColumn: DeferredReviewColumn
+    private lateinit var segments: LinearLayout
     private var recapLoading = false
     private var dataEpoch = 0
     private var drawListener: ViewTreeObserver.OnDrawListener? = null
@@ -101,8 +102,8 @@ class MainActivity : Activity() {
     private var day: DayRecap? = null
     private var total = 0
     private var unsure = 0
-    private var todaySummary = recapSummary(emptyList())
-    private var tileCounts = RecapTileCounts(0, 0, 0, 0)
+    private var glance = RecapGlance()
+    private var selectedCardId: String? = null
     private var offset = 0
     private var navi = "미수신"
     private var seed = "초기 신호 확인 중"
@@ -166,19 +167,12 @@ class MainActivity : Activity() {
         root.addView(title)
         status = label("안전 상태 확인 중", 26f, MUTED).apply { setPadding(0, dp(10), 0, dp(20)) }
         root.addView(status)
+        segments = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; visibility = View.GONE; isSaveEnabled = false }
+        root.addView(segments, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(24) })
         content = column()
         scroll = ScrollView(this).apply { isFillViewport = true; isSaveEnabled = false; addView(content) }
         cardsContent = column()
         cardsScroll = ScrollView(this).apply { isFillViewport = true; isSaveEnabled = false; addView(cardsContent) }
-        cardColumn = DeferredReviewColumn(this)
-        cardColumn.onFirstCardPainted = {
-            recapOpenedAtMs?.let { at ->
-                if (BuildConfig.DEBUG) android.util.Log.i("ObserveLab", "event=ui.recap.firstCard elapsedMs=${SystemClock.elapsedRealtime() - at} offset=$offset")
-                recapOpenedAtMs = null
-            }
-        }
-        scroll.setOnScrollChangeListener { _, _, _, _, _ -> cardColumn.schedule() }
-        cardsScroll.setOnScrollChangeListener { _, _, _, _, _ -> cardColumn.schedule() }
         scroll.setOnTouchListener { _, _ -> if (!restoringScroll) cardsFocused = false; false }
         cardsScroll.setOnTouchListener { _, _ -> if (!restoringScroll) cardsFocused = true; false }
         paneHost = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; isSaveEnabled = false
@@ -224,7 +218,7 @@ class MainActivity : Activity() {
         if (unlocked) { frozenUi = captureUi(); pendingUi = frozenUi; pendingRoute = frozenUi?.route() }
         logUiState("pause")
         foreground = false; ++generation; main.removeCallbacks(poll)
-        ++dataEpoch; reading = false; recapLoading = false; recapOpenedAtMs = null; cancelAfterDraw(); cardColumn.clearCards()
+        ++dataEpoch; reading = false; recapLoading = false; recapOpenedAtMs = null; cancelAfterDraw()
         dismissDialog(preserve = true)
         main.removeCallbacks(startDeadline); startingRecorder = false
         invalidateAi()
@@ -265,7 +259,7 @@ class MainActivity : Activity() {
         addressInput?.let { addressDraft = it.text.toString(); addressCursor = it.selectionStart.coerceAtLeast(0) }
         return Checkpoint(showRecap, offset, pendingScroll ?: captureScroll(), dialogKind, addressDraft, addressCursor,
             addressError, demoDraft, demo, speedAsked, notificationAsked, startingAt, aiEnabled, userAiChoice, aiProxyUrl,
-            aiDecisions.toMap(), aiAttempts.filterKeys { it in aiDecisions }, SystemClock.elapsedRealtime())
+            aiDecisions.toMap(), aiAttempts.filterKeys { it in aiDecisions }, SystemClock.elapsedRealtime(), selectedCardId)
     }
 
     private fun Checkpoint.route() = RecapUiRoute(recap, offset, scroll, capturedAtMs)
@@ -286,7 +280,7 @@ class MainActivity : Activity() {
         speedAsked = state.askedSpeed; notificationAsked = state.askedNotification; startingAt = state.startAt
         aiEnabled = state.aiEnabled; userAiChoice = state.aiChoice
         aiProxyUrl = state.proxyUrl; aiClient.setBaseUrl(aiProxyUrl)
-        aiDecisions.putAll(state.decisions); aiAttempts.putAll(state.attempts)
+        aiDecisions.putAll(state.decisions); aiAttempts.putAll(state.attempts); selectedCardId = state.cardId
     }
 
     private fun onSafety(value: SafetyState) {
@@ -327,7 +321,7 @@ class MainActivity : Activity() {
         }
         if (!unlocked) {
             day = null; lastFingerprint = null
-            if (wasUnlocked) { ++dataEpoch; reading = false; recapLoading = false; cancelAfterDraw(); cardColumn.clearCards() }
+            if (wasUnlocked) { ++dataEpoch; reading = false; recapLoading = false; cancelAfterDraw() }
         }
         // Do not rebuild an identical locked view tree on every speed callback.
         if (wasUnlocked != unlocked || previousGate != restorationGate(value)) render()
@@ -384,8 +378,8 @@ class MainActivity : Activity() {
                 demoNaviEnabled = BuildConfig.DEBUG && result.getBoolean("demoNaviEnabled")
                 hasDemoNaviCards = result.getBoolean("hasDemoNaviCards")
                 total = result.getInt("total"); unsure = result.getInt("unsure")
-                todaySummary = result.getString("recapSummary") ?: recapSummary(emptyList())
-                tileCounts = RecapTileCounts(result.getInt("tileMissing"), result.getInt("tileLate"), result.getInt("tileHardBrake"), result.getInt("tileGood"))
+                glance = RecapGlance(result.getInt("glanceGood"), result.getInt("glanceMissed"), result.getInt("glanceLate"),
+                    result.getInt("glanceLeftOn"), result.getInt("glanceHardBrake"))
                 navi = result.getString("navi") ?: "미수신"; error = result.getString("error") ?: ""
                 if (recording || error.isNotEmpty()) {
                     startingRecorder = false; startingAt = null; main.removeCallbacks(startDeadline)
@@ -397,7 +391,7 @@ class MainActivity : Activity() {
                 if (proxyUrl != aiProxyUrl) { invalidateAi(); aiProxyUrl = proxyUrl; aiClient.setBaseUrl(proxyUrl) }
                 generated = if (aiEnabled) decodedSummary else null
                 summaryPending = aiEnabled && result.getBoolean("summaryPending")
-                val fingerprint = "$bytesHash|$recording|$recordingDemo|$total|$unsure|$todaySummary|$tileCounts|$navi|$seed|$error|$showRecap|$offset|$aiEnabled|$aiProxyUrl|$summaryJson|$summaryPending|$startingRecorder|$demoNaviEnabled|$hasDemoNaviCards"
+                val fingerprint = "$bytesHash|$recording|$recordingDemo|$total|$unsure|$glance|$navi|$seed|$error|$showRecap|$offset|$aiEnabled|$aiProxyUrl|$summaryJson|$summaryPending|$startingRecorder|$demoNaviEnabled|$hasDemoNaviCards"
                 if (fingerprint != lastFingerprint) { lastFingerprint = fingerprint; render() }
                 restoreDialog()
                 requestAi()
@@ -415,8 +409,8 @@ class MainActivity : Activity() {
         cancelAfterDraw(); ++dataEpoch; reading = false; pendingOperation = false
         recapOpenedAtMs = SystemClock.elapsedRealtime()
         showRecap = true; offset = recapPageOffset(page); recapLoading = true; day = null; error = ""
-        if (!preserve) pendingScroll = PaneScrollState()
-        cardColumn.clearCards(); lastFingerprint = null
+        if (!preserve) { pendingScroll = PaneScrollState(); selectedCardId = null }
+        lastFingerprint = null
         render() // The click itself installs a lightweight shell and spinner, never 100 tiles.
         val epoch = generation; val requestEpoch = dataEpoch
         var posted = false
@@ -487,11 +481,14 @@ class MainActivity : Activity() {
         val anchors = pendingScroll ?: captureScroll()
         val wide = unlocked && showRecap && layoutSpec.twoPanes
         cardsScroll.visibility = if (wide) View.VISIBLE else View.GONE
+        // C안: 넓은 화면은 왼쪽 큰 카드 + 오른쪽 좁은 열(약 420dp). 그 밖에는 오른쪽 열이 카드 아래로 내려온다.
+        (scroll.layoutParams as LinearLayout.LayoutParams).weight = if (wide) 2.85f else 1f
+        (cardsScroll.layoutParams as LinearLayout.LayoutParams).apply { weight = if (wide) 1f else 1.5f; marginStart = dp(if (wide) 28 else 16) }
+        segments.removeAllViews(); segments.visibility = View.GONE
         title.isLongClickable = unlocked
         status.text = if (unlocked) "운전 중에는 기록만, 복기는 차를 세운 뒤" else "정차 후 사용"
         content.removeAllViews(); cardsContent.removeAllViews()
         if (!unlocked) {
-            cardColumn.clearCards()
             paragraph("정차 후 사용", 40f)
             paragraph("기어 P·속도 0·주행 제한 해제가 확인되면 복기를 볼 수 있어요.", 26f, MUTED)
             scroll.scrollTo(0, 0); return
@@ -507,20 +504,24 @@ class MainActivity : Activity() {
         if (!showRecap) renderHome(d) else renderRecap(d, wide)
         if ((d?.speedUnknownDrivingMs ?: 0) > 0) paragraph("이 중 ${d!!.speedUnknownDrivingMs / 1_000}초는 속도 미수신 경로예요.", 24f, MUTED)
         if (recordingDemo) paragraph("시연 기록: 실제 속도를 사용하지 않았어요. 모든 후보를 애매함으로 표시해요.", 24f, MUTED)
-        paragraph("$navi\n내비가 없으면 기존 추정 판정을 사용해요. 조향 부호로 좌우를 정하지 않으며, 내비 확인도 법률 판단이 아니에요.", 20f, MUTED)
-        action("기록 삭제") { confirmDelete() }
+        // 내비 안내 문구·기록 삭제는 홈에만: 복기 화면은 순간 카드에 집중한다(C안).
+        if (!showRecap) {
+            paragraph("$navi\n내비가 없으면 기존 추정 판정을 사용해요. 조향 부호로 좌우를 정하지 않으며, 내비 확인도 법률 판단이 아니에요.", 20f, MUTED)
+            action("기록 삭제") { confirmDelete() }
+        }
         if (BuildConfig.DEBUG) paragraph("창 폭 ${resources.configuration.screenWidthDp}dp · ${layoutSpec.width} · 시스템 주간/야간", 20f, MUTED)
         if (d != null) {
             pendingScroll = null
             val epoch = generation; val requestEpoch = dataEpoch
             scroll.post { if (unlocked && epoch == generation && requestEpoch == dataEpoch) {
                 restoringScroll = true
-                if (wide) { scroll.restoreAnchor(anchors.primary); cardsScroll.restoreAnchor(anchors.cards) }
-                else scroll.restoreAnchor(singlePaneAnchor(anchors))
+                // 포커스를 먼저 옮긴다: 나중에 옮기면 ScrollView가 포커스 쪽으로 스스로 스크롤해 복원한 위치를 덮어쓴다.
                 if (serverDialog == null) {
                     val focusedPane = if (wide && anchors.cardsFocused) cardsScroll else scroll
                     focusedPane.isFocusableInTouchMode = true; focusedPane.requestFocus()
                 }
+                if (wide) { scroll.restoreAnchor(anchors.primary); cardsScroll.restoreAnchor(anchors.cards) }
+                else scroll.restoreAnchor(singlePaneAnchor(anchors))
                 cardsFocused = anchors.cardsFocused; restoringScroll = false
             } }
         }
@@ -557,87 +558,46 @@ class MainActivity : Activity() {
 
     private fun renderRecap(d: DayRecap?, wide: Boolean) {
         if (demoNaviEnabled || hasDemoNaviCards) paragraph(if (demoNaviEnabled) "시연용 모의 내비 입력 사용 중" else "시연용 모의 내비 판정 포함", 26f)
-        val counts = listOf(
-            Triple("깜빡이 놓침", tileCounts.missing, PleosIcon.LANE_CHANGE),
-            Triple("늦게 켬", tileCounts.late, PleosIcon.LATE_SIGNAL),
-            Triple("급제동", tileCounts.hardBrake, PleosIcon.HARD_BRAKE),
-            Triple("잘한 순간", tileCounts.good, PleosIcon.GOOD))
-        val tones = listOf(PleosTone.WARNING, PleosTone.CAUTION, PleosTone.WARNING, PleosTone.INFORMATION)
-        content.addView(tileGrid(counts.mapIndexed { i, item ->
-            PleosTile(this, item.third, item.first, "", tones[i], number = if (d == null) "—" else item.second.toString())
-        }, layoutSpec.width != VehicleWidth.NARROW).apply { tag = "summary" }, params()) // 세로 1칸(628dp↑)도 2×2
-        paragraph(todaySummary, 24f, MUTED)
-        paragraph("${d?.date ?: "오늘"} · 주행 ${(d?.drivingMs ?: 0) / 1_000}초 · 후보 $total 개 · 규칙 애매함 $unsure 개", 24f, MUTED)
-        val message = column().apply {
-            tag = "daily-message"; background = vehicleSurface(colors.listGroup, 32)
-            setPadding(dp(24), dp(24), dp(24), dp(24))
+        val painter = RecapPainter(this, layoutSpec.width)
+        val cards = chronologicalCards(d?.cards.orEmpty())
+        val index = cards.indexOfFirst { it.id == selectedCardId }.takeIf { it >= 0 } ?: 0
+        selectedCardId = cards.getOrNull(index)?.id
+        d?.let { status.text = recapSubtitle(it.date, it.drivingMs) }
+        if (cards.isNotEmpty()) {
+            painter.segments(cards.size, index).forEach { segments.addView(it) }
+            segments.visibility = View.VISIBLE
         }
-        val header = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = android.view.Gravity.CENTER_VERTICAL }
-        header.addView(pleosIcon(PleosIcon.AI_SUMMARY, FG))
-        header.addView(label("오늘의 한마디", 32f, FG, true), LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = dp(16) })
-        message.addView(header, params())
-        message.addView(label("AI 한마디", 24f, MUTED), params())
-        message.addView(VehicleParagraph(this, generatedOrTemplate(generated, total > 0), 28f, FG), params())
-        message.addView(label(when {
+        if (cards.isEmpty()) content.addView(painter.emptyCard(), params())
+        else {
+            val c = cards[index]
+            content.addView(painter.momentCard(cards, index, aiDecisions[c.id].takeIf { aiEnabled }, aiEnabled, pendingOperation,
+                BuildConfig.DEBUG, fillHeight = wide,
+                onMove = { next -> if (unlocked && next in cards.indices) { selectedCardId = cards[next].id; render() } },
+                onFeedback = { feedback -> if (unlocked) requestData("feedback", c.id, feedback) }),
+                if (wide) LinearLayout.LayoutParams(-1, 0, 1f).apply { bottomMargin = dp(18) } else params())
+            recapOpenedAtMs?.let { at ->
+                if (BuildConfig.DEBUG) android.util.Log.i("ObserveLab", "event=ui.recap.firstCard elapsedMs=${SystemClock.elapsedRealtime() - at} offset=$offset")
+                recapOpenedAtMs = null
+            }
+        }
+        val side = if (wide) cardsContent else content
+        side.addView(painter.glanceCard(glance, total, unsure), params())
+        val aiStatus = when {
             summaryPending -> "AI 문장 준비 중"
             generated != null -> "AI 문장 · 정차 후 읽는 복기"
             else -> "기본 문구"
-        }, 24f, MUTED))
-        if (summaryPending) message.addView(ProgressBar(this).apply { contentDescription = "AI 문장 준비 중" }, LinearLayout.LayoutParams(dp(48), dp(48)))
-        generated?.patterns?.forEach { message.addView(VehicleParagraph(this, it, 26f, MUTED), params()) }
-        content.addView(message, params())
-        val cardTarget = if (wide) cardsContent else content
-        if (d?.cards.isNullOrEmpty()) cardTarget.addView(VehicleParagraph(this, "아직 복기 후보가 없어요. 기록을 시작한 뒤 정차해서 확인해 주세요.", 26f, MUTED), params())
-        val cards = d?.cards.orEmpty()
-        (cardColumn.parent as? ViewGroup)?.removeView(cardColumn)
-        cardTarget.addView(cardColumn, LinearLayout.LayoutParams(-1, -2))
-        val viewport = if (wide) cardsScroll else scroll
-        cardColumn.submit(cards.map { "card:${it.id}" }, cards.map {
-            listOf(it, aiDecisions[it.id], aiEnabled, pendingOperation, layoutSpec.width)
-        }, viewport, preserve = {
-            val anchor = viewport.captureAnchor(); val y = viewport.scrollY; val epoch = generation; val requestEpoch = dataEpoch
-            val restore: () -> Unit = {
-                viewport.post { if (unlocked && epoch == generation && requestEpoch == dataEpoch && viewport.scrollY == y) viewport.restoreAnchor(anchor) }
-            }; restore
-        }) { index -> column().apply {
-            addView(reviewTile(cards[index]), LinearLayout.LayoutParams(-1, -2)); addView(PleosDivider(this@MainActivity))
-        } }
-        if (offset > 0) action("최근 카드로") { openRecap(0) }
-        nextRecapPage(offset, cards.size, total)?.let { next -> action("다음 카드 100개") { openRecap(next) } }
-        if (aiEnabled) action("AI 다시 확인") { invalidateAi(); summaryPending = true; requestData("summaryRetry"); render(); requestAi() }
-        action("처음으로") {
-            ++dataEpoch; reading = false; cancelAfterDraw(); cardColumn.clearCards()
+        }
+        side.addView(painter.messageCard(generatedOrTemplate(generated, total > 0), generated?.patterns.orEmpty(), aiStatus, summaryPending, wide,
+            if (aiEnabled) { { invalidateAi(); summaryPending = true; requestData("summaryRetry"); render(); requestAi() } } else null),
+            if (wide) LinearLayout.LayoutParams(-1, 0, 1f) else params())
+        // 넓은 화면에서는 이동 버튼을 오른쪽 열 아래로 보내 큰 카드 밑을 비운다.
+        fun sideAction(text: String, block: () -> Unit) = side.addView(button(text) { if (unlocked) block() }, params())
+        if (offset > 0) sideAction("최근 카드로") { openRecap(0) }
+        nextRecapPage(offset, d?.cards?.size ?: 0, total)?.let { next -> sideAction("다음 카드 100개") { openRecap(next) } }
+        sideAction("처음으로") {
+            ++dataEpoch; reading = false; cancelAfterDraw()
             showRecap = false; recapLoading = false; invalidateAi(); pendingScroll = PaneScrollState(); render()
         }
-    }
-
-    private fun reviewTile(c: ReviewCard): View {
-        val appearance = reviewAppearance(c.kind, c.navigationTurn, c.direction)
-        val decision = aiDecisions[c.id].takeIf { aiEnabled }
-        val box = column().apply {
-            tag = "card:${c.id}"; setBackgroundColor(SURFACE); setPadding(dp(24), dp(24), dp(24), dp(24))
-        }
-        val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
-        row.addView(pleosIcon(appearance.icon, colors.tone(appearance.tone)))
-        val text = column()
-        val titleText = if (decision?.accepted == true) decision.label ?: recapTitle(c) else recapTitle(c)
-        text.addView(VehicleParagraph(this, titleText, 32f, FG, true), params())
-        val aiLabel = aiCardTitle(c, decision, aiEnabled).removePrefix("${recapTitle(c)} · ")
-        val badge = if (decision?.accepted == true) "AI 추정 · ${navigationLabel(c)}"
-            else aiLabel + if (c.navigation == NavigationLabel.ESTIMATED) " · 추정" else ""
-        text.addView(VehicleParagraph(this, badge, 24f, MUTED).apply {
-            background = vehicleSurface(colors.listGroup, 16); setPadding(dp(12), dp(8), dp(12), dp(8))
-        }, params())
-        if (c.demoNavigation && c.navigation == NavigationLabel.ESTIMATED) text.addView(label("모의 내비 미수신/안내 없음", 24f, MUTED), params())
-        if (decision?.accepted == true) text.addView(VehicleParagraph(this, "규칙 결과: ${recapTitle(c)}", 24f, MUTED), params())
-        val time = DateTimeFormatter.ofPattern("HH:mm:ss").withZone(ZoneId.systemDefault()).format(Instant.ofEpochMilli(c.wallTimeMs))
-        text.addView(VehicleParagraph(this, "$time · ${recapEvidence(c, debug = BuildConfig.DEBUG)}", 26f, MUTED), params())
-        row.addView(text, LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = dp(16) })
-        box.addView(row)
-        box.addView(PleosTabs(this, listOf("맞아요", "아니에요"), when (c.feedback) { Feedback.YES -> 0; Feedback.NO -> 1; else -> null }, !pendingOperation) { index ->
-            if (unlocked) { cardsFocused = true; requestData("feedback", c.id, if (index == 0) Feedback.YES else Feedback.NO) }
-        })
-        return box
     }
 
     private fun tileGrid(tiles: List<View>, twoColumns: Boolean): View {

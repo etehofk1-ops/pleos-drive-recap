@@ -34,9 +34,15 @@ class RealDataBatchTest {
             val items = unique.sortedBy { it.summary.startMs }.joinToString(",") { c ->
                 "{\"start_ms\":${c.summary.startMs},\"end_ms\":${c.summary.endMs},\"kind\":\"${c.kind}\",\"candidate\":\"${c.candidate}\"," +
                     "\"visible\":${c.id in visible},\"lat_m\":${c.summary.lateral?.displacementM ?: "null"}," +
-                    "\"peak_rad\":${c.summary.lateral?.peakHeadingRad ?: "null"}}"
+                    "\"peak_rad\":${c.summary.lateral?.peakHeadingRad ?: "null"}," +
+                    // 1.7.0: lead (A) and left-on (B) evidence
+                    "\"lead_m\":${c.summary.signalLeadMeters ?: "null"},\"lead_ms\":${c.summary.signalLeadMs ?: "null"}," +
+                    // 1.7.1: manoeuvre onset the lead is measured to (null = reducer path, lead measured to start_ms)
+                    "\"onset_ms\":${c.summary.maneuverOnsetMs ?: "null"}," +
+                    "\"blinker_ms\":${c.summary.blinkerOnMs ?: "null"},\"blinker_m\":${c.summary.blinkerOnMeters ?: "null"}," +
+                    "\"min_mps\":${c.summary.minSpeedMps ?: "null"},\"max_mps\":${c.summary.maxSpeedMps ?: "null"},\"timing\":\"${c.summary.timing}\"}"
             }
-            sb.append("{\"segment\":\"${csv.nameWithoutExtension}\",\"cards\":[").append(items).append("]}\n")
+            sb.append("{\"segment\":\"${csv.nameWithoutExtension}\",\"duration_ms\":$last,\"cards\":[").append(items).append("]}\n")
         }
         out.writeText(sb.toString())
         println("wrote ${out.path}")

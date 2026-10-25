@@ -1,6 +1,7 @@
 package lab.pleos.observe.logic.recap
 
 import java.util.Locale
+import kotlin.math.roundToInt
 
 fun recapTitle(card: ReviewCard): String = when (card.candidate) {
     ReviewKind.LANE_NO_SIGNAL -> "깜빡이 없이 차선 변경(추정)"
@@ -14,8 +15,38 @@ fun recapTitle(card: ReviewCard): String = when (card.candidate) {
     ReviewKind.CURVE -> "굽은 길 후보"
     ReviewKind.HARD_BRAKE -> "급제동(추정)"
     ReviewKind.BRAKE_UNVERIFIED -> "브레이크 작동 · 급제동 확인 불가"
+    ReviewKind.BLINKER_LEFT_ON -> "깜빡이를 켠 채 주행"
     else -> "조향 변화"
 } + if (card.kind == ReviewKind.UNSURE) " · 애매함" else ""
+
+internal fun roundMeters(meters: Float) = (meters / BlinkerThresholds.ROUND_M).roundToInt() * BlinkerThresholds.ROUND_M
+
+/** Reference distance for the lead: 100m when the mean speed over the lead interval was >= 80km/h, else 30m.
+ * The app cannot tell an expressway apart, so only speed picks it. Null when the card has no lead. */
+fun signalLeadReferenceMeters(s: SegmentSummary): Float? {
+    val meters = s.signalLeadMeters ?: return null
+    val ms = s.signalLeadMs
+    val mean = if (ms != null && ms > 0) meters.toDouble() / (ms / 1_000.0) else null
+    return if (mean != null && mean >= BlinkerThresholds.HIGHWAY_MIN_MPS) BlinkerThresholds.HIGHWAY_REFERENCE_M else BlinkerThresholds.REFERENCE_M
+}
+
+/** Wording for the early-signal cards only. A recommended distance, never a legal judgement. */
+fun signalLeadText(card: ReviewCard): String? {
+    if (card.candidate != ReviewKind.LANE_SIGNALLED && card.candidate != ReviewKind.TURN_SIGNALLED) return null
+    val meters = card.summary.signalLeadMeters ?: return null
+    val reference = signalLeadReferenceMeters(card.summary) ?: return null
+    val head = "깜빡이를 켜고 약 ${roundMeters(meters)} m 뒤 진입 — "
+    val highway = if (reference == BlinkerThresholds.HIGHWAY_REFERENCE_M) " · 평균 80km/h 이상이라 고속 기준으로 봤어요(속도로만 구분)" else ""
+    return head + (if (meters >= reference) "충분히 일찍 켰어요" else "권장 거리(30m/고속 100m)보다 짧아요") + highway
+}
+
+/** 1.7.0 B wording. */
+fun blinkerLeftOnText(card: ReviewCard): String? {
+    if (card.candidate != ReviewKind.BLINKER_LEFT_ON) return null
+    val ms = card.summary.blinkerOnMs ?: return null
+    val meters = card.summary.blinkerOnMeters ?: return null
+    return "깜빡이를 켠 채 약 ${(ms / 1_000f).roundToInt()}초(약 ${roundMeters(meters)} m) 달렸어요 — 뒤차가 진로 변경으로 오해할 수 있어요"
+}
 
 private fun turnTitle(card: ReviewCard) = when (card.navigationTurn) {
     NavigationTurn.LEFT -> "좌회전"; NavigationTurn.RIGHT -> "우회전"; NavigationTurn.UTURN -> "유턴"; null -> "회전"
@@ -35,17 +66,9 @@ fun recapEvidence(card: ReviewCard, debug: Boolean = false): String {
         if (debug) " · Debug 원시 감속 ${number(deceleration)}m/s²" else ""
         else "감속 ${number(deceleration)}m/s²"
     val base = if (card.candidate == ReviewKind.HARD_BRAKE) "$speed, $braking + 브레이크 작동"
+        else if (card.candidate == ReviewKind.BLINKER_LEFT_ON) "$speed, ${blinkerLeftOnText(card) ?: "깜빡이를 켠 채 주행"}"
         else if (card.candidate == ReviewKind.BRAKE_UNVERIFIED) "속도 미수신으로 감소율을 계산할 수 없어요. 급제동으로 단정하지 않아요."
-        else "$speed, 핸들 원시 $angle, ${number(s.durationMs / 1_000f)}초, $signal"
-    val reasons = card.uncertainty.map { when (it) {
-        Uncertainty.SPEED_MISSING -> "속도 미수신 경로"
-        Uncertainty.DEMO_SPEED_MISSING -> "속도 미수신 시연"
-        Uncertainty.SIGNAL_GAP -> "깜빡이 관측 부족/동시 관측"
-        Uncertainty.INPUT_GAP -> "입력 공백"
-        Uncertainty.INCOMPLETE -> "끝나기 전 기록 종료"
-        Uncertainty.SHAPE_AMBIGUOUS -> "파형·속도만으로 종류를 가르기 어려움"
-        Uncertainty.NAV_CONFLICT -> "내비와 핸들 불일치"
-        Uncertainty.WEAK_LANE_EVIDENCE -> "깜빡이 놓침을 표시할 조향 근거 부족"
-    } }
+        else "$speed, 핸들 원시 $angle, ${number(s.durationMs / 1_000f)}초, $signal" + (signalLeadText(card)?.let { " · $it" } ?: "")
+    val reasons = card.uncertainty.map(::uncertaintyLabel)
     return base + (if (s.nearNavigationTurn) " · 가까운 회전 안내 관측" else "") + if (reasons.isEmpty()) "" else "\n애매한 이유: ${reasons.joinToString(", ")}"
 }

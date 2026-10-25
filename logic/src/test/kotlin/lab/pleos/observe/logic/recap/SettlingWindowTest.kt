@@ -37,9 +37,9 @@ class SettlingWindowTest {
         val day=DayRecap("2026-10-24",cards=listOf(card))
         assertEquals(day,RecapCodec.decode(RecapCodec.encode(day)))
         // Version 6 appended the 4-byte window duration after the 8-byte settledMs; the stored bytes are v6.
-        val v5=RecapCodec.encode(day).dropLast(4).toByteArray().apply { this[7]=5 }
+        val v5=RecapCodec.encode(day).dropLast(4 + 4).toByteArray().apply { this[7]=5 } // + v7 tail (4 absent nullable fields)
         assertEquals(day.copy(cards=listOf(card.copy(summary=card.summary.copy(lateral=card.summary.lateral!!.copy(windowDurationMs=0))))),RecapCodec.decode(v5))
-        val v4=RecapCodec.encode(day).dropLast(12).toByteArray().apply { this[7]=4 }
+        val v4=RecapCodec.encode(day).dropLast(12 + 4).toByteArray().apply { this[7]=4 }
         assertEquals(day.copy(cards=listOf(card.copy(summary=card.summary.copy(lateral=card.summary.lateral!!.copy(settledMs=0))))),RecapCodec.decode(v4))
     }
 }

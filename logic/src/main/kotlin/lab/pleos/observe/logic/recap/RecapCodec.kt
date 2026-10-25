@@ -18,7 +18,8 @@ fun applyFeedback(day: DayRecap, cardId: String, feedback: Feedback): DayRecap =
 /** Whitelisted, versioned summary schema. No raw event, location, VIN, route or arbitrary object serialization. */
 object RecapCodec {
     private const val MAGIC = 0x52454350
-    private const val VERSION = 6
+    // 7 (1.7.0): directional lead distance, signalLeadMeters/Ms and blinkerOnMs/Meters. Older records decode with null.
+    private const val VERSION = 7
     fun encode(day: DayRecap): ByteArray = ByteArrayOutputStream().use { bytes ->
         DataOutputStream(bytes).use { out ->
             out.writeInt(MAGIC); out.writeInt(VERSION); out.writeUTF(day.date)
@@ -37,7 +38,10 @@ object RecapCodec {
                 out.writeBoolean(s.nearNavigationTurn); out.writeBoolean(s.incomplete); out.writeBoolean(s.inputGap)
                 listOf(s.leftSignal, s.rightSignal).forEach { timing ->
                     out.writeBoolean(timing != null)
-                    timing?.let { out.writeUTF(it.timing.name); out.writeBoolean(it.lateMs != null); it.lateMs?.let(out::writeLong) }
+                    timing?.let {
+                        out.writeUTF(it.timing.name); out.writeBoolean(it.lateMs != null); it.lateMs?.let(out::writeLong)
+                        out.nullableFloat(it.leadMeters); out.nullableLong(it.leadMs)
+                    }
                 }
                 out.writeUTF(c.navigation.name); out.writeUTF(c.navigationTurn?.name ?: "")
                 out.writeBoolean(c.demoNavigation)
@@ -48,6 +52,8 @@ object RecapCodec {
                     require(m.settledMs in 0..LateralThresholds.SETTLE_MS); out.writeLong(m.settledMs)
                     require(m.windowDurationMs == 0 || m.windowDurationMs in 2_500..8_000); out.writeInt(m.windowDurationMs)
                 }
+                out.nullableFloat(s.signalLeadMeters); out.nullableLong(s.signalLeadMs)
+                out.nullableLong(s.blinkerOnMs); out.nullableFloat(s.blinkerOnMeters)
             }
         }
         bytes.toByteArray()
@@ -72,8 +78,10 @@ object RecapCodec {
                 input.readInt(), input.readInt(), input.nullableFloat(), input.nullableFloat(), input.readBoolean(),
                 SignalTiming.valueOf(input.readUTF()), input.readBoolean(), if (input.readBoolean()) input.readLong() else null,
                 input.readBoolean(), input.readBoolean(), input.readBoolean())
-            fun directional(): DirectionalTiming? = if (input.readBoolean()) DirectionalTiming(SignalTiming.valueOf(input.readUTF()),
-                if (input.readBoolean()) input.readLong() else null) else null
+            fun directional(): DirectionalTiming? = if (input.readBoolean()) {
+                val timing = SignalTiming.valueOf(input.readUTF()); val late = if (input.readBoolean()) input.readLong() else null
+                if (version >= 7) DirectionalTiming(timing, late, input.nullableFloat(), input.nullableLong()) else DirectionalTiming(timing, late)
+            } else null
             if (version >= 2) s = s.copy(leftSignal = directional(), rightSignal = directional())
             val navigation = if (version >= 2) NavigationLabel.valueOf(input.readUTF()) else NavigationLabel.ESTIMATED
             val turn = if (version >= 2) input.readUTF().takeIf { it.isNotEmpty() }?.let(NavigationTurn::valueOf) else null
@@ -84,6 +92,12 @@ object RecapCodec {
                 val windowMs = if (version >= 6) input.readInt().also { require(it == 0 || it in 2_500..8_000) } else 0
                 s = s.copy(lateral = LateralSummary(m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7], settledMs, windowMs))
             }
+            if (version >= 7) {
+                val leadMeters = input.nullableFloat(); val leadMs = input.nullableLong()
+                val onMs = input.nullableLong(); val onMeters = input.nullableFloat()
+                require((leadMeters ?: 0f) >= 0f && (leadMs ?: 0L) >= 0L && (onMs ?: 0L) >= 0L && (onMeters ?: 0f) >= 0f)
+                s = s.copy(signalLeadMeters = leadMeters, signalLeadMs = leadMs, blinkerOnMs = onMs, blinkerOnMeters = onMeters)
+            }
             require(s.endMs >= s.startMs && s.minAngle.isFinite() && s.maxAngle.isFinite())
             ReviewCard(id, wall, kind, candidate, s, direction, flags, decel, feedback, navigation, turn, demo)
         }
@@ -92,5 +106,7 @@ object RecapCodec {
     }
 
     private fun DataOutputStream.nullableFloat(value: Float?) { writeBoolean(value != null); value?.let(::writeFloat) }
+    private fun DataOutputStream.nullableLong(value: Long?) { writeBoolean(value != null); value?.let(::writeLong) }
+    private fun DataInputStream.nullableLong(): Long? = if (readBoolean()) readLong() else null
     private fun DataInputStream.nullableFloat(): Float? = if (readBoolean()) readFloat().also { require(it.isFinite()) } else null
 }

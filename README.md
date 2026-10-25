@@ -4,7 +4,9 @@
 
 **오운복**(오늘의 운전 복기) — **점수 대신, 내가 몰랐던 순간.** 운전 중에는 차량 신호를 구간 요약으로 기록하고, 차를 세운 뒤 깜빡이 사용과 감속 순간을 돌아보는 Pleos Connect 앱입니다.
 
-**1.6.0 / versionCode 21 — 제출 버전.** 시속 25km 이상의 차선 변경을 사건이 끝난 뒤 최대 약 9초 늦게, 사건 앞뒤 0.5초를 기준선으로 삼는 창으로 판정합니다(핸들 영점·도로 곡률 영향 제거). 공개 실주행 데이터(현대·기아 8차종 74분)에서 현대 25/32, 기아 16/28을 잡았고, 낸 카드의 61%가 자이로 센서로 옆 이동이 확인됐습니다(1.5.2는 4/32·0/28, 43%). [설계와 검증](docs/WEEK16C_DESIGN.md) · [Kotlin 이식·시험 변경](docs/WEEK16C_KOTLIN_PORT.md) · 이전 실패 시도 [1차](docs/WEEK16_REALDATA_REDESIGN.md)·[2차](docs/WEEK16B_EVENT_CURVE.md).
+**1.8.0 / versionCode 23 — 제출 버전.** 정차 후 복기를 "한 장씩" 보여 줍니다: 순간 하나를 사람 말 제목·근거 칩·그날 주행 중 위치와 함께 크게 보여 주고, 맞아요/아니에요로 직접 표시합니다([화면 설계](docs/WEEK18_UI_C_SPEC.md) · [구현](docs/WEEK18_UI_C_REPORT.md)). 1.7.0부터 깜빡이를 켜고 진입까지의 **켬 거리**(권장 30m, 평균 80km/h 이상이면 100m 기준 — 법규 판단 아님, 근삿값)와 **깜빡이를 켠 채 주행**(시속 30km 이상 15초 이상)을 함께 짚습니다([설계](docs/WEEK17_BLINKER_SPEC.md) · [구현·실데이터](docs/WEEK17_BLINKER_REPORT.md) · [켬 거리 시작점 보정](docs/WEEK17B_LEAD_ONSET_REPORT.md)). 30분 연속 주행 시험에서 크래시 0, 메모리 증가 없음([기록](docs/WEEK13_RUNTIME_CHECK.md)).
+
+차선 변경 판정은 1.6.0과 같습니다. 시속 25km 이상의 차선 변경을 사건이 끝난 뒤 최대 약 9초 늦게, 사건 앞뒤 0.5초를 기준선으로 삼는 창으로 판정합니다(핸들 영점·도로 곡률 영향 제거). 공개 실주행 데이터(현대·기아 8차종 74분)에서 현대 25/32, 기아 16/28을 잡았고, 낸 카드의 61%가 자이로 센서로 옆 이동이 확인됐습니다(1.5.2는 4/32·0/28, 43%). [설계와 검증](docs/WEEK16C_DESIGN.md) · [Kotlin 이식·시험 변경](docs/WEEK16C_KOTLIN_PORT.md) · 이전 실패 시도 [1차](docs/WEEK16_REALDATA_REDESIGN.md)·[2차](docs/WEEK16B_EVENT_CURVE.md).
 
 앱은 AI 없이 규칙 엔진으로 동작하며, AI 보조를 켜면 애매한 조향 분류와 복기 문장을 보탭니다. 차선 변경은 신호 패턴에 따른 **추정**이며 실제 차선 이동·안전성·법규 준수를 확정하지 않습니다.
 
@@ -255,7 +257,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-submissi
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-submission.ps1 -NameListFile .local/submission-names.txt
 ```
 
-매칭 원문 없이 파일/행/분류만 보고합니다. 소스 검사 성공은 제출 완료가 아닙니다. 최종 검사는 APK 한 개·실제 팀명 파일명·21/1.6.0·비디버그·유효 서명을 요구합니다. 현재1.6.0 후보는 회귀 실패로 제출 보류이며 해당 APK도 만들지 않았습니다. F는 Debug용이며 release의 실제 내비 입력과 구분합니다. build-tools의 aapt2/apksigner가 필요하고 `-Aapt2Path`/`-ApkSignerPath`로 지정할 수 있습니다. 화면/영상·무표식 실명·Git 작성자와 과거 파일 내용은 별도 검토 대상입니다. 현재 Git 커밋 메시지는 검사하지만 이력은 수정하지 않습니다.
+매칭 원문 없이 파일/행/분류만 보고합니다. 소스 검사 성공은 제출 완료가 아닙니다. 최종 검사는 APK 한 개·실제 팀명 파일명·23/1.8.0·비디버그·유효 서명을 요구합니다(apksigner 실행에 JAVA_HOME 필요). F는 Debug용이며 release의 실제 내비 입력과 구분합니다. build-tools의 aapt2/apksigner가 필요하고 `-Aapt2Path`/`-ApkSignerPath`로 지정할 수 있습니다. 화면/영상·무표식 실명·Git 작성자와 과거 파일 내용은 별도 검토 대상입니다. 현재 Git 커밋 메시지는 검사하지만 이력은 수정하지 않습니다.
 
 오프라인 회귀: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/test-logic-offline.ps1`, `node --test ai-proxy/server.test.mjs scripts/test-recap-replay.mjs scripts/test-submission.mjs scripts/test-navi.mjs scripts/test-demo-navi.mjs scripts/test-responsive.mjs scripts/test-pleos-design.mjs`.
 

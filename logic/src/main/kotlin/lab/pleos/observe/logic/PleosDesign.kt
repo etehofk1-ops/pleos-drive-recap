@@ -103,7 +103,8 @@ fun reviewAppearance(kind: ReviewKind, turn: NavigationTurn? = null, direction: 
     return when (kind) {
         ReviewKind.LANE_NO_SIGNAL -> ReviewAppearance(lane, PleosTone.WARNING)
         ReviewKind.TURN_NO_SIGNAL -> ReviewAppearance(turning, PleosTone.WARNING)
-        ReviewKind.LANE_LATE_SIGNAL, ReviewKind.TURN_LATE_SIGNAL -> ReviewAppearance(PleosIcon.LATE_SIGNAL, PleosTone.CAUTION)
+        // BLINKER_LEFT_ON: a missed moment like the late signal, so the same blinker icon and caution tone (no new icon/layout).
+        ReviewKind.LANE_LATE_SIGNAL, ReviewKind.TURN_LATE_SIGNAL, ReviewKind.BLINKER_LEFT_ON -> ReviewAppearance(PleosIcon.LATE_SIGNAL, PleosTone.CAUTION)
         ReviewKind.HARD_BRAKE -> ReviewAppearance(PleosIcon.HARD_BRAKE, PleosTone.WARNING)
         ReviewKind.LANE_SIGNALLED, ReviewKind.TURN_SIGNALLED -> ReviewAppearance(PleosIcon.GOOD, PleosTone.INFORMATION)
         ReviewKind.TURN -> ReviewAppearance(turning, PleosTone.NEUTRAL)
@@ -112,5 +113,24 @@ fun reviewAppearance(kind: ReviewKind, turn: NavigationTurn? = null, direction: 
     }
 }
 
-data class RecapTileCounts(val missing: Int, val late: Int, val hardBrake: Int, val good: Int)
-fun recapTileCounts(c: ReviewCounts) = RecapTileCounts(c.missing + c.turnMissing, c.late + c.turnLate, c.hardBrake, c.good + c.turnGood)
+/** 복기 카드 종류 색(시안 C). 파랑·빨강·주황은 Pleos 토큰, 보라는 토큰이 없어 시안 값을 쓴다. */
+fun momentColor(p: VehiclePalette, group: MomentGroup): Int = when (group) {
+    MomentGroup.GOOD -> p.positive
+    MomentGroup.MISSED -> p.negative
+    MomentGroup.LATE -> p.caution
+    MomentGroup.LEFT_ON -> if (p.night) 0xffa78bfa.toInt() else 0xff8a5cf6.toInt()
+    MomentGroup.HARD_BRAKE -> p.textPrimary
+    MomentGroup.OTHER -> p.textTertiary
+}
+
+/** 글자로 쓸 때 [background] 위에서 4.5:1이 되도록 같은 색을 [ink] 쪽으로 필요한 만큼만 섞는다. */
+fun legibleTint(color: Int, background: Int, ink: Int): Int {
+    if (contrastRatio(color, background) >= 4.5) return color
+    for (step in 1..20) {
+        val t = step / 20.0
+        fun channel(shift: Int) = ((((color ushr shift) and 255) * (1 - t) + ((ink ushr shift) and 255) * t).roundToInt()).coerceIn(0, 255)
+        val mixed = (0xff shl 24) or (channel(16) shl 16) or (channel(8) shl 8) or channel(0)
+        if (contrastRatio(mixed, background) >= 4.5) return mixed
+    }
+    return ink
+}

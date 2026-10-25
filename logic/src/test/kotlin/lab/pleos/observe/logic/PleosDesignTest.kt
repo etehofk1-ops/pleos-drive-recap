@@ -79,10 +79,23 @@ class PleosDesignTest {
         }
         ReviewKind.values().forEach { assertNotNull(reviewAppearance(it)) }
     }
-    @Test fun summaryTilesIncludeTurnsWithoutReclassifyingUnderlyingCounts() {
-        val input = ReviewCounts(1, 2, 3, 4, 5, 6, 7)
-        assertEquals(RecapTileCounts(6, 8, 4, 10), recapTileCounts(input))
-        assertEquals(1, input.missing); assertEquals(5, input.turnMissing)
-        assertEquals(RecapTileCounts(0, 0, 0, 0), recapTileCounts(ReviewCounts()))
+    @Test fun momentColorsFollowTheSixToneSpecAndCaptionsStayReadableInDayAndNight() {
+        val day = vehiclePalette(false); val night = vehiclePalette(true)
+        assertEquals(day.positive, momentColor(day, MomentGroup.GOOD))
+        assertEquals(0xff8a5cf6.toInt(), momentColor(day, MomentGroup.LEFT_ON))
+        assertEquals(day.textPrimary, momentColor(day, MomentGroup.HARD_BRAKE))
+        assertEquals(night.textPrimary, momentColor(night, MomentGroup.HARD_BRAKE))
+        for (p in listOf(day, night)) for (group in MomentGroup.values()) {
+            val tint = legibleTint(momentColor(p, group), p.surfaceBasic, p.textPrimary)
+            assertTrue("$group ${p.night}", contrastRatio(tint, p.surfaceBasic) >= 4.5)
+        }
+    }
+    @Test fun legibleTintKeepsAReadableColorAndDarkensOnlyAsMuchAsNeeded() {
+        val white = 0xffffffff.toInt(); val ink = 0xff131417.toInt()
+        assertEquals(0xff0064ff.toInt(), legibleTint(0xff0064ff.toInt(), white, ink))
+        val red = 0xffe5482c.toInt(); val tinted = legibleTint(red, white, ink)
+        assertNotEquals(red, tinted); assertTrue(contrastRatio(tinted, white) >= 4.5)
+        assertTrue(((tinted ushr 16) and 255) > ((tinted ushr 8) and 255)) // 아직 붉은 계열
+        assertTrue(contrastRatio(legibleTint(0xffffa202.toInt(), white, ink), white) >= 4.5)
     }
 }

@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.car.permission.CAR_INFO" />
     <application>
         <!-- Debug-only explicit adb transport. Never starts recording or changes the toggle. -->
         <receiver android:name=".DemoNaviReceiver" android:exported="true" android:process=":drive_recorder">
             <intent-filter><action android:name="lab.pleos.observe.DEMO_NAVI" /></intent-filter>
+        </receiver>
+        <receiver android:name=".InfoProbeReceiver" android:exported="true">
+            <intent-filter><action android:name="lab.pleos.observe.INFO_PROBE" /></intent-filter>
         </receiver>
     </application>
 </manifest>

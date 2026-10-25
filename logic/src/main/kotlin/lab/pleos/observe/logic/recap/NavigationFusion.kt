@@ -86,7 +86,10 @@ private fun fuseNavigationEvidence(card: ReviewCard, observations: List<Navigati
         }
         val finalFlags = if (kind == ReviewKind.TURN) remaining + Uncertainty.SIGNAL_GAP else remaining
         return card.copy(kind = if (finalFlags.isEmpty()) kind else ReviewKind.UNSURE, candidate = kind,
-            summary = s.copy(timing = timing, lateSignalMs = signal?.lateMs, nearNavigationTurn = true),
+            // 1.7.0: the lead belongs to the side the navigation says, like the timing itself.
+            summary = s.copy(timing = timing, lateSignalMs = signal?.lateMs, nearNavigationTurn = true,
+                signalLeadMeters = signal?.leadMeters.takeIf { timing == SignalTiming.BEFORE },
+                signalLeadMs = signal?.leadMs.takeIf { timing == SignalTiming.BEFORE }),
             direction = if (turn == NavigationTurn.RIGHT) ManeuverDirection.RIGHT else ManeuverDirection.LEFT,
             navigation = NavigationLabel.CONFIRMED, navigationTurn = turn, uncertainty = finalFlags)
     }

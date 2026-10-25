@@ -44,8 +44,8 @@ android {
         applicationId = "lab.pleos.observe"
         minSdk = 28
         targetSdk = 35
-        versionCode = 21
-        versionName = "1.6.0"
+        versionCode = 23
+        versionName = "1.8.0"
         // Double distance has no verified unit: opt in only after documented metre validation.
         buildConfigField("boolean", "NAVI_DISTANCE_METERS", (naviDistanceUnit == "meters").toString())
     }

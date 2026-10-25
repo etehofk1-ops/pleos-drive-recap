@@ -58,6 +58,8 @@ data class RecapEngineState(
     val lateralFilter: LateralFilter = LateralFilter(),
     val lastSpeedDropMs: Long? = null,
     val delayedLane: DelayedLaneState = DelayedLaneState(),
+    /** 1.7.0: odometer, continuous blinker runs, lead distance (A) and left-on (B). Memory only. */
+    val blinker: BlinkerState = BlinkerState(),
 )
 
 data class RecapStep(val state: RecapEngineState, val cards: List<ReviewCard> = emptyList(),
@@ -104,7 +106,7 @@ fun classifySegment(s: SegmentSummary, policy: RecapPolicy = RecapPolicy()): Rev
         maneuverDirection(s.firstSign, policy.convention), flags)
 }
 
-private fun speedAt(s: RecapEngineState, now: Long, policy: RecapPolicy): Float? =
+internal fun speedAt(s: RecapEngineState, now: Long, policy: RecapPolicy): Float? =
     if (policy.demoMissingSpeed || s.speedAt == null || now - s.speedAt !in 0..RecapThresholds.SPEED_FRESH_MS) null else s.speed
 
 private fun sign(angle: Float) = if (angle >= RecapThresholds.ANGLE_ENTER) 1 else if (angle <= -RecapThresholds.ANGLE_ENTER) -1 else 0
@@ -148,12 +150,21 @@ private fun beginSegment(s: RecapEngineState, start: Long, at: Long, wall: Long,
         leftBefore = before(s, 1, start, policy.copy(convention = SteeringConvention.POSITIVE_LEFT)),
         rightBefore = before(s, -1, start, policy.copy(convention = SteeringConvention.POSITIVE_LEFT)))
 
-/** Immutable online reducer: no raw history, file IO, Android classes or AI calls. */
-fun recapStep(previous: RecapEngineState, input: DriveInput, policy: RecapPolicy = RecapPolicy()): RecapStep {
+/** An older same-type event, or one far behind the reducer clock: dropped by [recapCore] (never applied). */
+private fun isStaleInput(previous: RecapEngineState, input: DriveInput): Boolean {
+    val sameSignalOlder = previous.inputTimes[input.javaClass.simpleName]?.let { input.atMs < it } == true
+    return sameSignalOlder || (previous.lastMs != null && previous.lastMs - input.atMs > RecapThresholds.CALLBACK_REORDER_MS)
+}
+
+/** Immutable online reducer: no raw history, file IO, Android classes or AI calls.
+ * [recapCore] is the 1.6.0 manoeuvre/brake reducer; [blinkerStep] adds the 1.7.0 blinker lead (A) and left-on card (B). */
+fun recapStep(previous: RecapEngineState, input: DriveInput, policy: RecapPolicy = RecapPolicy()): RecapStep =
+    blinkerStep(previous, input, policy, recapCore(previous, input, policy), isStaleInput(previous, input))
+
+private fun recapCore(previous: RecapEngineState, input: DriveInput, policy: RecapPolicy): RecapStep {
     val eventAt = input.atMs
     val key = input.javaClass.simpleName
-    val sameSignalOlder = previous.inputTimes[key]?.let { eventAt < it } == true
-    if (sameSignalOlder || (previous.lastMs != null && previous.lastMs - eventAt > RecapThresholds.CALLBACK_REORDER_MS)) {
+    if (isStaleInput(previous, input)) {
         // Never infer absence after dropping an out-of-order blinker, or a clean shape after a lost angle.
         val affected = input is DriveInput.Signal || input is DriveInput.Steering
         val active = previous.active?.let { it.copy(summary = it.summary.copy(inputGap = it.summary.inputGap || affected,
