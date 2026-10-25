@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 오운복 마크: 되감기 고리(원호+화살촉)와 왼쪽 화살표. 인트로·아웃트로 영상의 로고와 같은 형태(viewBox 200).
-     적응형 아이콘 108dp 캔버스의 안전 영역(가운데 66dp) 안에 60dp로 배치한다. -->
+<!-- 오운복 마크 '고리 속 한 순간'(docs/store/brand/make_brand.py가 생성). 끊긴 고리 = 되감기, 틈의 점 = 몰랐던 한 순간.
+     108dp 캔버스 가운데 지름 56dp(안전 영역 66dp 안). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <group android:translateX="24" android:translateY="24" android:scaleX="0.3" android:scaleY="0.3">
-        <path android:pathData="M49.86,40.25 A78,78 0 1,0 150.14,40.25"
-            android:strokeColor="#FFFFFF" android:strokeWidth="14" android:strokeLineCap="round" />
-        <path android:fillColor="#FFFFFF" android:pathData="M134.8,27.4 L162.8,31.3 L143.6,54.3 Z" />
-        <path android:fillColor="#FFFFFF" android:pathData="M56,100 L90,66 L90,85 L142,85 L142,115 L90,115 L90,134 Z" />
-    </group>
+    <path android:fillColor="#FFFFFF" android:pathData="M64.489,28.039 A28.000,28.000 0 1,0 78.723,40.855 L69.575,45.719 A17.640,17.640 0 1,1 60.608,37.644 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M65.633,36.105 a4.480,4.480 0 1,0 8.960,0 a4.480,4.480 0 1,0 -8.960,0 Z" />
 </vector>
