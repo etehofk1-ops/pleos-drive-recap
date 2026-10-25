@@ -1,0 +1,1234 @@
+{
+  "name": "E · 실제 안내와 조향 융합",
+  "note": "각 phase는 실제 지도 경로/TBT 확인 후 개별 실행. 합성 TBT를 앱에 주입하지 않음. geo 경로는 .local/navi-e-route.json에 별도 준비.",
+  "phases": {
+    "right-turn": {
+      "name": "E 안내 중 우회전 · 깜빡이 사전 사용",
+      "requiredNavigation": {
+        "guiding": true,
+        "action": "TURN_RIGHT",
+        "distanceMetersMax": 50
+      },
+      "expected": "TURN_SIGNALLED · 내비 확인 · 우회전",
+      "steps": [
+        {
+          "atMs": 0,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P에서 기록 시작·내비 조건 확인"
+        },
+        {
+          "atMs": 1000,
+          "controls": {
+            "brake": 0,
+            "gear": "D",
+            "speedKph": 12,
+            "steering": 0
+          },
+          "caption": "D 출발·속도 안정 대기",
+          "waitForSpeedKph": {
+            "min": 11,
+            "max": 13,
+            "timeoutMs": 20000,
+            "holdMs": 3000
+          }
+        },
+        {
+          "atMs": 5000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "turnSignal": "Blink right"
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 7000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 20
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 7400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 50
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 7800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 80
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 8200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 90
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 8600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 90
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 9000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 90
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 9400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 90
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 9800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 70
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 10200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 40
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 10600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 10
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 11000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 0
+          },
+          "caption": "안내 중 우회전 · 깜빡이 사전 사용"
+        },
+        {
+          "atMs": 12200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "조향 종료·내비 지연 이벤트 대기"
+        },
+        {
+          "atMs": 14000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 11,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14300,
+          "controls": {
+            "brake": 0,
+            "speedKph": 10,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 9,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14900,
+          "controls": {
+            "brake": 0,
+            "speedKph": 8,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 7,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15500,
+          "controls": {
+            "brake": 0,
+            "speedKph": 6,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 5,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16100,
+          "controls": {
+            "brake": 0,
+            "speedKph": 4,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 3,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16700,
+          "controls": {
+            "brake": 0,
+            "speedKph": 2,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 1,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17300,
+          "controls": {
+            "brake": 0,
+            "speedKph": 0,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 18800,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P 복귀 · 복기 확인"
+        }
+      ]
+    },
+    "uturn": {
+      "name": "E 안내 중 유턴 · 깜빡이 없음",
+      "requiredNavigation": {
+        "guiding": true,
+        "action": "TURN_UTURN",
+        "distanceMetersMax": 50
+      },
+      "expected": "TURN_NO_SIGNAL · 내비 확인 · 유턴",
+      "steps": [
+        {
+          "atMs": 0,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P에서 기록 시작·내비 조건 확인"
+        },
+        {
+          "atMs": 1000,
+          "controls": {
+            "brake": 0,
+            "gear": "D",
+            "speedKph": 12,
+            "steering": 0
+          },
+          "caption": "D 출발·속도 안정 대기",
+          "waitForSpeedKph": {
+            "min": 11,
+            "max": 13,
+            "timeoutMs": 20000,
+            "holdMs": 3000
+          }
+        },
+        {
+          "atMs": 5000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "turnSignal": "Off"
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 7000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 30
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 7400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 65
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 7800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 100
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 8200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 120
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 8600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 120
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 9000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 120
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 9400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 120
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 9800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 90
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 10200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 50
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 10600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 15
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 11000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 0
+          },
+          "caption": "안내 중 유턴 · 깜빡이 없음"
+        },
+        {
+          "atMs": 12200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "조향 종료·내비 지연 이벤트 대기"
+        },
+        {
+          "atMs": 14000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 11,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14300,
+          "controls": {
+            "brake": 0,
+            "speedKph": 10,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14600,
+          "controls": {
+            "brake": 0,
+            "speedKph": 9,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14900,
+          "controls": {
+            "brake": 0,
+            "speedKph": 8,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15200,
+          "controls": {
+            "brake": 0,
+            "speedKph": 7,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15500,
+          "controls": {
+            "brake": 0,
+            "speedKph": 6,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15800,
+          "controls": {
+            "brake": 0,
+            "speedKph": 5,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16100,
+          "controls": {
+            "brake": 0,
+            "speedKph": 4,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 3,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16700,
+          "controls": {
+            "brake": 0,
+            "speedKph": 2,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 1,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17300,
+          "controls": {
+            "brake": 0,
+            "speedKph": 0,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 18800,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P 복귀 · 복기 확인"
+        }
+      ]
+    },
+    "lane": {
+      "name": "E 안내 없는 구간 · 깜빡이 없는 차선 변경",
+      "requiredNavigation": {
+        "guiding": false
+      },
+      "expected": "LANE_NO_SIGNAL · 추정",
+      "steps": [
+        {
+          "atMs": 0,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P에서 기록 시작·내비 조건 확인"
+        },
+        {
+          "atMs": 1000,
+          "controls": {
+            "brake": 0,
+            "gear": "D",
+            "speedKph": 60,
+            "steering": 0
+          },
+          "caption": "D 출발·속도 안정 대기",
+          "waitForSpeedKph": {
+            "min": 59,
+            "max": 61,
+            "timeoutMs": 20000,
+            "holdMs": 3000
+          }
+        },
+        {
+          "atMs": 5000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "turnSignal": "Off"
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 7000,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 8
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 7350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 15
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 7700,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 12
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 8050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 4
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 8400,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": -6
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 8750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": -10
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 9100,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": -4
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 9450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 0
+          },
+          "caption": "안내 없는 구간 · 깜빡이 없는 차선 변경"
+        },
+        {
+          "atMs": 10650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 60,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "조향 종료·내비 지연 이벤트 대기"
+        },
+        {
+          "atMs": 12450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 59,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 12750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 58,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 13050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 57,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 13350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 56,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 13650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 55,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 13950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 54,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 53,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 52,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 14850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 51,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 50,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 49,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 15750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 48,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 47,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 46,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 45,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 16950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 44,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 43,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 42,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 17850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 41,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 18150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 40,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 18450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 39,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 18750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 38,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 19050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 37,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 19350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 36,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 19650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 35,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 19950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 34,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 20250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 33,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 20550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 32,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 20850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 31,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 21150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 30,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 21450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 29,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 21750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 28,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 22050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 27,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 22350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 26,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 22650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 25,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 22950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 24,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 23250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 23,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 23550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 22,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 23850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 21,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 24150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 20,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 24450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 19,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 24750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 18,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 25050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 17,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 25350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 16,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 25650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 15,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 25950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 14,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 26250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 13,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 26550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 12,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 26850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 11,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 27150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 10,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 27450,
+          "controls": {
+            "brake": 0,
+            "speedKph": 9,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 27750,
+          "controls": {
+            "brake": 0,
+            "speedKph": 8,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 28050,
+          "controls": {
+            "brake": 0,
+            "speedKph": 7,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 28350,
+          "controls": {
+            "brake": 0,
+            "speedKph": 6,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 28650,
+          "controls": {
+            "brake": 0,
+            "speedKph": 5,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 28950,
+          "controls": {
+            "brake": 0,
+            "speedKph": 4,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 29250,
+          "controls": {
+            "brake": 0,
+            "speedKph": 3,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 29550,
+          "controls": {
+            "brake": 0,
+            "speedKph": 2,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 29850,
+          "controls": {
+            "brake": 0,
+            "speedKph": 1,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 30150,
+          "controls": {
+            "brake": 0,
+            "speedKph": 0,
+            "steering": 0
+          },
+          "caption": "완만 감속 · 내비 증거와 조향 구간 분리"
+        },
+        {
+          "atMs": 31650,
+          "controls": {
+            "brake": 0,
+            "gear": "P",
+            "speedKph": 0,
+            "steering": 0,
+            "turnSignal": "Off"
+          },
+          "caption": "P 복귀 · 복기 확인"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "b-turn-and-curve",
+  "notes": "속도 미수신 시연 OFF. 정상 저속 회전은 숨김, 굽은 길 후보 1개. 좌우 미표시. 서버 속도 도달까지 타임라인 대기.",
+  "steps": [
+    {"atMs": 0, "controls": {"gear": "P", "steering": 0, "turnSignal": "Off", "brake": 0, "speedKph": 0}},
+    {"atMs": 4000, "waitForSpeedKph": {"min": 8, "max": 15, "timeoutMs": 20000}, "controls": {"gear": "D", "speedKph": 12}},
+    {"atMs": 5000, "controls": {"turnSignal": "Blink right"}},
+    {"atMs": 5500, "controls": {"steering": 90}},
+    {"atMs": 6500, "controls": {"steering": 120}},
+    {"atMs": 8000, "controls": {"steering": 100}},
+    {"atMs": 9000, "controls": {"steering": 0}},
+    {"atMs": 10000, "controls": {"turnSignal": "Off"}},
+    {"atMs": 13000, "waitForSpeedKph": {"min": 42, "max": 48, "timeoutMs": 30000}, "controls": {"speedKph": 45}},
+    {"atMs": 14000, "controls": {"steering": 18}},
+    {"atMs": 16000, "controls": {"steering": 20}},
+    {"atMs": 19000, "controls": {"steering": 18}},
+    {"atMs": 23500, "controls": {"steering": 0}},
+    {"atMs": 25000, "waitForSpeedKph": {"min": 0, "max": 0.1, "timeoutMs": 20000}, "controls": {"speedKph": 0}},
+    {"atMs": 27000, "controls": {"gear": "P"}}
+  ]
+}

@@ -1,0 +1,209 @@
+{
+  "name": "c-boundary-speed-uncertain-two",
+  "notes": "AI 보조 ON, 속도 미수신 시연 OFF. 기존 속도 25~35kph 경계의 파형 2건이다. W14 정규화에서는 CURVE/숨긴 STEERING으로 바뀔 수 있어 UNSURE·AI 요청을 보장하지 않는다. Jev의 최고 선택 확률이 0.6 이상이고 판단 보류가 아닐 때만 AI 추정을 표시한다. 실측 채택 결과를 보장하지 않는다.",
+  "steps": [
+    {
+      "atMs": 0,
+      "controls": {
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0,
+        "turnSignal": "Off"
+      }
+    },
+    {
+      "atMs": 6000,
+      "waitForSpeedKph": {
+        "min": 22,
+        "max": 28,
+        "timeoutMs": 30000
+      },
+      "controls": {
+        "gear": "D",
+        "speedKph": 25,
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 9000,
+      "controls": {
+        "speedKph": 25,
+        "steering": 18,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 9350,
+      "controls": {
+        "speedKph": 25,
+        "steering": 25,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 9700,
+      "controls": {
+        "speedKph": 35,
+        "steering": 32,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 10050,
+      "controls": {
+        "speedKph": 35,
+        "steering": 6,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 10400,
+      "controls": {
+        "speedKph": 35,
+        "steering": -15,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 10750,
+      "controls": {
+        "speedKph": 35,
+        "steering": -25,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 11100,
+      "controls": {
+        "speedKph": 35,
+        "steering": -5,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 11450,
+      "controls": {
+        "speedKph": 35,
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 14000,
+      "waitForSpeedKph": {
+        "min": 22,
+        "max": 28,
+        "timeoutMs": 20000
+      },
+      "controls": {
+        "speedKph": 25,
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 15000,
+      "controls": {
+        "speedKph": 25,
+        "turnSignal": "Blink left"
+      }
+    },
+    {
+      "atMs": 17000,
+      "controls": {
+        "speedKph": 25,
+        "steering": -18,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 17350,
+      "controls": {
+        "speedKph": 25,
+        "steering": -25,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 17700,
+      "controls": {
+        "speedKph": 35,
+        "steering": -32,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 18050,
+      "controls": {
+        "speedKph": 35,
+        "steering": -6,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 18400,
+      "controls": {
+        "speedKph": 35,
+        "steering": 15,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 18750,
+      "controls": {
+        "speedKph": 35,
+        "steering": 25,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 19100,
+      "controls": {
+        "speedKph": 35,
+        "steering": 5,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 19450,
+      "controls": {
+        "speedKph": 35,
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 21000,
+      "controls": {
+        "speedKph": 35,
+        "turnSignal": "Off",
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 23000,
+      "waitForSpeedKph": {
+        "min": 0,
+        "max": 0.1,
+        "timeoutMs": 20000
+      },
+      "controls": {
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0
+      }
+    },
+    {
+      "atMs": 25000,
+      "controls": {
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,1280 @@
+{
+  "name": "d-morning-commute-demo",
+  "notes": "0.6.3 영상용 기준74초+속도 대기/HTTP 처리시간. 모든 속도는 정수. 신호 대기60→0은1km/h·250ms(명령 평균1.11m/s²), 급제동60→15는3km/h·100ms(8.33m/s²), 마지막15→0은1km/h·250ms(10/5/0 지점은각1.25초 간격). 실수신 감속/카드 수는 AVD 재확인 필요. 기대: 좋아요1·놓침1·늦음1·급제동1·애매함0, 회전 숨김. caption은 콘솔 출력만.",
+  "steps": [
+    {
+      "atMs": 0,
+      "controls": {
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "출근길을 기록합니다. 출발 전 차를 세웠어요."
+    },
+    {
+      "atMs": 4000,
+      "waitForSpeedKph": {
+        "min": 58,
+        "max": 62,
+        "timeoutMs": 30000
+      },
+      "controls": {
+        "gear": "D",
+        "speedKph": 60,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "출발합니다. 운전 중에는 화면 없이 기록만 합니다."
+    },
+    {
+      "atMs": 6500,
+      "controls": {
+        "speedKph": 60
+      },
+      "caption": "시속 60km로 순항합니다."
+    },
+    {
+      "atMs": 8000,
+      "controls": {
+        "speedKph": 60,
+        "turnSignal": "Blink left"
+      },
+      "caption": "차선을 바꾸기 전에 깜빡이를 켰어요."
+    },
+    {
+      "atMs": 10000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 8
+      },
+      "caption": "첫 번째 차선 변경을 시작합니다."
+    },
+    {
+      "atMs": 10350,
+      "controls": {
+        "speedKph": 60,
+        "steering": 15
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 10700,
+      "controls": {
+        "speedKph": 60,
+        "steering": 12
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 11050,
+      "controls": {
+        "speedKph": 60,
+        "steering": 4
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 11400,
+      "controls": {
+        "speedKph": 60,
+        "steering": -6
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 11750,
+      "controls": {
+        "speedKph": 60,
+        "steering": -10
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 12100,
+      "controls": {
+        "speedKph": 60,
+        "steering": -4
+      },
+      "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
+    },
+    {
+      "atMs": 12450,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0
+      },
+      "caption": "깜빡이를 미리 켠 차선 변경, 좋아요."
+    },
+    {
+      "atMs": 13500,
+      "controls": {
+        "speedKph": 60,
+        "turnSignal": "Off"
+      },
+      "caption": "깜빡이를 끄고 다시 순항합니다."
+    },
+    {
+      "atMs": 17000,
+      "controls": {
+        "speedKph": 60,
+        "steering": -8
+      },
+      "caption": "두 번째 차선 변경, 이번에는 깜빡이를 놓쳤어요."
+    },
+    {
+      "atMs": 17350,
+      "controls": {
+        "speedKph": 60,
+        "steering": -14
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 17700,
+      "controls": {
+        "speedKph": 60,
+        "steering": -10
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 18050,
+      "controls": {
+        "speedKph": 60,
+        "steering": -3
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 18400,
+      "controls": {
+        "speedKph": 60,
+        "steering": 6
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 18750,
+      "controls": {
+        "speedKph": 60,
+        "steering": 11
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 19100,
+      "controls": {
+        "speedKph": 60,
+        "steering": 5
+      },
+      "caption": "짧은 조향 구간을 요약해 기록합니다."
+    },
+    {
+      "atMs": 19450,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0
+      },
+      "caption": "깜빡이 없이 바뀐 순간을 복기 후보로 남깁니다."
+    },
+    {
+      "atMs": 21000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0
+      },
+      "caption": "차를 세운 뒤 살펴볼 순간이 쌓입니다."
+    },
+    {
+      "atMs": 24000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 7
+      },
+      "caption": "세 번째 차선 변경을 시작합니다."
+    },
+    {
+      "atMs": 24350,
+      "controls": {
+        "speedKph": 60,
+        "steering": 13
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 24600,
+      "controls": {
+        "speedKph": 60,
+        "turnSignal": "Blink left"
+      },
+      "caption": "핸들을 움직인 뒤에야 깜빡이를 켰어요."
+    },
+    {
+      "atMs": 24700,
+      "controls": {
+        "speedKph": 60,
+        "steering": 9
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 25050,
+      "controls": {
+        "speedKph": 60,
+        "steering": 2
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 25400,
+      "controls": {
+        "speedKph": 60,
+        "steering": -7
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 25750,
+      "controls": {
+        "speedKph": 60,
+        "steering": -10
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 26100,
+      "controls": {
+        "speedKph": 60,
+        "steering": -3
+      },
+      "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
+    },
+    {
+      "atMs": 26450,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0
+      },
+      "caption": "늦게 켠 깜빡이도 복기에 남깁니다."
+    },
+    {
+      "atMs": 27500,
+      "controls": {
+        "speedKph": 60,
+        "turnSignal": "Off"
+      },
+      "caption": "깜빡이를 끄고 신호 대기를 준비합니다."
+    },
+    {
+      "atMs": 30000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "신호 앞에서 서서히 속도를 낮춥니다."
+    },
+    {
+      "atMs": 30250,
+      "controls": {
+        "speedKph": 59,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 30500,
+      "controls": {
+        "speedKph": 58,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 30750,
+      "controls": {
+        "speedKph": 57,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 31000,
+      "controls": {
+        "speedKph": 56,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 31250,
+      "controls": {
+        "speedKph": 55,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 31500,
+      "controls": {
+        "speedKph": 54,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 31750,
+      "controls": {
+        "speedKph": 53,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 32000,
+      "controls": {
+        "speedKph": 52,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 32250,
+      "controls": {
+        "speedKph": 51,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 32500,
+      "controls": {
+        "speedKph": 50,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 32750,
+      "controls": {
+        "speedKph": 49,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 33000,
+      "controls": {
+        "speedKph": 48,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 33250,
+      "controls": {
+        "speedKph": 47,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 33500,
+      "controls": {
+        "speedKph": 46,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 33750,
+      "controls": {
+        "speedKph": 45,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 34000,
+      "controls": {
+        "speedKph": 44,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 34250,
+      "controls": {
+        "speedKph": 43,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 34500,
+      "controls": {
+        "speedKph": 42,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 34750,
+      "controls": {
+        "speedKph": 41,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 35000,
+      "controls": {
+        "speedKph": 40,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 35250,
+      "controls": {
+        "speedKph": 39,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 35500,
+      "controls": {
+        "speedKph": 38,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 35750,
+      "controls": {
+        "speedKph": 37,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 36000,
+      "controls": {
+        "speedKph": 36,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 36250,
+      "controls": {
+        "speedKph": 35,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 36500,
+      "controls": {
+        "speedKph": 34,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 36750,
+      "controls": {
+        "speedKph": 33,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 37000,
+      "controls": {
+        "speedKph": 32,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 37250,
+      "controls": {
+        "speedKph": 31,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 37500,
+      "controls": {
+        "speedKph": 30,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 37750,
+      "controls": {
+        "speedKph": 29,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 38000,
+      "controls": {
+        "speedKph": 28,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 38250,
+      "controls": {
+        "speedKph": 27,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 38500,
+      "controls": {
+        "speedKph": 26,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 38750,
+      "controls": {
+        "speedKph": 25,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 39000,
+      "controls": {
+        "speedKph": 24,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 39250,
+      "controls": {
+        "speedKph": 23,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 39500,
+      "controls": {
+        "speedKph": 22,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 39750,
+      "controls": {
+        "speedKph": 21,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 40000,
+      "controls": {
+        "speedKph": 20,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 40250,
+      "controls": {
+        "speedKph": 19,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 40500,
+      "controls": {
+        "speedKph": 18,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 40750,
+      "controls": {
+        "speedKph": 17,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 41000,
+      "controls": {
+        "speedKph": 16,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 41250,
+      "controls": {
+        "speedKph": 15,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 41500,
+      "controls": {
+        "speedKph": 14,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 41750,
+      "controls": {
+        "speedKph": 13,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 42000,
+      "controls": {
+        "speedKph": 12,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 42250,
+      "controls": {
+        "speedKph": 11,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 42500,
+      "controls": {
+        "speedKph": 10,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 42750,
+      "controls": {
+        "speedKph": 9,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 43000,
+      "controls": {
+        "speedKph": 8,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 43250,
+      "controls": {
+        "speedKph": 7,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 43500,
+      "controls": {
+        "speedKph": 6,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 43750,
+      "controls": {
+        "speedKph": 5,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 44000,
+      "controls": {
+        "speedKph": 4,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 44250,
+      "controls": {
+        "speedKph": 3,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 44500,
+      "controls": {
+        "speedKph": 2,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 44750,
+      "controls": {
+        "speedKph": 1,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "시속 1km씩 여유를 두고 감속합니다."
+    },
+    {
+      "atMs": 45000,
+      "waitForSpeedKph": {
+        "min": 0,
+        "max": 0.1,
+        "timeoutMs": 20000,
+        "holdMs": 400
+      },
+      "controls": {
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 10
+      },
+      "caption": "완만하게 정지했어요. 급제동으로 세지 않습니다."
+    },
+    {
+      "atMs": 46000,
+      "controls": {
+        "speedKph": 0,
+        "brake": 0
+      },
+      "caption": "신호를 기다리는 동안에도 화면은 열지 않습니다."
+    },
+    {
+      "atMs": 48000,
+      "waitForSpeedKph": {
+        "min": 10,
+        "max": 14,
+        "timeoutMs": 20000
+      },
+      "controls": {
+        "speedKph": 12,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "신호가 바뀌어 천천히 다시 출발합니다."
+    },
+    {
+      "atMs": 49000,
+      "controls": {
+        "speedKph": 12,
+        "turnSignal": "Blink right"
+      },
+      "caption": "교차로에서 우회전할 깜빡이를 켰어요."
+    },
+    {
+      "atMs": 50000,
+      "controls": {
+        "speedKph": 12,
+        "steering": 20
+      },
+      "caption": "저속 우회전을 시작합니다."
+    },
+    {
+      "atMs": 50400,
+      "controls": {
+        "speedKph": 12,
+        "steering": 50
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 50800,
+      "controls": {
+        "speedKph": 12,
+        "steering": 80
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 51200,
+      "controls": {
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 51600,
+      "controls": {
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 52000,
+      "controls": {
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 52400,
+      "controls": {
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 52800,
+      "controls": {
+        "speedKph": 12,
+        "steering": 70
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 53200,
+      "controls": {
+        "speedKph": 12,
+        "steering": 40
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 53600,
+      "controls": {
+        "speedKph": 12,
+        "steering": 10
+      },
+      "caption": "교차로를 돌며 큰 조향이 이어집니다."
+    },
+    {
+      "atMs": 54000,
+      "controls": {
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "저속의 큰 조향은 회전으로 분류해 카드에서 숨깁니다."
+    },
+    {
+      "atMs": 55000,
+      "controls": {
+        "speedKph": 12,
+        "turnSignal": "Off"
+      },
+      "caption": "우회전을 마치고 깜빡이를 껐어요."
+    },
+    {
+      "atMs": 57000,
+      "waitForSpeedKph": {
+        "min": 58,
+        "max": 62,
+        "timeoutMs": 30000
+      },
+      "controls": {
+        "speedKph": 60,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "다시 순항한 뒤 급제동 장면을 재현합니다."
+    },
+    {
+      "atMs": 61000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "브레이크를 유지한 채 단계 급제동을 재현합니다."
+    },
+    {
+      "atMs": 61100,
+      "controls": {
+        "speedKph": 57,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61200,
+      "controls": {
+        "speedKph": 54,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61300,
+      "controls": {
+        "speedKph": 51,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61400,
+      "controls": {
+        "speedKph": 48,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61500,
+      "controls": {
+        "speedKph": 45,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61600,
+      "controls": {
+        "speedKph": 42,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61700,
+      "controls": {
+        "speedKph": 39,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61800,
+      "controls": {
+        "speedKph": 36,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 61900,
+      "controls": {
+        "speedKph": 33,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62000,
+      "controls": {
+        "speedKph": 30,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62100,
+      "controls": {
+        "speedKph": 27,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62200,
+      "controls": {
+        "speedKph": 24,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62300,
+      "controls": {
+        "speedKph": 21,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62400,
+      "controls": {
+        "speedKph": 18,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
+    },
+    {
+      "atMs": 62500,
+      "controls": {
+        "speedKph": 15,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "시속 15km부터는 다시 완만하게 멈춥니다."
+    },
+    {
+      "atMs": 62750,
+      "controls": {
+        "speedKph": 14,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 63000,
+      "controls": {
+        "speedKph": 13,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 63250,
+      "controls": {
+        "speedKph": 12,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 63500,
+      "controls": {
+        "speedKph": 11,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 63750,
+      "controls": {
+        "speedKph": 10,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 64000,
+      "controls": {
+        "speedKph": 9,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 64250,
+      "controls": {
+        "speedKph": 8,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 64500,
+      "controls": {
+        "speedKph": 7,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 64750,
+      "controls": {
+        "speedKph": 6,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 65000,
+      "controls": {
+        "speedKph": 5,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 65250,
+      "controls": {
+        "speedKph": 4,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 65500,
+      "controls": {
+        "speedKph": 3,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 65750,
+      "controls": {
+        "speedKph": 2,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 66000,
+      "controls": {
+        "speedKph": 1,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
+    },
+    {
+      "atMs": 66250,
+      "waitForSpeedKph": {
+        "min": 0,
+        "max": 0.1,
+        "timeoutMs": 20000,
+        "holdMs": 400
+      },
+      "controls": {
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 90
+      },
+      "caption": "정지까지 브레이크를 유지해 한 구간으로 묶습니다."
+    },
+    {
+      "atMs": 68000,
+      "controls": {
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "정지한 뒤 브레이크를 풀고 기록을 마무리합니다."
+    },
+    {
+      "atMs": 70000,
+      "controls": {
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0
+      },
+      "caption": "오늘의 순간을 짧은 구간 요약으로 보관합니다."
+    },
+    {
+      "atMs": 74000,
+      "controls": {
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "brake": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "정차했어요. 이제 오늘의 운전을 차분히 복기합니다."
+    }
+  ]
+}

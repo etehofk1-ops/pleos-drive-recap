@@ -1,0 +1,14 @@
+<resources>
+    <style name="Theme.ObserveLab.DayNight" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:colorAccent">#0082FF</item>
+        <item name="android:windowBackground">#1D1E21</item>
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#DBDBDB</item>
+        <item name="android:statusBarColor">#1D1E21</item>
+        <item name="android:navigationBarColor">#1D1E21</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>

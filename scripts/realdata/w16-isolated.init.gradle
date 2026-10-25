@@ -1,0 +1,4 @@
+// Isolate generated artifacts from the pre-existing tracked build outputs.
+gradle.beforeProject { p ->
+    p.layout.buildDirectory.set(new File(p.rootDir, "build/w16/gradle/${p.name}"))
+}

@@ -1,0 +1,822 @@
+{
+  "name": "F · 시연용 모의 내비 융합",
+  "runner": "demo-navi-feed.ps1",
+  "requiresDemoNavi": true,
+  "note": "추가 서버 없이 PowerShell이 Console HTTP와 adb 입력을 한 시계로 함께 재생. Console 브라우저 탭은 닫기. navi는 1초마다 갱신, 수신 후3초 만료.",
+  "expected": [
+    "TURN_SIGNALLED · 우회전 · 내비 확인(모의) · 좋아요",
+    "TURN_NO_SIGNAL · 깜빡이 없이 유턴 · 내비 확인(모의)",
+    "LANE_NO_SIGNAL · 내비 보조(모의)",
+    "LANE_NO_SIGNAL · 추정 · 모의 내비"
+  ],
+  "steps": [
+    {
+      "atMs": 0,
+      "controls": {
+        "brake": 0,
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "모의 내비 시연 시작 · P",
+      "navi": {
+        "guiding": false,
+        "action": null,
+        "distanceMeters": null
+      }
+    },
+    {
+      "atMs": 1000,
+      "controls": {
+        "brake": 0,
+        "gear": "D",
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "저속 출발 · 초기 신호와 속도 확인",
+      "waitForSpeedKph": {
+        "min": 11,
+        "max": 13,
+        "timeoutMs": 20000,
+        "holdMs": 3000
+      }
+    },
+    {
+      "atMs": 6000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12
+      },
+      "caption": "모의 우회전 안내 · 200m",
+      "navi": {
+        "guiding": true,
+        "action": "TURN_RIGHT",
+        "distanceMeters": 200
+      }
+    },
+    {
+      "atMs": 8000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "turnSignal": "Blink right"
+      },
+      "caption": "모의 우회전 50m · 미리 깜빡이 켜기",
+      "navi": {
+        "guiding": true,
+        "action": "TURN_RIGHT",
+        "distanceMeters": 50
+      }
+    },
+    {
+      "atMs": 10000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 20
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 10400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 50
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 10800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 80
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 11200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 11600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 12000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 12400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 12800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 70
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 13200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 40
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 13600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 10
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 14000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "안내와 저속 큰 조향이 일치하는 우회전"
+    },
+    {
+      "atMs": 16000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "우회전 마침 · 내비 확인(모의)·좋아요 기대"
+    },
+    {
+      "atMs": 20000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "모의 유턴 안내 · 200m",
+      "navi": {
+        "guiding": true,
+        "action": "TURN_UTURN",
+        "distanceMeters": 200
+      }
+    },
+    {
+      "atMs": 22000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "모의 유턴 안내 · 50m · 깜빡이 없음",
+      "navi": {
+        "guiding": true,
+        "action": "TURN_UTURN",
+        "distanceMeters": 50
+      }
+    },
+    {
+      "atMs": 24000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 30
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 24400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 65
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 24800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 100
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 25200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 120
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 25600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 120
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 26000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 120
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 26400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 120
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 26800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 90
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 27200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 50
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 27600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 15
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 28000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "깜빡이 없이 유턴 · 모의 안내와 조향 융합"
+    },
+    {
+      "atMs": 33000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 0
+      },
+      "caption": "모의 직진 안내 · 회전 없는 구간",
+      "navi": {
+        "guiding": true,
+        "action": "TURN_STRAIGHT",
+        "distanceMeters": 200
+      },
+      "waitForSpeedKph": {
+        "min": 34,
+        "max": 36,
+        "timeoutMs": 20000,
+        "holdMs": 3000
+      }
+    },
+    {
+      "atMs": 40000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 8
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 40350,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 15
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 40700,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 12
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 41050,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 4
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 41400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -6
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 41750,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -10
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 42100,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -4
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 42450,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 0
+      },
+      "caption": "깜빡이 없는 차선 변경 · 내비 보조(모의) 기대"
+    },
+    {
+      "atMs": 48000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 0
+      },
+      "caption": "모의 안내 종료 · 이후는 기존 추정만",
+      "navi": {
+        "guiding": false,
+        "action": null,
+        "distanceMeters": null
+      }
+    },
+    {
+      "atMs": 53000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -8
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 53350,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -14
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 53700,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -10
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 54050,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": -3
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 54400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 6
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 54750,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 11
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 55100,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 5
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 55450,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 0
+      },
+      "caption": "안내 없는 차선 변경 · 추정 기대"
+    },
+    {
+      "atMs": 59000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 35,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 59300,
+      "controls": {
+        "brake": 0,
+        "speedKph": 34,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 59600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 33,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 59900,
+      "controls": {
+        "brake": 0,
+        "speedKph": 32,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 60200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 31,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 60500,
+      "controls": {
+        "brake": 0,
+        "speedKph": 30,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 60800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 29,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 61100,
+      "controls": {
+        "brake": 0,
+        "speedKph": 28,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 61400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 27,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 61700,
+      "controls": {
+        "brake": 0,
+        "speedKph": 26,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 62000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 25,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 62300,
+      "controls": {
+        "brake": 0,
+        "speedKph": 24,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 62600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 23,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 62900,
+      "controls": {
+        "brake": 0,
+        "speedKph": 22,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 63200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 21,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 63500,
+      "controls": {
+        "brake": 0,
+        "speedKph": 20,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 63800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 19,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 64100,
+      "controls": {
+        "brake": 0,
+        "speedKph": 18,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 64400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 17,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 64700,
+      "controls": {
+        "brake": 0,
+        "speedKph": 16,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 65000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 15,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 65300,
+      "controls": {
+        "brake": 0,
+        "speedKph": 14,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 65600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 13,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 65900,
+      "controls": {
+        "brake": 0,
+        "speedKph": 12,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 66200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 11,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 66500,
+      "controls": {
+        "brake": 0,
+        "speedKph": 10,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 66800,
+      "controls": {
+        "brake": 0,
+        "speedKph": 9,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 67100,
+      "controls": {
+        "brake": 0,
+        "speedKph": 8,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 67400,
+      "controls": {
+        "brake": 0,
+        "speedKph": 7,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 67700,
+      "controls": {
+        "brake": 0,
+        "speedKph": 6,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 68000,
+      "controls": {
+        "brake": 0,
+        "speedKph": 5,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 68300,
+      "controls": {
+        "brake": 0,
+        "speedKph": 4,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 68600,
+      "controls": {
+        "brake": 0,
+        "speedKph": 3,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 68900,
+      "controls": {
+        "brake": 0,
+        "speedKph": 2,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 69200,
+      "controls": {
+        "brake": 0,
+        "speedKph": 1,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 69500,
+      "controls": {
+        "brake": 0,
+        "speedKph": 0,
+        "steering": 0
+      },
+      "caption": "급제동 없이 천천히 정차"
+    },
+    {
+      "atMs": 73000,
+      "controls": {
+        "brake": 0,
+        "gear": "P",
+        "speedKph": 0,
+        "steering": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "P 복귀 · 모의 배지와 카드 네 장 확인"
+    }
+  ]
+}

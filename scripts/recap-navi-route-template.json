@@ -1,0 +1,15 @@
+{
+  "note": "위치 미확인 템플릿. Claude가 지도에서 경로를 확인한 공개 시험 지점만 .local/navi-e-route.json에 입력한다. null은 스크립트가 거부한다. 각 phase와 실제 조향 시작을 맞추고 안내 동작/거리를 logcat으로 확인한다.",
+  "right-turn": [
+    {"atMs": 0, "longitude": null, "latitude": null},
+    {"atMs": 1000, "longitude": null, "latitude": null}
+  ],
+  "uturn": [
+    {"atMs": 0, "longitude": null, "latitude": null},
+    {"atMs": 1000, "longitude": null, "latitude": null}
+  ],
+  "lane": [
+    {"atMs": 0, "longitude": null, "latitude": null},
+    {"atMs": 1000, "longitude": null, "latitude": null}
+  ]
+}

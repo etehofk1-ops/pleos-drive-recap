@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.type.automotive" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <!-- Public read permissions, protectionLevel=normal. No control permissions. -->
+    <uses-permission android:name="pleos.car.permission.CAR_WINDOWS" />
+    <uses-permission android:name="pleos.car.permission.CAR_LIGHTS" />
+    <!-- Vehicle 2.3.2 AAR @RequiresPermission; docs/WEEK3_PROBE.md. -->
+    <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
+    <uses-permission android:name="pleos.car.permission.CAR_ENERGY" />
+    <uses-permission android:name="pleos.car.permission.CAR_DOORS" />
+    <uses-permission android:name="pleos.car.permission.CAR_SEATS" />
+    <uses-permission android:name="android.car.permission.CAR_POWERTRAIN" />
+    <!-- Dangerous: MainActivity requests runtime approval. Denial keeps the body locked. -->
+    <uses-permission android:name="android.car.permission.CAR_SPEED" />
+    <!-- API 34 foreground telemetry trial; sources: docs/WEEK4_DRIVE_RECORDER.md. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- NaviHelper getRouteStateInfo/getTBTInfo, verified @RequiresPermission in 3.0.5. -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />
+    <!-- Diagnostic requestRoute/cancelRoute only; AAR @RequiresPermission + official destinations guide. -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE_SEARCH" />
+    <!-- Restore the retention cleanup job after reboot; never auto-starts drive recording. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <application
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="false"
+        android:allowBackup="false"
+        android:label="오늘 운전 복기"
+        android:supportsRtl="true"
+        android:resizeableActivity="true"
+        android:theme="@style/Theme.ObserveLab.DayNight">
+        <uses-library android:name="android.car" android:required="false" />
+        <provider android:name=".RecapProvider" android:authorities="${applicationId}.recap"
+            android:exported="false" android:process=":drive_recorder" />
+        <service android:name=".RecapCleanupJob" android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="false" android:process=":drive_recorder" />
+        <!-- Own process/session: Activity pause/release cannot release recorder-owned SDK objects. -->
+        <service
+            android:name=".DriveRecorderService"
+            android:exported="false"
+            android:process=":drive_recorder"
+            android:stopWithTask="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-started AAOS drive recap: reduce vehicle callbacks into private maneuver summaries while the non-DO activity is blocked. No location or VIN. Stop while parked." />
+        </service>
+        <!-- Deliberately no distractionOptimized declaration. Parked-only app. -->
+        <activity android:name=".LegacyLabActivity" android:resizeableActivity="true" android:exported="false" />
+        <activity android:name=".NaviDemoActivity" android:resizeableActivity="true" android:exported="false" />
+        <activity android:name=".MainActivity" android:resizeableActivity="true" android:exported="true" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

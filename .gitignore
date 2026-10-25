@@ -1,0 +1,26 @@
+.gradle/
+.kotlin/
+.gradle-user-home/
+.local/
+.idea/
+**/build/
+local.properties
+*.iml
+_codex_log_*.txt
+.omc/
+docs/evidence/w3/*.webm
+# Signing material and development artifacts are not submission contents.
+*.keystore
+*.jks
+*.p12
+.env
+.env.*
+docs/dev-notes/
+docs/evidence/
+motion/
+_codex_log*
+_codex_report*
+SPEC_*
+motion/drive-recap/assets/fonts/
+motion/drive-recap/renders/
+motion/drive-recap/node_modules/

@@ -1,0 +1,15 @@
+<resources>
+    <!-- Native resource-qualified DayNight: Activity recreation follows system uiMode. -->
+    <style name="Theme.ObserveLab.DayNight" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:colorAccent">#0064FF</item>
+        <item name="android:windowBackground">#F7F8FA</item>
+        <item name="android:textColorPrimary">#131417</item>
+        <item name="android:textColorSecondary">#38393B</item>
+        <item name="android:statusBarColor">#F7F8FA</item>
+        <item name="android:navigationBarColor">#F7F8FA</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>
