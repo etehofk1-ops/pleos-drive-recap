@@ -177,6 +177,11 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
         }
     }
 
+    private fun goodChip(value: String, color: Int) = text(value, 24f, legibleTint(color, p.surfaceBasic, p.textPrimary), 700).apply {
+        setPadding(dp(18), dp(8), dp(18), dp(8))
+        background = GradientDrawable().apply { cornerRadius = dp(40).toFloat(); setColor((color and 0x00ffffff) or (0x1f shl 24)) }
+    }
+
     private fun bigNumber(item: BigNumber) = LinearLayout(ctx).apply {
         orientation = LinearLayout.VERTICAL; background = ctx.vehicleSurface(p.basicEnabled, 16)
         setPadding(dp(24), dp(16), dp(28), dp(16)); isSaveEnabled = false; isSaveFromParentEnabled = false
@@ -198,7 +203,7 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
         }
 
     fun momentCard(cards: List<ReviewCard>, index: Int, decision: AiDecision?, aiEnabled: Boolean, busy: Boolean,
-        debugEvidence: Boolean, fillHeight: Boolean, onMove: (Int) -> Unit, onFeedback: (Feedback) -> Unit): View {
+        debugEvidence: Boolean, fillHeight: Boolean, goodOrdinal: Int? = null, onMove: (Int) -> Unit, onFeedback: (Feedback) -> Unit): View {
         val c = cards[index]; val group = momentGroup(c)
         val color = momentColor(p, group)
         val padH = if (wide) 56 else 32; val padV = if (wide) 48 else 28
@@ -219,6 +224,8 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
         }
         val chips = ChipFlow(ctx)
         momentEvidenceChips(c, numbersShown = numbers.isNotEmpty()).forEach { chips.addView(chip(it)) }
+        // 1.9.0: 모으기에 들어간 잘한 순간 카드에만 작은 칩("7번째 잘한 순간"). 아니에요로 뺀 카드는 칩이 없다.
+        if (goodOrdinal != null && group == MomentGroup.GOOD) chips.addView(goodChip(goodMomentChip(goodOrdinal), color))
         chips.addView(chip(trustBadge(c, decision, aiEnabled), outlined = true))
         box.addView(chips, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(if (wide) 32 else 20) })
         if (c.demoNavigation && c.navigation == NavigationLabel.ESTIMATED) box.addView(text("모의 내비 미수신/안내 없음", 24f, p.textSecondary),
@@ -264,6 +271,27 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
             addView(line, LinearLayout.LayoutParams(-1, -2))
         }
         addView(text("후보 ${total}개 · 규칙 애매함 ${unsure}개", 24f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
+    }
+
+    /** 1.9.0 "지난 7일과 비교". 좋아진 줄만 파랑 굵게, 나머지는 숫자만. 기록이 모자라면 한 줄 안내만. */
+    fun comparisonCard(compare: WeekComparison): View = cardBox(32, 28).apply {
+        tag = "week-compare"
+        addView(text("지난 7일과 비교", 24f, p.textSecondary))
+        if (compare.rows.isEmpty()) {
+            addView(VehicleParagraph(ctx, compare.note.ifEmpty { NOTE_NO_PAST }, 26f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(12) })
+            return@apply
+        }
+        val blue = legibleTint(momentColor(p, MomentGroup.GOOD), p.surfaceBasic, p.textPrimary)
+        compare.rows.forEachIndexed { i, row ->
+            addView(View(ctx).apply { setBackgroundColor(p.dividerSecondary) }, LinearLayout.LayoutParams(-1, dp(2)).apply { topMargin = dp(if (i == 0) 12 else 0) })
+            // 좁은 열이라 "오늘 · 지난 7일" 문장을 가운데 점에서 두 줄로 나눠 보여 준다(문장 자체는 logic이 정한 그대로).
+            val (mine, before) = row.text.substringBefore(" · ") to row.text.substringAfter(" · ", "")
+            val line = LinearLayout(ctx).apply { orientation = LinearLayout.VERTICAL; isSaveEnabled = false; isSaveFromParentEnabled = false }
+            line.addView(VehicleParagraph(ctx, mine, 28f, if (row.better) blue else p.textPrimary, row.better))
+            if (before.isNotEmpty()) line.addView(VehicleParagraph(ctx, before, 24f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(4) })
+            addView(line, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(14); bottomMargin = dp(14) })
+        }
+        addView(text(compare.basis, 22f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(2) })
     }
 
     fun messageCard(message: String, patterns: List<String>, status: String, pending: Boolean, fill: Boolean, onRetry: (() -> Unit)?): View =

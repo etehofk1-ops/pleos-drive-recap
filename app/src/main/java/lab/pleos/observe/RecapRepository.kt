@@ -16,6 +16,7 @@ class RecapRepository private constructor(context: Context) {
     private val dirty = mutableSetOf<String>()
     private val unreadable = mutableSetOf<String>()
     private val weekly = WeeklyCountStore(context)
+    private val good = GoodMomentsStore(context)
     private val summary = RecapSummaryCoordinator(context) { key ->
         aiEnabled && summaryAllowed() && currentSummary()?.first == key
     }
@@ -75,6 +76,7 @@ class RecapRepository private constructor(context: Context) {
     fun day(date: String = today()): DayRecap {
         prune()
         require(retainedDate(date, today()))
+        val firstLoad = date !in days
         val result = days.getOrPut(date) {
             val file = File(dir, "$date.bin")
             if (!file.exists() && !File(dir, "$date.bin.bak").exists()) DayRecap(date)
@@ -86,7 +88,10 @@ class RecapRepository private constructor(context: Context) {
                 DayRecap(date)
             }
         }
-        if (date !in unreadable) weekly.record(result)
+        if (date !in unreadable) {
+            weekly.record(result)
+            if (firstLoad) syncGood(date, result.cards)
+        }
         return result
     }
 
@@ -99,6 +104,7 @@ class RecapRepository private constructor(context: Context) {
             speedUnknownDrivingMs = current.speedUnknownDrivingMs + step.speedUnknownDrivingMs,
             cards = mergeReviewCards(current.cards, step.cards))
         weekly.record(checkNotNull(days[date]))
+        if (step.cards.isNotEmpty()) syncGood(date, checkNotNull(days[date]).cards)
         if (step.drivingMs > 0 || step.cards.isNotEmpty()) dirty += date
         if (step.cards.isNotEmpty() || step.parked) flush()
         if (step.cards.isNotEmpty() && motion == DriveGear.PARK) prepareSummary()
@@ -108,6 +114,7 @@ class RecapRepository private constructor(context: Context) {
         val current = day()
         check(today() !in unreadable)
         days[today()] = applyFeedback(current, id, value)
+        syncGood(today(), checkNotNull(days[today()]).cards)
         dirty += today()
         flush()
     }
@@ -130,14 +137,24 @@ class RecapRepository private constructor(context: Context) {
         }
         weekly.flush(dirty) // Counts only commit after the corresponding raw summary succeeds.
         if (weekly.error.isNotEmpty()) error = weekly.error
+        good.flush(dirty)
+        if (good.error.isNotEmpty()) error = good.error
     }
 
-    fun recentCounts(): List<RecentCounts> {
+    /** 오늘(또는 자정을 넘기며 마무리하는 어제) 카드로만 모은 순간을 갱신한다. 지난 날 파일을 읽을 때는 건드리지 않는다. */
+    private fun syncGood(date: String, cards: List<ReviewCard>) {
+        if (date == today() || date == good.state.date) good.sync(date, cards)
+    }
+    fun goodState(): GoodState = good.state
+
+    private fun settlePast() {
         val yesterday = LocalDate.now().minusDays(1).toString()
         if (File(dir, "$yesterday.bin").exists() || File(dir, "$yesterday.bin.bak").exists()) day(yesterday)
         weekly.flush(dirty)
-        return weekly.recent()
     }
+    fun recentCounts(): List<RecentCounts> { settlePast(); return weekly.recent() }
+    /** 1.9.0 "지난 7일과 비교": 오늘을 뺀 남은 지난 날의 집계(보존 기간은 그대로 7일). */
+    fun pastDays(): List<CountDay> { settlePast(); return weekly.pastDays() }
 
     fun onDriveGear(gear: DriveGear) {
         motion = gear
@@ -161,6 +178,8 @@ class RecapRepository private constructor(context: Context) {
         days.clear(); dirty.clear(); unreadable.clear(); error = ""
         weekly.deleteAll()
         if (weekly.error.isNotEmpty()) error = weekly.error
+        good.deleteAll() // 모은 잘한 순간도 함께 0으로.
+        if (good.error.isNotEmpty()) error = good.error
         dir.listFiles()?.filter { it.name.matches(Regex("\\d{4}-\\d{2}-\\d{2}\\.bin(?:\\.bak|\\.new)?")) }?.forEach {
             if (!it.delete()) error = "기록 삭제 실패. 다시 시도해 주세요."
         }

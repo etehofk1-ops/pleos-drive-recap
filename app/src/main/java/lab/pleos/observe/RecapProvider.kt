@@ -48,6 +48,17 @@ class RecapProvider : ContentProvider() {
                 result.putInt("glanceGood", glance.good); result.putInt("glanceMissed", glance.missed)
                 result.putInt("glanceLate", glance.late); result.putInt("glanceLeftOn", glance.leftOn)
                 result.putInt("glanceHardBrake", glance.hardBrake)
+                // 1.9.0 B: 모은 잘한 순간(홈 타일)과 이 페이지 카드의 "N번째". 숫자만 보내고 AI로는 보내지 않는다.
+                val good = repo.goodState()
+                result.putInt("goodTotal", good.total); result.putInt("goodStreak", good.streak); result.putInt("goodBest", good.best)
+                val pageIds = newest.drop(offset).take(100).map { it.id }.toSet()
+                val ordinals = goodOrdinals(good, stored.cards).filterKeys { it in pageIds }
+                result.putStringArray("goodIds", ordinals.keys.toTypedArray()); result.putIntArray("goodOrdinals", ordinals.values.toIntArray())
+                // 1.9.0 A: 오늘 vs 남은 지난 날 평균(문장은 logic에서 완성).
+                val compare = weekComparison(countDay(stored), stored.drivingMs > 0 || stored.cards.isNotEmpty(), repo.pastDays())
+                result.putStringArray("cmpTexts", compare.rows.map { it.text }.toTypedArray())
+                result.putBooleanArray("cmpBetter", compare.rows.map { it.better }.toBooleanArray())
+                result.putString("cmpNote", compare.note); result.putString("cmpBasis", compare.basis)
                 result.putInt("unsure", day.cards.count { it.kind == ReviewKind.UNSURE })
                 result.putBoolean("recording", repo.recording)
                 result.putBoolean("demo", repo.demoMissingSpeed)

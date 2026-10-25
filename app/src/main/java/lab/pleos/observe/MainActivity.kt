@@ -103,6 +103,9 @@ class MainActivity : Activity() {
     private var total = 0
     private var unsure = 0
     private var glance = RecapGlance()
+    private var good = GoodState()
+    private var goodOrdinals: Map<String, Int> = emptyMap()
+    private var comparison = WeekComparison()
     private var selectedCardId: String? = null
     private var offset = 0
     private var navi = "미수신"
@@ -380,6 +383,11 @@ class MainActivity : Activity() {
                 total = result.getInt("total"); unsure = result.getInt("unsure")
                 glance = RecapGlance(result.getInt("glanceGood"), result.getInt("glanceMissed"), result.getInt("glanceLate"),
                     result.getInt("glanceLeftOn"), result.getInt("glanceHardBrake"))
+                good = GoodState(total = result.getInt("goodTotal"), streak = result.getInt("goodStreak"), best = result.getInt("goodBest"))
+                goodOrdinals = (result.getStringArray("goodIds").orEmpty().toList()).zip(result.getIntArray("goodOrdinals")?.toList().orEmpty()).toMap()
+                val texts = result.getStringArray("cmpTexts").orEmpty(); val better = result.getBooleanArray("cmpBetter") ?: BooleanArray(0)
+                comparison = WeekComparison(texts.mapIndexed { i, text -> ComparisonRow(text, better.getOrElse(i) { false }) },
+                    result.getString("cmpNote").orEmpty(), result.getString("cmpBasis").orEmpty())
                 navi = result.getString("navi") ?: "미수신"; error = result.getString("error") ?: ""
                 if (recording || error.isNotEmpty()) {
                     startingRecorder = false; startingAt = null; main.removeCallbacks(startDeadline)
@@ -391,7 +399,7 @@ class MainActivity : Activity() {
                 if (proxyUrl != aiProxyUrl) { invalidateAi(); aiProxyUrl = proxyUrl; aiClient.setBaseUrl(proxyUrl) }
                 generated = if (aiEnabled) decodedSummary else null
                 summaryPending = aiEnabled && result.getBoolean("summaryPending")
-                val fingerprint = "$bytesHash|$recording|$recordingDemo|$total|$unsure|$glance|$navi|$seed|$error|$showRecap|$offset|$aiEnabled|$aiProxyUrl|$summaryJson|$summaryPending|$startingRecorder|$demoNaviEnabled|$hasDemoNaviCards"
+                val fingerprint = "$bytesHash|$recording|$recordingDemo|$total|$unsure|$glance|$good|$goodOrdinals|$comparison|$navi|$seed|$error|$showRecap|$offset|$aiEnabled|$aiProxyUrl|$summaryJson|$summaryPending|$startingRecorder|$demoNaviEnabled|$hasDemoNaviCards"
                 if (fingerprint != lastFingerprint) { lastFingerprint = fingerprint; render() }
                 restoreDialog()
                 requestAi()
@@ -537,6 +545,7 @@ class MainActivity : Activity() {
             }, tone = if (recording) PleosTone.INFORMATION else PleosTone.NEUTRAL),
             PleosTile(this, PleosIcon.RECAP, "오늘 복기", "짚어볼 순간 ${if (d == null) "확인 중" else "${total}개"}",
                 forward = true, action = { openRecap(0) }),
+            PleosTile(this, PleosIcon.GOOD, GOOD_TILE_HEADING, goodTileState(good), PleosTone.INFORMATION, number = goodTileNumber(good)),
             PleosTile(this, PleosIcon.AI_SUMMARY, "AI 보조", if (aiEnabled) "켜짐" else "꺼짐",
                 tone = if (aiEnabled) PleosTone.INFORMATION else PleosTone.NEUTRAL,
                 action = { changeAi(!aiEnabled) }))
@@ -571,7 +580,7 @@ class MainActivity : Activity() {
         else {
             val c = cards[index]
             content.addView(painter.momentCard(cards, index, aiDecisions[c.id].takeIf { aiEnabled }, aiEnabled, pendingOperation,
-                BuildConfig.DEBUG, fillHeight = wide,
+                BuildConfig.DEBUG, fillHeight = wide, goodOrdinal = goodOrdinals[c.id],
                 onMove = { next -> if (unlocked && next in cards.indices) { selectedCardId = cards[next].id; render() } },
                 onFeedback = { feedback -> if (unlocked) requestData("feedback", c.id, feedback) }),
                 if (wide) LinearLayout.LayoutParams(-1, 0, 1f).apply { bottomMargin = dp(18) } else params())
@@ -582,6 +591,7 @@ class MainActivity : Activity() {
         }
         val side = if (wide) cardsContent else content
         side.addView(painter.glanceCard(glance, total, unsure), params())
+        side.addView(painter.comparisonCard(comparison), params())
         val aiStatus = when {
             summaryPending -> "AI 문장 준비 중"
             generated != null -> "AI 문장 · 정차 후 읽는 복기"
@@ -682,7 +692,7 @@ class MainActivity : Activity() {
     private fun confirmDelete() {
         if (!unlocked) return
         present(DialogKind.DELETE, AlertDialog.Builder(this).setCustomTitle(dialogTitle("기록과 집계 삭제"))
-            .setMessage("오늘·어제 요약과 피드백, 최근 집계, 저장된 AI 문장을 삭제합니다. 기록 중이면 집계도 새로 시작합니다.")
+            .setMessage("오늘·어제 요약과 피드백, 최근 집계, 모은 잘한 순간, 저장된 AI 문장을 삭제합니다. 기록 중이면 집계도 새로 시작합니다.")
             .setNegativeButton("취소", null).setPositiveButton("삭제") { _, _ ->
                 if (unlocked) { offset = 0; requestData("delete") }
             }.create())

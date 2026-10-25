@@ -6,7 +6,7 @@ import lab.pleos.observe.logic.recap.*
 import java.io.File
 import java.time.LocalDate
 
-/** Owner-process only. Raw summaries still expire after two days; four counts survive seven. */
+/** Owner-process only. Raw summaries still expire after two days; four counts (plus the 1.9.0 lead-distance sum) survive seven. */
 class WeeklyCountStore(context: Context) {
     private val dir = File(context.filesDir, "recap-counts-v1").apply { check(isDirectory || mkdirs()) }
     private val cache = mutableMapOf<String, CountDay>()
@@ -34,13 +34,15 @@ class WeeklyCountStore(context: Context) {
     }
     fun record(day: DayRecap) {
         if (day.drivingMs == 0L && day.cards.isEmpty()) return
-        val next = CountDay(day.date, reviewCounts(day.cards))
+        val next = countDay(day)
         if (load(day.date) != next && day.date !in bad) { cache[day.date] = next; dirty += day.date }
     }
-    fun recent(): List<RecentCounts> {
+    /** 오늘을 뺀 남은 지난 날(최대 6일, 기록이 있는 날만). */
+    fun pastDays(): List<CountDay> {
         prune(); val today = LocalDate.now()
-        return relativeCounts((1..6).mapNotNull { load(today.minusDays(it.toLong()).toString()) }, today.toString())
+        return (1..6).mapNotNull { load(today.minusDays(it.toLong()).toString()) }
     }
+    fun recent(): List<RecentCounts> = relativeCounts(pastDays(), LocalDate.now().toString())
     fun flush(excludeDates: Set<String>) {
         prune()
         dirty.toList().filter { it !in excludeDates }.forEach { date ->
