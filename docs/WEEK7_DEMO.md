@@ -88,7 +88,7 @@ $env:RECAP_LLM_PROVIDER='opencode-go'
 $env:RECAP_LLM_MODEL='deepseek-v4.1-flash'
 $env:RECAP_LLM_FALLBACK_MODEL='minimax-m3.1-flash'
 $env:RECAP_LLM_MAX_TOKENS='1200'
-node .\ai-proxy\server.mjs   # TYPESAFE_API_KEY 등 키는 환경변수로 따로 넣는다
+node .\ai-proxy\server.mjs   # 키는 환경변수로 따로 넣는다
 ```
 
 2. 별도 터미널에서 **Claude가 빌드·설치**한다. 설치한 build-tools 버전이 다르면 aapt2 경로만 바꾼다. serial은 실제 devices 결과를 사용한다.

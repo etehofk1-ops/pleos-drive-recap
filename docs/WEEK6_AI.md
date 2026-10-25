@@ -46,7 +46,7 @@ Go는 개발·시연 전용이다. 서버 생성형8초보다 앱3초 제한이 
 Set-Location D:\Projects\pleos-observe-lab
 $env:RECAP_LLM_PROVIDER='opencode-go'
 $env:RECAP_LLM_MODEL='deepseek-v4.1-flash'
-node .\ai-proxy\server.mjs   # TYPESAFE_API_KEY 등 키는 환경변수로 따로 넣는다
+node .\ai-proxy\server.mjs   # 키는 환경변수로 따로 넣는다
 ```
 
 Go 키는 사용자 환경변수 또는 승인된 Aside 항목에서 읽는다. 키를 출력하지 않는다. 시작 로그의 `jevKeyPresent`/`recapKeyPresent`가 true인지와 provider/model만 확인한다. 다른 터미널에서 `Invoke-RestMethod http://127.0.0.1:8787/health`를 확인한다. 서버를 브라우저로 호출하지 않는다.

@@ -1,8 +1,8 @@
-# 오늘 운전 복기
+# 오운복 — 오늘의 운전 복기
 
 ## 앱 이름 및 한 줄 소개
 
-**오늘 운전 복기** — 운전 중에는 차량 신호를 구간 요약으로 기록하고, 차를 세운 뒤 깜빡이 사용과 감속 순간을 돌아보는 Pleos Connect 앱입니다.
+**오운복**(오늘의 운전 복기) — 운전 중에는 차량 신호를 구간 요약으로 기록하고, 차를 세운 뒤 깜빡이 사용과 감속 순간을 돌아보는 Pleos Connect 앱입니다.
 
 **1.6.0 / versionCode 21 — 제출 버전.** 시속 25km 이상의 차선 변경을 사건이 끝난 뒤 최대 약 9초 늦게, 사건 앞뒤 0.5초를 기준선으로 삼는 창으로 판정합니다(핸들 영점·도로 곡률 영향 제거). 공개 실주행 데이터(현대·기아 8차종 74분)에서 현대 25/32, 기아 16/28을 잡았고, 낸 카드의 61%가 자이로 센서로 옆 이동이 확인됐습니다(1.5.2는 4/32·0/28, 43%). [설계와 검증](docs/WEEK16C_DESIGN.md) · [Kotlin 이식·시험 변경](docs/WEEK16C_KOTLIN_PORT.md) · 이전 실패 시도 [1차](docs/WEEK16_REALDATA_REDESIGN.md)·[2차](docs/WEEK16B_EVENT_CURVE.md).
 
@@ -216,7 +216,7 @@ $env:ANDROID_HOME = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
 .\gradlew.bat :logic:test :app:assembleRelease --no-daemon --no-configuration-cache --console=plain
 if ($LASTEXITCODE -ne 0) { throw 'release 빌드 실패. 이전 APK를 제출하지 마세요.' }
 $team = Read-Host '제출 팀명'
-$target = Join-Path 'apk' ($team + '_오늘운전복기_release.apk')
+$target = Join-Path 'apk' ($team + '_오운복_release.apk')
 Copy-Item -LiteralPath .\app\build\outputs\apk\release\app-release.apk -Destination $target
 ```
 
@@ -226,7 +226,7 @@ Copy-Item -LiteralPath .\app\build\outputs\apk\release\app-release.apk -Destinat
 
 ## APK 위치
 
-**`apk/팀명_오늘운전복기_release.apk`**. 파일명 앱 이름은 공백을 뺀 `오늘운전복기`입니다. 현재 `.gitkeep`만 준비했으며 **서명 APK는 빌드 후 복사해야 합니다**. 저장소 생성·업로드·심사 계정 초대는 수행하지 않았습니다. 소스+APK/release/README/접근 권한 요건은 [공식 지원·제출 방법](https://appdevchallenge.auto-hmg.io/guide/submission)을 따릅니다.
+**`apk/김승주_오운복_release.apk`** (팀명 김승주, 앱 이름 오운복). 서명된 release APK입니다. 심사 계정 초대는 공지 후 진행합니다. 소스+APK/release/README/접근 권한 요건은 [공식 지원·제출 방법](https://appdevchallenge.auto-hmg.io/guide/submission)을 따릅니다.
 
 ## 개인정보 처리
 

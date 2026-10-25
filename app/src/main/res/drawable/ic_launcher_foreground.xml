@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 오운복 마크: 되감기 고리(원호+화살촉)와 왼쪽 화살표. 인트로·아웃트로 영상의 로고와 같은 형태(viewBox 200).
+     적응형 아이콘 108dp 캔버스의 안전 영역(가운데 66dp) 안에 60dp로 배치한다. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="24" android:translateY="24" android:scaleX="0.3" android:scaleY="0.3">
+        <path android:pathData="M49.86,40.25 A78,78 0 1,0 150.14,40.25"
+            android:strokeColor="#FFFFFF" android:strokeWidth="14" android:strokeLineCap="round" />
+        <path android:fillColor="#FFFFFF" android:pathData="M134.8,27.4 L162.8,31.3 L143.6,54.3 Z" />
+        <path android:fillColor="#FFFFFF" android:pathData="M56,100 L90,66 L90,85 L142,85 L142,115 L90,115 L90,134 Z" />
+    </group>
+</vector>

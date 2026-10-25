@@ -154,7 +154,7 @@ class MainActivity : Activity() {
                 }
             }
         }
-        title = label("오늘 운전 복기", pleosTitle(layoutSpec.width), bold = true).apply {
+        title = label("오운복", pleosTitle(layoutSpec.width), bold = true).apply {
             minHeight = dp(48)
             installPleosPress()
             setOnLongClickListener {

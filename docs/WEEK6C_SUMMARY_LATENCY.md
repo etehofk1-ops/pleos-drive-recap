@@ -54,7 +54,7 @@ $env:RECAP_LLM_PROVIDER='opencode-go'
 $env:RECAP_LLM_MODEL='deepseek-v4.1-flash'
 $env:RECAP_LLM_FALLBACK_MODEL='minimax-m3.1-flash'
 $env:RECAP_LLM_MAX_TOKENS='1200'
-node .\ai-proxy\server.mjs   # TYPESAFE_API_KEY 등 키는 환경변수로 따로 넣는다
+node .\ai-proxy\server.mjs   # 키는 환경변수로 따로 넣는다
 ```
 
 별도 터미널에서 Claude가 빌드한다. Codex는 Gradle/AVD를 실행하지 않았다.

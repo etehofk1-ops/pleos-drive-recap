@@ -9,7 +9,7 @@ const workspace = dirname(dirname(fileURLToPath(import.meta.url)));
 const checker = join(workspace, 'scripts', 'check-submission.ps1');
 const fixtures = join(workspace, '.local');
 mkdirSync(fixtures, { recursive: true });
-const readme = '# 오늘 운전 복기\n\n' + ['앱 이름 및 한 줄 소개', '실행 방법', '테스트 환경 및 필요한 설정', 'APK 위치']
+const readme = '# 오운복\n\n' + ['앱 이름 및 한 줄 소개', '실행 방법', '테스트 환경 및 필요한 설정', 'APK 위치']
   .map(h => '## ' + h + '\n\n설명.\n').join('\n') + '\napk/\n';
 function fixture() {
   const root = mkdtempSync(join(fixtures, 'submission-test-'));
@@ -65,7 +65,7 @@ test('default final check fails when no APK exists', () => {
   const r = run(fixture(), []); assert.equal(r.code, 1); assert.match(r.output, /Exactly one signed release APK/);
 });
 function mockApkTools(root, { debug = false, version = '21', debugCertificate = false } = {}) {
-  const apk = join(root, 'apk', '시연팀_오늘운전복기_release.apk');
+  const apk = join(root, 'apk', '시연팀_오운복_release.apk');
   writeFileSync(apk, 'fixture only - not an actual APK');
   const aapt = join(root, '.local', 'aapt.cmd'), signer = join(root, '.local', 'signer.cmd');
   writeFileSync(aapt, '@echo off\r\necho package: name=\'lab.pleos.observe\' versionCode=\'' + version +

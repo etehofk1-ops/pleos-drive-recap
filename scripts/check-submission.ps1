@@ -66,7 +66,7 @@ else {
     foreach ($heading in @('앱 이름 및 한 줄 소개', '실행 방법', '테스트 환경 및 필요한 설정', 'APK 위치')) {
         if ($text -notmatch ('(?m)^##\s+' + [Regex]::Escape($heading) + '\s*$')) { Fail ('README section missing: ' + $heading) }
     }
-    if ($text -notmatch '오늘 운전 복기' -or $text -notmatch 'apk/') { Fail 'README app name/APK path missing' }
+    if ($text -notmatch '오운복' -or $text -notmatch 'apk/') { Fail 'README app name/APK path missing' }
 }
 
 # Walk without following junctions/symlinks; never read local signing material or excluded notes.
@@ -119,9 +119,9 @@ if (!$SourceOnly -and (Test-Path -LiteralPath $apkDir -PathType Container)) {
     if ($apks.Count -ne 1) { Fail 'Exactly one signed release APK is required in apk/' }
     else {
         $apk = $apks[0]
-        $nameValid = $apk.Name -match '^.+_오늘운전복기_release\.apk$' -and $apk.Name -notmatch '^팀명_'
-        if ($TeamName) { $nameValid = $nameValid -and $apk.Name -eq ($TeamName + '_오늘운전복기_release.apk') }
-        if (!$nameValid) { Fail 'APK filename must be actual-team_오늘운전복기_release.apk' }
+        $nameValid = $apk.Name -match '^.+_오운복_release\.apk$' -and $apk.Name -notmatch '^팀명_'
+        if ($TeamName) { $nameValid = $nameValid -and $apk.Name -eq ($TeamName + '_오운복_release.apk') }
+        if (!$nameValid) { Fail 'APK filename must be actual-team_오운복_release.apk' }
         if ($apk.Length -eq 0 -or $apk.Length -gt 100MB) { Fail 'APK size is empty or exceeds repository upload limit' }
         if (!$Aapt2Path -or !$ApkSignerPath) {
             $sdk = if ($env:ANDROID_HOME) { $env:ANDROID_HOME } elseif ($env:ANDROID_SDK_ROOT) { $env:ANDROID_SDK_ROOT } else { Join-Path $env:LOCALAPPDATA 'Android\Sdk' }

@@ -127,7 +127,7 @@ class DriveRecorderService : Service() {
 
     private fun recordingNotification(): Notification {
         val builder = Notification.Builder(this, CHANNEL).setSmallIcon(android.R.drawable.ic_menu_info_details)
-            .setContentTitle("오늘 운전 복기 · 기록 중")
+            .setContentTitle("오운복 · 기록 중")
             .setContentText("위치 없이 구간 요약만 저장합니다. 주차 후 복기를 확인하세요.")
             .setOngoing(true).setOnlyAlertOnce(true).setShowWhen(false).setCategory(Notification.CATEGORY_SERVICE)
         if (recap?.gear == DriveGear.PARK) {
