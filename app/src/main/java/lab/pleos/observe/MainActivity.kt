@@ -99,6 +99,9 @@ class MainActivity : Activity() {
     private var recordingDemo = false
     private var demoNaviEnabled = false
     private var hasDemoNaviCards = false
+
+    /** 개발용 글자("Debug · …" 원시값, "창 폭 …dp")는 디버그 빌드에서만, 시연용 모의 내비를 쓰는 동안(시연 영상 녹화)에는 숨긴다. 릴리스는 항상 숨김. */
+    private fun showDevText(): Boolean = BuildConfig.DEBUG && !demoNaviEnabled && !hasDemoNaviCards
     private var day: DayRecap? = null
     private var total = 0
     private var unsure = 0
@@ -517,7 +520,7 @@ class MainActivity : Activity() {
             paragraph("$navi\n내비가 없으면 기존 추정 판정을 사용해요. 조향 부호로 좌우를 정하지 않으며, 내비 확인도 법률 판단이 아니에요.", 20f, MUTED)
             action("기록 삭제") { confirmDelete() }
         }
-        if (BuildConfig.DEBUG) paragraph("창 폭 ${resources.configuration.screenWidthDp}dp · ${layoutSpec.width} · 시스템 주간/야간", 20f, MUTED)
+        if (showDevText()) paragraph("창 폭 ${resources.configuration.screenWidthDp}dp · ${layoutSpec.width} · 시스템 주간/야간", 20f, MUTED)
         if (d != null) {
             pendingScroll = null
             val epoch = generation; val requestEpoch = dataEpoch
@@ -580,7 +583,7 @@ class MainActivity : Activity() {
         else {
             val c = cards[index]
             content.addView(painter.momentCard(cards, index, aiDecisions[c.id].takeIf { aiEnabled }, aiEnabled, pendingOperation,
-                BuildConfig.DEBUG, fillHeight = wide, goodOrdinal = goodOrdinals[c.id],
+                showDevText(), fillHeight = wide, goodOrdinal = goodOrdinals[c.id],
                 onMove = { next -> if (unlocked && next in cards.indices) { selectedCardId = cards[next].id; render() } },
                 onFeedback = { feedback -> if (unlocked) requestData("feedback", c.id, feedback) }),
                 if (wide) LinearLayout.LayoutParams(-1, 0, 1f).apply { bottomMargin = dp(18) } else params())
@@ -668,23 +671,18 @@ class MainActivity : Activity() {
 
     private fun openDiagnosticsMenu() {
         if (!unlocked) return
-        val choices = mutableListOf("신호 탐침·기존 게임", "내비 경로 요청 (입력 저장 안 함)", "AI 서버 설정")
-        if (BuildConfig.DEBUG) choices += "시연용 모의 내비"
-        if (BuildConfig.DEBUG && !recording) choices += if (demo) "속도 미수신 시연 끄기 (Debug)" else "속도 미수신 시연 켜기 (Debug)"
+        val choices = mutableListOf<Pair<String, () -> Unit>>()
+        DiagnosticTools.entries.forEach { entry -> choices += entry.label to { startActivity(entry.intent(this, navi)) } }
+        choices += "AI 서버 설정" to { editAiServer() }
+        if (BuildConfig.DEBUG) choices += "시연용 모의 내비" to { editDemoNavigation() }
+        if (BuildConfig.DEBUG && !recording) choices += (if (demo) "속도 미수신 시연 끄기 (Debug)" else "속도 미수신 시연 켜기 (Debug)") to {
+            demo = !demo; toast(if (demo) "속도 미수신 시연 켜짐 (Debug)" else "속도 미수신 시연 꺼짐"); render()
+        }
         val menu = column()
         val dialog = AlertDialog.Builder(this).setCustomTitle(dialogTitle("숨은 진단 메뉴")).setView(ScrollView(this).apply { addView(menu) })
             .setNegativeButton("닫기", null).create()
-        choices.forEachIndexed { which, name -> menu.addView(button(name) {
-            if (unlocked) {
-                dialog.dismiss()
-                when (which) {
-                    0 -> startActivity(Intent(this, LegacyLabActivity::class.java).putExtra("recapNaviStatus", navi))
-                    1 -> startActivity(Intent(this, NaviDemoActivity::class.java))
-                    2 -> editAiServer()
-                    3 -> editDemoNavigation()
-                    else -> { demo = !demo; toast(if (demo) "속도 미수신 시연 켜짐 (Debug)" else "속도 미수신 시연 꺼짐"); render() }
-                }
-            }
+        choices.forEach { (name, action) -> menu.addView(button(name) {
+            if (unlocked) { dialog.dismiss(); action() }
         }, params()) }
         present(DialogKind.MENU, dialog)
     }

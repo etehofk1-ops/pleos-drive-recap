@@ -3,14 +3,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.type.automotive" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <!-- Public read permissions, protectionLevel=normal. No control permissions. -->
-    <uses-permission android:name="pleos.car.permission.CAR_WINDOWS" />
+    <!-- Public read permission, protectionLevel=normal. CAR_LIGHTS is required by TurnSignal. No control permissions. -->
     <uses-permission android:name="pleos.car.permission.CAR_LIGHTS" />
     <!-- Vehicle 2.3.2 AAR @RequiresPermission; docs/WEEK3_PROBE.md. -->
     <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
-    <uses-permission android:name="pleos.car.permission.CAR_ENERGY" />
-    <uses-permission android:name="pleos.car.permission.CAR_DOORS" />
-    <uses-permission android:name="pleos.car.permission.CAR_SEATS" />
     <uses-permission android:name="android.car.permission.CAR_POWERTRAIN" />
     <!-- Dangerous: MainActivity requests runtime approval. Denial keeps the body locked. -->
     <uses-permission android:name="android.car.permission.CAR_SPEED" />
@@ -20,8 +16,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- NaviHelper getRouteStateInfo/getTBTInfo, verified @RequiresPermission in 3.0.5. -->
     <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />
-    <!-- Diagnostic requestRoute/cancelRoute only; AAR @RequiresPermission + official destinations guide. -->
-    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE_SEARCH" />
     <!-- Restore the retention cleanup job after reboot; never auto-starts drive recording. -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
@@ -51,8 +45,6 @@
                 android:value="User-started AAOS drive recap: reduce vehicle callbacks into private maneuver summaries while the non-DO activity is blocked. No location or VIN. Stop while parked." />
         </service>
         <!-- Deliberately no distractionOptimized declaration. Parked-only app. -->
-        <activity android:name=".LegacyLabActivity" android:resizeableActivity="true" android:exported="false" />
-        <activity android:name=".NaviDemoActivity" android:resizeableActivity="true" android:exported="false" />
         <activity android:name=".MainActivity" android:resizeableActivity="true" android:exported="true" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

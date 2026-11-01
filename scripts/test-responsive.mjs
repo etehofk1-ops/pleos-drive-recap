@@ -21,9 +21,10 @@ test('capture rejects malformed sizes, path labels and non-emulator targets befo
 });
 test('all Activities use system recreation without orientation/aspect/compat locks',()=>{
   const manifest=read('../app/src/main/AndroidManifest.xml');
-  assert.doesNotMatch(manifest,/android:(screenOrientation|configChanges|maxAspectRatio|minAspectRatio|requiresSmallestWidthDp)=/);
-  for(const name of ['MainActivity','LegacyLabActivity','NaviDemoActivity']) {
-    assert.match(manifest,new RegExp('<activity[^>]*android:name="\\.'+name+'"[^>]*android:resizeableActivity="true"'));
+  const debugManifest=read('../app/src/debug/AndroidManifest.xml');
+  for(const m of [manifest,debugManifest]) assert.doesNotMatch(m,/android:(screenOrientation|configChanges|maxAspectRatio|minAspectRatio|requiresSmallestWidthDp)=/);
+  for(const [name,m] of [['MainActivity',manifest],['LegacyLabActivity',debugManifest],['NaviDemoActivity',debugManifest]]) {
+    assert.match(m,new RegExp('<activity[^>]*android:name="\\.'+name+'"[^>]*android:resizeableActivity="true"'));
   }
   assert.match(manifest,/@style\/Theme.ObserveLab.DayNight/);
   for(const variant of ['values','values-night']) assert.ok(existsSync(new URL('../app/src/main/res/'+variant+'/styles.xml',import.meta.url)));

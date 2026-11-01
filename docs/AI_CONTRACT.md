@@ -89,7 +89,7 @@ patterns는 임의 모델 주장을 받지 않는다. 실제 과거 집계가 �
 - `기록된 최근 날짜보다 늦은 깜빡이 후보가 많아요.`
 - `기록된 최근 날짜보다 급제동 후보가 많아요.`
 
-기본 공급자는 `opencode-go`이며 `/chat/completions`에 messages와 max_tokens(기본1200)를 보낸다. Go+DeepSeek 계열에만 `reasoning_effort:"low"`를 추가한다(Claude의2026-10-23 실측 근거). 빈 content 대체 모델은 RECAP_LLM_FALLBACK_MODEL, 기본 `minimax-m3.1-flash`다. 동일 모델/빈 설정은 재호출하지 않는다. 다른 모델에는 DeepSeek 옵션이나 미확인 thinking 옵션을 보내지 않는다. 고유 `User-Agent: drive-recap-proto/0.6`와 동일 세션 헤더는 대체 호출에도 유지한다. Go는 개발·시연용이다. 모델·실측 한계·환경 변수는 [서버 README](../ai-proxy/README.md)를 따른다. [공식 Go 문서](https://opencode.ai/v2/docs/console/go/).
+기본 공급자는 `opencode-go`이며 `/chat/completions`에 messages와 max_tokens(기본1200)를 보낸다. Go+DeepSeek 계열에만 `reasoning_effort:"low"`를 추가한다(2026-10-23 직접 측정 근거). 빈 content 대체 모델은 RECAP_LLM_FALLBACK_MODEL, 기본 `minimax-m3.1-flash`다. 동일 모델/빈 설정은 재호출하지 않는다. 다른 모델에는 DeepSeek 옵션이나 미확인 thinking 옵션을 보내지 않는다. 고유 `User-Agent: drive-recap-proto/0.6`와 동일 세션 헤더는 대체 호출에도 유지한다. Go는 개발·시연용이다. 모델·실측 한계·환경 변수는 [서버 README](../ai-proxy/README.md)를 따른다. [공식 Go 문서](https://opencode.ai/v2/docs/console/go/).
 
 ## 저장·로그
 

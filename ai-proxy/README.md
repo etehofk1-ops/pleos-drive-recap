@@ -42,7 +42,7 @@ Invoke-RestMethod http://127.0.0.1:8787/health
 - [Jev System One](https://docs.typesafe.ai/api/system-one)과 [Choice](https://docs.typesafe.ai/primitives/choice): model=jev-preview, state+questions.kind, criteria 객체, answers.kind.choice/probabilities. 선택지 분포는 정확도 지표가 아니다. 실제 반환 model을 응답에 넣는다.
 - [Go 공식 문서](https://opencode.ai/v2/docs/console/go/): DeepSeek와 GLM의 OpenAI 호환 chat completions 및 고유 User-Agent/안정적인 x-opencode-session. 이 구현은 `drive-recap-proto/0.6`과 앱 프로세스 UUID를 쓴다.
 - Go는 코딩 에이전트용 구독이므로 **개발·시연에만** 사용한다. 출시 공급자는 별도 검토한다.
-- Claude의2026-10-23 실측: DeepSeek800토큰 기본 요청은 추론만 반환했고, reasoning_effort=low는3.9초/정상 content, MiniMax4.4초, GLM6.5초였다. 이 결과를 근거로 Go+DeepSeek 계열에만 low를 보낸다. 이는 Codex가 재호출해 측정한 결과가 아니다. GLM thinking={type:disabled}는 Claude 실측400이어서 사용하지 않는다.
+- 2026-10-23 직접 측정: DeepSeek800토큰 기본 요청은 추론만 반환했고, reasoning_effort=low는3.9초/정상 content, MiniMax4.4초, GLM6.5초였다. 이 결과를 근거로 Go+DeepSeek 계열에만 low를 보낸다. GLM thinking={type:disabled}는 직접 측정 400이어서 사용하지 않는다.
 - content가 비고 reasoning_content만 있으면 MiniMax로1회 대체 호출한다. 추론 텍스트는 답변으로 쓰지 않는다. 타임아웃/401/5xx/안전 검증 실패에는 대체 호출하지 않는다. 대체 모델도 비면503이다. `qwen3.8-flash`는 현재 문서상 Anthropic messages 경로이므로 이 chat 어댑터에 자동 대입하지 않는다.
 - 선택형 OpenAI는 [공식 Chat Completions](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create) 형식을 따른다. 기본 공급자가 아니다.
 

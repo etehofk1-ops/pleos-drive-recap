@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.car.permission.CAR_INFO" />
+    <!-- Diagnostic probes and the observation game only; release does not declare these. -->
+    <uses-permission android:name="pleos.car.permission.CAR_WINDOWS" />
+    <uses-permission android:name="pleos.car.permission.CAR_ENERGY" />
+    <uses-permission android:name="pleos.car.permission.CAR_DOORS" />
+    <uses-permission android:name="pleos.car.permission.CAR_SEATS" />
+    <!-- Diagnostic requestRoute/cancelRoute only; AAR @RequiresPermission + official destinations guide. -->
+    <uses-permission android:name="pleos.car.permission.NAVI_ROUTE_SEARCH" />
     <application>
+        <activity android:name=".LegacyLabActivity" android:resizeableActivity="true" android:exported="false" />
+        <activity android:name=".NaviDemoActivity" android:resizeableActivity="true" android:exported="false" />
         <!-- Debug-only explicit adb transport. Never starts recording or changes the toggle. -->
         <receiver android:name=".DemoNaviReceiver" android:exported="true" android:process=":drive_recorder">
             <intent-filter><action android:name="lab.pleos.observe.DEMO_NAVI" /></intent-filter>
