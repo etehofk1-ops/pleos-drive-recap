@@ -58,11 +58,36 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 
 앱은 차량 상태 **조회**만 사용하며 제어 권한이 없습니다. DO(Distraction Optimized)를 선언하지 않은 주차 중 전용 앱입니다. SDK 키는 코드에 없고 AI 인증은 로컬 서버에서만 처리합니다. 창문·도어·시트·배터리 등을 읽는 진단 탐침과 해당 권한은 debug 빌드에만 있습니다. [AI 계약](docs/AI_CONTRACT.md)
 
+## 구조
+
+```text
+[기록 프로세스 :drive_recorder]                          [화면 프로세스]
+DriveRecorderService (foreground)                      MainActivity
+ ├ DriveSignalSubscriptions  깜빡이·조향·브레이크 구독     ├ CarSafetyClient  기어·속도·UX 제한 → 잠금
+ ├ PleosNaviSource           NaviHelper 안내(메모리만)    ├ RecapScreen / VehicleUi  카드·타일 그리기
+ └ RecapRecordingSession ── logic: RecapEngine 판단      └ AiProxyClient  애매한 조향 분류 (선택)
+        │                                                        ▲
+        ▼                                                        │
+   RecapRepository ── RecapCodec 직렬화 ── RecapProvider ─────────┘  (ContentProvider, exported=false)
+   ├ 요약·피드백·7일 집계·잘한 순간, 정리 작업 RecapCleanupJob
+   └ RecapSummaryCoordinator ─ AiProxyClient  오늘의 한마디 생성 (선택)
+```
+
+| 모듈 | 역할 |
+|---|---|
+| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위 시험 443개가 여기에 있습니다. |
+| `app/src/main` | SDK 연결, 기록 서비스, 저장, 화면. 판단은 하지 않고 `logic`에 신호를 넘깁니다. |
+| `app/src/debug` | 신호 탐침·관찰 게임·모의 내비 등 개발 도구. release APK에는 들어가지 않습니다. |
+| `ai-proxy/` | 선택형 로컬 AI 중계(Node, 외부 패키지 없음). 키는 이 서버에만 있습니다. |
+| `scripts/` | 시나리오 재생(`recap-replay.js`, `recap-scenario-*.json`), 오프라인 시험, 공개 실주행 자료 평가(`realdata/`). |
+
+기록 프로세스를 따로 둔 이유: 주행 중에는 플랫폼이 화면을 가리고 Activity가 멈출 수 있어서, SDK 구독과 판단을 화면 수명과 분리했습니다. 화면은 저장된 요약만 읽습니다.
+
 ## 실행 상세
 
 ### 로컬 AI 서버(선택)
 
-Node20 이상, npm 설치/외부 패키지 없이 실행합니다. 서버 프로세스 환경에 `TYPESAFE_API_KEY`, `OPENCODE_GO_API_KEY`를 제공한 뒤 프로젝트 루트에서 실행합니다. 키를 소스·APK·명령 인수·로그에 넣지 않습니다.
+Node 20 이상, npm 설치/외부 패키지 없이 실행합니다. 서버 프로세스 환경에 `TYPESAFE_API_KEY`, `OPENCODE_GO_API_KEY`를 제공한 뒤 프로젝트 루트에서 실행합니다. 키를 소스·APK·명령 인수·로그에 넣지 않습니다.
 
 ```powershell
 $env:RECAP_LLM_PROVIDER = 'opencode-go'
@@ -78,11 +103,11 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 
 ### 기록과 리플레이
 
-1. P·속도0·UX 해제에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고3초 이상 기다립니다.
+1. P·속도0·UX 해제에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
 2. PC `http://127.0.0.1:8088` Console의 DevTools에 `scripts/recap-replay.js`를 붙입니다. `await driveRecapReplay.runFile()`로 `scripts/recap-scenario-d-demo.json`을 선택합니다.
-3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 기준74초+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
-4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 좋아요1·놓침1·늦음1·급제동1, 카드4·애매함0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다.
-5. `await driveRecapReplay.stop()`은0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
+3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 기준 74초+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
+4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 좋아요 1·놓침 1·늦음 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다.
+5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
 ## 소스에서 빌드하기
 
@@ -123,7 +148,7 @@ Copy-Item -LiteralPath .\app\build\outputs\apk\release\app-release.apk -Destinat
 ## 개인정보 처리
 
 - 기록 서비스는 위치·VIN·경로·음성·이름·연락처·메일을 수집/저장하지 않습니다. 실제/모의 내비 동작·거리·안내 상태·방송 runId/sequence는 메모리에만 두고 버립니다. 요약에는 사건 시각·종류·근거 수치·피드백·최종 내비 판정과 모의 출처 Boolean만 있습니다. Debug 빌드 숨은 시연 설정의 목적지 좌표는 사용자가 직접 입력해 NaviHelper로 요청하는 용도로만 사용하고 기록/AI/로그/파일로 보내지 않습니다.
-- 상세 요약/피드백은 오늘·어제2일, 날짜와7개 건수(기존4 + 회전 미사용/늦음/사전사용) 집계만7일, AI 문장은 오늘 캐시만 유지합니다. (하루 집계에 켬 거리 합계·장수가 더해지고, "모은 잘한 순간"은 누적·연속·최고 연속 숫자와 내부 기준 날짜 하나만 앱 파일에 남기며 위치·시각·카드 id는 없습니다. 기록 삭제가 함께 지웁니다.) 접근 시와 주기적 정리로 기간 밖 자료를 삭제하며 자정 정각 삭제는 보장하지 않습니다.
+- 상세 요약/피드백은 오늘·어제 2일, 날짜와 7개 건수(기존 4 + 회전 미사용/늦음/사전사용) 집계만 7일, AI 문장은 오늘 캐시만 유지합니다. (하루 집계에 켬 거리 합계·장수가 더해지고, "모은 잘한 순간"은 누적·연속·최고 연속 숫자와 내부 기준 날짜 하나만 앱 파일에 남기며 위치·시각·카드 id는 없습니다. 기록 삭제가 함께 지웁니다.) 접근 시와 주기적 정리로 기간 밖 자료를 삭제하며 자정 정각 삭제는 보장하지 않습니다.
 - 기록 삭제는 요약/피드백/집계/문장을 지웁니다. AI 사용 여부와 서버 주소는 유지합니다. Android 백업은 비활성입니다.
 - AI ON은 허용한 요약 특징만 로컬 중계/제공자에 보냅니다. 정확한 시각은 시간대, 과거 날짜는 상대값으로 축소하며 위치·VIN·경로·원시 시계열을 보내지 않습니다. 외부 공급자 처리 정책은 별도 확인 대상입니다.
 - 서버는 키를 응답/파일/로그에 남기지 않습니다. 실제 키·서명 재료는 저장소에 넣지 않습니다. release 로그는 원시 차량 값/Debug 숫자를 숨깁니다.
