@@ -11,8 +11,8 @@ Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌
 `Pleos_Connect_v2_1` AVD를 부팅한 뒤 `apk/`의 release APK를 설치하고 실행합니다.
 
 ```powershell
-$adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-toolsdb.exe'
-& $adb -s emulator-5554 install -r (Get-ChildItem .pk\*_release.apk).FullName
+$adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
+& $adb -s emulator-5554 install -r (Get-ChildItem .\apk\*_release.apk).FullName
 & $adb -s emulator-5554 forward tcp:8088 tcp:8088      # 시나리오 재생용 Console
 & $adb -s emulator-5554 shell am start -n lab.pleos.observe/.MainActivity
 ```
