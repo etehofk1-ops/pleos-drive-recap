@@ -8,7 +8,7 @@ Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌
 
 ## 실행 방법
 
-`Pleos_Connect_v2_1` AVD를 부팅한 뒤 `apk/`의 release APK를 설치하고 실행합니다.
+Pleos Playground 개발 환경이 제공하는 `Pleos_Connect_v2_1` AVD를 부팅한 뒤 `apk/`의 release APK를 설치하고 실행합니다. 차량 신호를 넣는 Console(8088)은 이 AVD 안에서 이미 돌고 있어, PC에서는 포트만 연결합니다. 아래 명령은 저장소 루트(`pleos-drive-recap`)에서 실행하며, AVD가 여러 대면 `adb devices`로 번호를 확인해 `emulator-5554`를 바꿉니다.
 
 ```powershell
 $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
@@ -17,7 +17,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 & $adb -s emulator-5554 shell am start -n lab.pleos.observe/.MainActivity
 ```
 
-처음 실행하면 속도 조회·알림 권한을 허용하고, P에서 **기록 시작** → "초기 신호 준비됨" 뒤 3초 기다린 다음 Console(`http://127.0.0.1:8088`)로 시나리오를 재생합니다([기록과 리플레이](#기록과-리플레이)). 다시 P로 놓으면 **오늘 복기**에서 카드를 한 장씩 봅니다. 기존 debug 앱과 서명이 달라 덮어쓰지 못하면 삭제 후 설치하세요(앱 기록도 지워집니다).
+처음 실행하면 권한 창이 두 번 뜹니다. 첫 창은 차량 속도 권한인데 Android가 **"위치 정보"**라는 이름으로 묻습니다. 앱은 속도 값만 읽고 위치는 읽거나 저장하지 않습니다. 둘째 창은 기록 알림입니다. 둘 다 허용한 뒤 P에서 **기록 시작**을 누르고(권한 창 전에 누른 것은 무시되니 다시 누릅니다), "초기 신호 준비됨" 뒤 3초 기다린 다음 Console(`http://127.0.0.1:8088`)로 시나리오를 재생합니다([기록과 리플레이](#기록과-리플레이)). 다시 P로 놓으면 **오늘 복기**에서 카드를 한 장씩 봅니다. 기록을 중지하지 않아도 복기를 볼 수 있습니다. 기존 debug 앱과 서명이 달라 덮어쓰지 못하면 삭제 후 설치하세요(앱 기록도 지워집니다).
 
 ## 테스트 환경 및 필요한 설정
 
@@ -33,7 +33,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 ## 검증 요약
 
 - **단위 시험**: `:logic:test` 443개 통과, 실패 0 (생략 4).
-- **구동 안정성**(AVD, release): 30분 연속 주행 크래시 0, 메모리 증가 없음(화면 36~39MB·기록 23~27MB), CPU 평균 약 0.5%, 콜드 스타트 0.4~0.7초, 홈·프로세스 종료 뒤 복기 화면 복원. [자세히](docs/RUNTIME.md)
+- **구동 안정성**(AVD, release): 1.9.1에서 30분 연속 주행 크래시 0, 메모리 증가 없음(화면 28~31MB·기록 20~23MB), CPU 평균 약 0.8%, 콜드 스타트 0.54~0.64초, 홈·프로세스 종료 뒤 복기 화면 복원. [자세히](docs/RUNTIME.md)
 - **차선 변경 정확도**(공개 실주행 74분·차량 27대): 엄격한 자이로 확인 규칙(오통과 0.8%)으로 51장 중 29장(57%) 확인, 확인 규칙 탐지율(약 78%, 실주행 자이로에 차선 변경 모양을 얹어 잰 값)로 보정한 정밀도 약 70%(95% 구간 약 50~90%). 재현율은 현대 32건 중 25건(78%, 문턱을 정한 자료), 기아 28건 중 16건(57%, 검증용). 실차 검증이 아닌 공개 자료 기준입니다. [근거와 한계](docs/ACCURACY.md)
 - 변경 이력은 [CHANGELOG](CHANGELOG.md)에 있습니다.
 
@@ -103,10 +103,10 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 
 ### 기록과 리플레이
 
-1. P·속도0·UX 해제에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
-2. PC `http://127.0.0.1:8088` Console의 DevTools에 `scripts/recap-replay.js`를 붙입니다. `await driveRecapReplay.runFile()`로 `scripts/recap-scenario-d-demo.json`을 선택합니다.
-3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 기준 74초+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
-4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 좋아요 1·놓침 1·늦음 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다.
+1. P·속도 0으로 정차한 상태(화면 안내 "정차 후 사용")에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
+2. PC 브라우저(Chrome·Edge)로 `http://127.0.0.1:8088` Console을 열고 F12 → Console 탭에 `scripts/recap-replay.js` 전체를 붙여넣습니다(브라우저가 붙여넣기 허용을 물으면 안내대로 허용). 이어서 `await driveRecapReplay.runFile()`을 입력하면 파일 선택 창이 열리고, 저장소의 `scripts/recap-scenario-d-demo.json`을 고릅니다. 파일 선택 창을 쓸 수 없으면 JSON 내용을 `await driveRecapReplay.run(<JSON 객체>)`로 직접 넘겨도 같습니다.
+3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 주행 약 74초(화면 집계 73~74초)+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
+4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다.
 5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
 ## 소스에서 빌드하기
@@ -137,7 +137,7 @@ $env:ANDROID_HOME = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
 .\gradlew.bat :logic:test :app:assembleRelease --no-daemon --no-configuration-cache --console=plain
 if ($LASTEXITCODE -ne 0) { throw 'release 빌드 실패. 이전 APK를 제출하지 마세요.' }
 $team = Read-Host '제출 팀명'
-$target = Join-Path 'apk' ($team + '_오운복_release.apk')
+$target = Join-Path '.local' ($team + '_오운복_release.apk')   # apk/에 두면 설치 명령의 *_release.apk가 두 개를 집습니다
 Copy-Item -LiteralPath .\app\build\outputs\apk\release\app-release.apk -Destination $target
 ```
 
