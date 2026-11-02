@@ -22,7 +22,7 @@ class RecapRepository private constructor(context: Context) {
     }
     private var motion = DriveGear.UNKNOWN
     private val settings = context.getSharedPreferences("recap-ai-settings", Context.MODE_PRIVATE)
-    val aiEnabled: Boolean get() = settings.getBoolean("enabled", true)
+    val aiEnabled: Boolean get() = settings.getBoolean("enabled", false)
     val aiProxyUrl: String get() = settings.getString("proxyUrl", null)?.let(::normalizedProxyEndpoint) ?: DEFAULT_AI_PROXY_URL
     fun setAiProxyUrl(value: String) {
         val selected = requireNotNull(normalizedProxyEndpoint(value)) { "Invalid relay origin" }

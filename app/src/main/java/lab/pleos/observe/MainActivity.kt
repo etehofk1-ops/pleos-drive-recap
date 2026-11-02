@@ -71,7 +71,7 @@ class MainActivity : Activity() {
     private val aiTasks = mutableListOf<Future<*>>()
     private val aiDecisions = mutableMapOf<String, AiDecision>()
     private val aiAttempts = mutableMapOf<String, ClassifyFeatures>()
-    private var aiEnabled = true
+    private var aiEnabled = false
     private var aiProxyUrl = DEFAULT_AI_PROXY_URL
     private var serverDialog: AlertDialog? = null
     private var userAiChoice: Boolean? = null
@@ -110,6 +110,7 @@ class MainActivity : Activity() {
     private var goodOrdinals: Map<String, Int> = emptyMap()
     private var comparison = WeekComparison()
     private var selectedCardId: String? = null
+    private var savedCardId: String? = null
     private var offset = 0
     private var navi = "미수신"
     private var seed = "초기 신호 확인 중"
@@ -142,6 +143,7 @@ class MainActivity : Activity() {
         }
         layoutSpec = vehicleLayout(resources.configuration.screenWidthDp.coerceAtLeast(0))
         // Keep a pending route through WAIT and another pause/save. Reveal only after fresh READY.
+        savedCardId = savedInstanceState?.getString("selectedCardId")
         logUiState("create", savedInstanceState != null)
         if (Build.VERSION.SDK_INT >= 33) setRecentsScreenshotEnabled(false)
         openRequested = savedInstanceState == null && intent.getBooleanExtra("openRecap", false)
@@ -247,6 +249,7 @@ class MainActivity : Activity() {
             outState.putLong("uiCapturedAt", it.capturedAtMs)
             anchor("primary", it.scroll.primary); anchor("cards", it.scroll.cards)
             outState.putBoolean("cardsFocused", it.scroll.cardsFocused)
+            if (it.recap) selectedCardId?.let { id -> outState.putString("selectedCardId", id) }
         }
         logUiState("save", state != null)
         // No diagnostic drafts, vehicle values or dialog inputs go into OS/file-backed saved state.
@@ -314,6 +317,8 @@ class MainActivity : Activity() {
             }
             RestorationGate.READY -> if (!wasUnlocked && foreground) {
                 pendingUi?.let(::restoreUi)
+                if (selectedCardId == null) selectedCardId = savedCardId
+                savedCardId = null
                 restored.restore?.let(::restoreRoute)
                 pendingUi = null; frozenUi = null
                 startingAt?.let { at ->
@@ -396,7 +401,7 @@ class MainActivity : Activity() {
                     startingRecorder = false; startingAt = null; main.removeCallbacks(startDeadline)
                 }
                 seed = result.getString("seed") ?: "초기 신호 확인 중"
-                val enabled = userAiChoice ?: result.getBoolean("aiEnabled", true)
+                val enabled = userAiChoice ?: result.getBoolean("aiEnabled", false)
                 if (enabled != aiEnabled) { invalidateAi(); aiEnabled = enabled }
                 val proxyUrl = result.getString("aiProxyUrl")?.let(::normalizedProxyEndpoint) ?: aiProxyUrl
                 if (proxyUrl != aiProxyUrl) { invalidateAi(); aiProxyUrl = proxyUrl; aiClient.setBaseUrl(proxyUrl) }
