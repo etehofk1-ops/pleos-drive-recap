@@ -75,7 +75,7 @@ DriveRecorderService (foreground)                      MainActivity
 
 | 모듈 | 역할 |
 |---|---|
-| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 443개(따로 켜야 도는 실주행 자료용 4개 포함)가 여기에 있습니다. |
+| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 443개(따로 켜야 도는 실주행 자료·보고서용 4개 포함)가 여기에 있습니다. |
 | `app/src/main` | SDK 연결, 기록 서비스, 저장, 화면. 판단은 하지 않고 `logic`에 신호를 넘깁니다. |
 | `app/src/debug` | 신호 탐침·관찰 게임·모의 내비 등 개발 도구. release APK에는 들어가지 않습니다. |
 | `ai-proxy/` | 선택형 로컬 AI 중계(Node, 외부 패키지 없음). 키는 이 서버에만 있습니다. |
@@ -106,7 +106,7 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 1. P·속도 0으로 정차한 상태(화면 안내 "정차 후 사용")에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
 2. PC 브라우저(Chrome·Edge)로 `http://127.0.0.1:8088` Console을 열고 F12 → Console 탭에 `scripts/recap-replay.js` 전체를 붙여넣습니다(브라우저가 붙여넣기 허용을 물으면 안내대로 허용). 이어서 `await driveRecapReplay.runFile()`을 입력하면 파일 선택 창이 열리고, 저장소의 `scripts/recap-scenario-d-demo.json`을 고릅니다. 파일 선택 창을 쓸 수 없으면 JSON 내용을 `await driveRecapReplay.run(<JSON 객체>)`로 직접 넘겨도 같습니다.
 3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 주행 약 74초(화면 집계 73~74초)+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
-4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 켜 둔 채 주행 카드는 `scripts/recap-scenario-h.json`으로 볼 수 있습니다.
+4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 켜 둔 채 주행·내비 회전 카드는 시연 영상에서 볼 수 있습니다(모의 내비가 든 시나리오 H·F는 개발용 debug 빌드와 `scripts/demo-navi-feed.ps1`이 필요합니다).
 5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
 ## 소스에서 빌드하기
