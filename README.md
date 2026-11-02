@@ -4,7 +4,7 @@
 
 **오운복 — 운전 중에는 화면 없이 깜빡이·핸들·브레이크 신호만 기록하고, 차를 세우면 오늘 놓친 깜빡이와 급제동 같은 순간을 근거와 함께 한 장씩 돌아보게 해 주는 차량 앱**
 
-Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌려드립니다. 현재 버전은 **1.9.1 (versionCode 25)** 입니다.
+Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌려드립니다. 현재 버전은 **1.9.2 (versionCode 26)** 입니다.
 
 ## 실행 방법
 
@@ -21,14 +21,14 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 
 ## 테스트 환경 및 필요한 설정
 
-- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.1 release 설치·실행·기록·시나리오 재생을 확인했습니다.
+- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을 확인했습니다.
 - **시나리오 재생**: ADB forward 후 `127.0.0.1:8088` Console, `scripts/recap-replay.js`.
-- **AI 보조는 선택 기능이며 기본값은 켜짐**입니다. 홈의 `AI 보조` 타일로 끌 수 있습니다. 켜 두면 로컬 중계 서버(`ai-proxy/`, PC `127.0.0.1:8787` = AVD `10.0.2.2:8787`)가 필요하고, 서버가 없거나 끄면 규칙 판정과 기본 문구로 동작합니다.
+- **AI 보조는 선택 기능이며 기본값은 꺼짐**입니다. 홈의 `AI 보조` 타일로 켤 수 있고, 켜면 로컬 중계 서버(`ai-proxy/`, PC `127.0.0.1:8787` = AVD `10.0.2.2:8787`)가 필요하고, 서버가 없거나 끄면 규칙 판정과 기본 문구로 동작합니다.
 - 소스 빌드: Windows, JBR 17 이상, Node 20 이상. minSdk 28 / targetSdk 35 / compileSdk 36, Kotlin 2.2.20, AGP 8.13.0, Gradle 8.14.3.
 
 ## APK 위치
 
-**`apk/김승주_오운복_release.apk`** — 1.9.1 (versionCode 25), 서명된 release APK. 제출 방법은 [공식 안내](https://appdevchallenge.auto-hmg.io/guide/submission)를 따랐습니다.
+**`apk/김승주_오운복_release.apk`** — 1.9.2 (versionCode 26), 서명된 release APK. 제출 방법은 [공식 안내](https://appdevchallenge.auto-hmg.io/guide/submission)를 따랐습니다.
 
 ## 검증 요약
 
