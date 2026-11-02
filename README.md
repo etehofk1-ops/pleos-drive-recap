@@ -8,7 +8,7 @@ Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌
 
 ## 실행 방법
 
-Pleos Playground 개발 환경이 제공하는 `Pleos_Connect_v2_1` AVD를 부팅한 뒤 `apk/`의 release APK를 설치하고 실행합니다. 차량 신호를 넣는 Console(8088)은 이 AVD 안에서 이미 돌고 있어, PC에서는 포트만 연결합니다. 아래 명령은 저장소 루트(`pleos-drive-recap`)에서 실행하며, AVD가 여러 대면 `adb devices`로 번호를 확인해 `emulator-5554`를 바꿉니다.
+Pleos Playground 개발 환경이 제공하는 `Pleos_Connect_v2_1` AVD를 부팅한 뒤 `apk/`의 release APK를 설치하고 실행합니다. 차량 신호를 넣는 Console(8088)은 이 AVD 안에서 이미 돌고 있어, PC에서는 포트만 연결합니다. 아래 명령은 저장소 루트(`pleos-drive-recap`)에서 실행하며, AVD가 여러 대면 `adb devices`로 번호를 확인해 `emulator-5554`를 바꿉니다. 재생 없이 결과 화면만 보려면 시연 영상(접수 메일의 링크)을 보면 됩니다.
 
 ```powershell
 $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
@@ -56,7 +56,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 | 기록 서비스 | foreground service(`specialUse`), 알림, 부팅 뒤 보존 기간 정리 작업 | `FOREGROUND_SERVICE*`, `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED` |
 | 선택형 AI | 로컬 `ai-proxy/`: Jev로 애매한 조향 분류, OpenCode Go로 한국어 문장 생성 | `INTERNET` |
 
-앱은 차량 상태 **조회**만 사용하며 제어 권한이 없습니다. DO(Distraction Optimized)를 선언하지 않은 주차 중 전용 앱입니다. SDK 키는 코드에 없고 AI 인증은 로컬 서버에서만 처리합니다. 창문·도어·시트·배터리 등을 읽는 진단 탐침과 해당 권한은 debug 빌드에만 있습니다. [AI 계약](docs/AI_CONTRACT.md)
+앱은 차량 상태 **조회**만 사용하며 제어 권한이 없습니다. 주행 중 화면 사용 허가(DO, Distraction Optimized)를 받지 않은 앱이라 주행 중에는 화면이 가려지고, 기록 서비스만 뒤에서 동작합니다. SDK 키는 코드에 없고 AI 인증은 로컬 서버에서만 처리합니다. 창문·도어·시트·배터리 등을 읽는 진단 탐침과 해당 권한은 debug 빌드에만 있습니다. [AI 계약](docs/AI_CONTRACT.md)
 
 ## 구조
 
@@ -106,7 +106,7 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 1. P·속도 0으로 정차한 상태(화면 안내 "정차 후 사용")에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
 2. PC 브라우저(Chrome·Edge)로 `http://127.0.0.1:8088` Console을 열고 F12 → Console 탭에 `scripts/recap-replay.js` 전체를 붙여넣습니다(브라우저가 붙여넣기 허용을 물으면 안내대로 허용). 이어서 `await driveRecapReplay.runFile()`을 입력하면 파일 선택 창이 열리고, 저장소의 `scripts/recap-scenario-d-demo.json`을 고릅니다. 파일 선택 창을 쓸 수 없으면 JSON 내용을 `await driveRecapReplay.run(<JSON 객체>)`로 직접 넘겨도 같습니다.
 3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 주행 약 74초(화면 집계 73~74초)+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
-4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다.
+4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 켜 둔 채 주행 카드는 `scripts/recap-scenario-h.json`으로 볼 수 있습니다.
 5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
 ## 소스에서 빌드하기
