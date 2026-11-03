@@ -21,7 +21,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 
 ## 테스트 환경 및 필요한 설정
 
-- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을, 1.9.3 release 설치·실행·기록과 바뀐 카드 문구 표시를 확인했습니다.
+- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을, 1.9.3 release 설치·실행·기록과 바뀐 카드 문구 표시, 시나리오 D 재생(카드 4장)을 확인했습니다.
 - **시나리오 재생**: ADB forward 후 `127.0.0.1:8088` Console, `scripts/recap-replay.js`.
 - **AI 보조는 선택 기능이며 기본값은 꺼짐**입니다. 홈의 `AI 보조` 타일로 켤 수 있고, 켜면 로컬 중계 서버(`ai-proxy/`, PC `127.0.0.1:8787` = AVD `10.0.2.2:8787`)가 필요하고, 서버가 없거나 끄면 규칙 판정과 기본 문구로 동작합니다.
 - 소스 빌드: Windows, JBR 17 이상, Node 20 이상. minSdk 28 / targetSdk 35 / compileSdk 36, Kotlin 2.2.20, AGP 8.13.0, Gradle 8.14.3.
@@ -106,7 +106,7 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 1. P·속도 0으로 정차한 상태(화면 안내 "정차 후 사용")에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
 2. PC 브라우저(Chrome·Edge)로 `http://127.0.0.1:8088` Console을 열고 F12 → Console 탭에 `scripts/recap-replay.js` 전체를 붙여넣습니다(브라우저가 붙여넣기 허용을 물으면 안내대로 허용). 이어서 `await driveRecapReplay.runFile()`을 입력하면 파일 선택 창이 열리고, 저장소의 `scripts/recap-scenario-d-demo.json`을 고릅니다. 파일 선택 창을 쓸 수 없으면 JSON 내용을 `await driveRecapReplay.run(<JSON 객체>)`로 직접 넘겨도 같습니다.
 3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→깜빡이를 켠 채 순항(18초)→급제동→P입니다. 주행 약 94초+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
-4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 켜 둔 채 주행·내비 회전 카드는 시연 영상에서 볼 수 있습니다(모의 내비가 든 시나리오 H·F는 개발용 debug 빌드와 `scripts/demo-navi-feed.ps1`이 필요합니다).
+4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·늦게 켬 1·켜 둔 채 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 깜빡이 없이 바꾸는 두 번째 차선 변경은 에뮬레이터 재생에서 놓친 순간 카드로 잡히지 않습니다(오프라인 로직 시험에서는 잡혀 5장). 에뮬레이터 부하가 크면 차선 카드가 더 빠질 수 있으니 `-no-audio`로 켜기를 권합니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 놓친 순간·내비 회전 카드는 시연 영상에서 볼 수 있습니다(모의 내비가 든 시나리오 H·F는 개발용 debug 빌드와 `scripts/demo-navi-feed.ps1`이 필요합니다).
 5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
 ## 소스에서 빌드하기
