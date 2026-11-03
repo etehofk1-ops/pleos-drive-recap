@@ -6,7 +6,7 @@ import java.io.File
 
 class RecapScenarioTest {
     /** The controlled fixtures contain flat scalar controls only; Node separately validates their full JSON. */
-    private fun scenario(name: String, demo: Boolean, periodicSpeed: Boolean = true): List<ReviewCard> {
+    private fun scenario(name: String, demo: Boolean, periodicSpeed: Boolean = true, mirrorLeftLanes: Boolean = false): List<ReviewCard> {
         val directory = listOf(File("scripts"), File("../scripts")).first { File(it, "recap-scenario-$name.json").isFile }
         val json = File(directory, "recap-scenario-$name.json").readText()
         val records = Regex("\\{\\s*\"atMs\"\\s*:\\s*(\\d+),\\s*(?:\"waitForSpeedKph\"\\s*:\\s*\\{[^}]*},\\s*)?\"controls\"\\s*:\\s*\\{([^}]*)}\\s*(?:,\\s*\"caption\"\\s*:\\s*\"[^\"\\r\\n]*\")?\\s*}").findAll(json).map {
@@ -36,7 +36,10 @@ class RecapScenarioTest {
                 val wall = 1_000_000 + time
                 when (key) {
                     "gear" -> put(DriveInput.Gear(time, wall, if (value == "P") DriveGear.PARK else DriveGear.DRIVE))
-                    "steering" -> put(DriveInput.Steering(time, wall, -value.toFloat())) // observed Console / SDK sign inversion, never labelled L/R
+                    "steering" -> {
+                        val mirror = mirrorLeftLanes && (time in 10_000L..12_450L || time in 24_000L..26_800L)
+                        put(DriveInput.Steering(time, wall, -value.toFloat() * if (mirror) -1 else 1)) // Console / SDK inversion, never labelled L/R
+                    }
                     "turnSignal" -> put(DriveInput.Signal(time, wall, when (value) { "Off" -> Indicator.OFF; "Blink left" -> Indicator.LEFT; else -> Indicator.RIGHT }))
                     "brake" -> put(DriveInput.Brake(time, wall, value.toFloat() > 0))
                     "speedKph" -> { speedMps = value.toFloat() / 3.6f; put(DriveInput.Speed(time, wall, speedMps)) }
@@ -83,24 +86,29 @@ class RecapScenarioTest {
         assertEquals(listOf(ReviewKind.TURN, ReviewKind.CURVE), cards.map { it.candidate })
         assertTrue(cards.all { it.kind == ReviewKind.UNSURE })
     }
-    @Test fun demoDProducesTwoWindowLaneChangesOneBrakeAndHiddenTurnWithoutUncertainty() {
-        // W16c: the old D script's third (late-indicator) lane change is a 2.45s step shape, below the
-        // 2.5s minimum window; scenario G (full-size lanes) covers all three kinds.
-        val cards = scenario("d-demo", false)
+    @Test fun demoDProducesFiveVisibleKindsAndPreservesTheHiddenTurn() {
+        // Left-on episodes finalize after steering/brake windows; the UI orders by occurrence time.
+        val cards = chronologicalCards(scenario("d-demo", false))
         assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_NO_SIGNAL,
-            ReviewKind.TURN, ReviewKind.HARD_BRAKE), cards.map { it.kind })
-        assertEquals(3, visibleReviewCards(cards).size)
+            ReviewKind.LANE_LATE_SIGNAL, ReviewKind.TURN, ReviewKind.BLINKER_LEFT_ON, ReviewKind.HARD_BRAKE), cards.map { it.kind })
+        assertEquals(5, visibleReviewCards(cards).size)
         assertFalse(cards.any { it.kind == ReviewKind.UNSURE })
-        assertEquals("오늘 차선 변경 2번 · 깜빡이 놓침 1 · 늦게 켬 0 · 급제동 1", recapSummary(cards))
+        assertEquals("오늘 차선 변경 3번 · 깜빡이 놓침 1 · 늦게 켬 1 · 급제동 1 · 켜 둔 채 주행 1", recapSummary(cards))
         assertTrue(visibleReviewCards(cards).all { aiCardTitle(it, null).endsWith("규칙 판정") })
+        assertEquals(18_000L, cards.single { it.kind == ReviewKind.BLINKER_LEFT_ON }.summary.blinkerOnMs)
         val deceleration = cards.single { it.kind == ReviewKind.HARD_BRAKE }.decelerationMps2!!
         assertTrue("Expected near 9m/s², got $deceleration", deceleration in 8f..10f)
     }
+    @Test fun correctingLeftLaneSteeringSignsPreservesCardKindsAndTimes() {
+        val corrected = scenario("d-demo", false)
+        val oldSigns = scenario("d-demo", false, mirrorLeftLanes = true)
+        assertEquals(oldSigns.map { it.kind to it.summary.startMs }, corrected.map { it.kind to it.summary.startMs })
+    }
     @Test fun demoDAlsoProducesOneNearNineBrakeWithoutPeriodicSpeedNotifications() {
         val cards = scenario("d-demo", false, periodicSpeed = false)
-        // W16c: speed expires after 3s without a packet, which restarts the lane window (only the lane
-        // change that was already fully checked is flushed); the brake measurement is unaffected.
-        assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.HARD_BRAKE), visibleReviewCards(cards).map { it.kind })
+        // Speed expires after 3s without a packet: missing-lane and long-cruise evidence is absent.
+        // The extended late-signal lane now completes before expiry; brake measurement is unchanged.
+        assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_LATE_SIGNAL, ReviewKind.HARD_BRAKE), visibleReviewCards(cards).map { it.kind })
         assertFalse(cards.any { it.kind == ReviewKind.UNSURE })
         val brake = cards.single { it.kind == ReviewKind.HARD_BRAKE }
         assertTrue(brake.decelerationMps2!! in 8f..10f)

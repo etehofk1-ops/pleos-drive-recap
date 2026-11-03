@@ -112,10 +112,13 @@ class RecapRepository private constructor(context: Context) {
 
     fun feedback(id: String, value: Feedback) {
         val current = day()
-        check(today() !in unreadable)
-        days[today()] = applyFeedback(current, id, value)
-        syncGood(today(), checkNotNull(days[today()]).cards)
-        dirty += today()
+        val date = current.date
+        check(date !in unreadable)
+        val updated = applyFeedback(current, id, value)
+        days[date] = updated
+        weekly.record(updated)
+        syncGood(date, updated.cards)
+        dirty += date
         flush()
     }
 

@@ -139,7 +139,7 @@ if (!$SourceOnly -and (Test-Path -LiteralPath $apkDir -PathType Container)) {
             if ($badgingResult.Code -ne 0) { Fail 'APK badging failed' }
             else {
                 $package = $badging | Where-Object { $_ -match '^package:' } | Select-Object -First 1
-                if (!$package -or $package -notmatch "name='lab.pleos.observe'" -or $package -notmatch "versionCode='26'" -or $package -notmatch "versionName='1.9.2'") { Fail 'APK package/version mismatch' }
+                if (!$package -or $package -notmatch "name='lab.pleos.observe'" -or $package -notmatch "versionCode='27'" -or $package -notmatch "versionName='1.9.3'") { Fail 'APK package/version mismatch' }
                 if ($badging -match '^application-debuggable') { Fail 'Debuggable APK is not a release submission' }
             }
         }

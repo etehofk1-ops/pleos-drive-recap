@@ -5,6 +5,17 @@ import org.junit.Test
 import java.time.ZoneId
 
 class AiReviewTest {
+    @Test fun generatedQuantitiesIncludingCachedPatternsFallBackToCodeTemplate() {
+        for (quantity in listOf("18번", "18 회", "18건", "18개", "18차례", "18m", "18 미터", "18초", "18분", "18km",
+            "1번", "1.5초", "１회", "①건", "두 번", "세 개", "스물한 차례", "십팔 번", "삼십미터", "두 분", "일회", "삼분", "오미터")) {
+            val result = GeneratedRecap("오늘 급제동 $quantity 기록이 있어요. 정차 후 확인해 보세요.", emptyList(), "fixture")
+            assertFalse(quantity, validGeneratedRecap(result))
+            assertEquals(templateRecap(true), generatedOrTemplate(result, true))
+            assertFalse(quantity, validGeneratedRecap(result.copy(text = templateRecap(true), patterns = listOf("기록 $quantity"))))
+        }
+        val good = GeneratedRecap("이번 기록에 감속 구간이 있어요. 정차한 지금 한 번 살펴보세요.", emptyList(), "fixture")
+        assertTrue(validGeneratedRecap(good))
+    }
     private fun card(): ReviewCard = classifySegment(SegmentSummary(0, 2450, 1_792_728_345_678,
         -18f, 12f, -1, 1, kphToMps(25f), kphToMps(35f), false, SignalTiming.NONE, true))!!
     private fun lowSpeedCard(): ReviewCard = card().let { it.copy(summary = it.summary.copy(minSpeedMps = kphToMps(24f))) }

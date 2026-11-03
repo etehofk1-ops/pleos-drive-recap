@@ -24,16 +24,16 @@ class RecapCardViewTest {
     // ---- 종류와 제목 ------------------------------------------------------------------------
 
     @Test fun headlineSaysWhatHappenedInPlainKorean() {
-        assertEquals("깜빡이를 켜고 45m 뒤에 차선을 바꿨어요", momentHeadline(card(ReviewKind.LANE_SIGNALLED, lead(46f))))
+        assertEquals("깜빡이를 켜고 45m 뒤에 차선을 바꾼 것 같아요", momentHeadline(card(ReviewKind.LANE_SIGNALLED, lead(46f))))
         assertEquals("깜빡이를 켜고 45m 뒤에 우회전했어요",
             momentHeadline(card(ReviewKind.TURN_SIGNALLED, lead(46f), turn = NavigationTurn.RIGHT)))
-        assertEquals("깜빡이를 켜고 차선을 바꿨어요", momentHeadline(card(ReviewKind.LANE_SIGNALLED, summary(SignalTiming.BEFORE))))
-        assertEquals("깜빡이 없이 차선을 바꿨어요", momentHeadline(card(ReviewKind.LANE_NO_SIGNAL)))
+        assertEquals("깜빡이를 켜고 차선을 바꾼 것 같아요", momentHeadline(card(ReviewKind.LANE_SIGNALLED, summary(SignalTiming.BEFORE))))
+        assertEquals("깜빡이 없이 차선을 바꾼 것 같아요", momentHeadline(card(ReviewKind.LANE_NO_SIGNAL)))
         assertEquals("깜빡이 없이 좌회전했어요", momentHeadline(card(ReviewKind.TURN_NO_SIGNAL, turn = NavigationTurn.LEFT)))
         assertEquals("깜빡이 없이 유턴했어요", momentHeadline(card(ReviewKind.TURN_NO_SIGNAL, turn = NavigationTurn.UTURN)))
-        assertEquals("핸들이 먼저 돌고 깜빡이가 0.5초 늦었어요",
+        assertEquals("깜빡이를 0.5초 늦게 켠 것 같아요",
             momentHeadline(card(ReviewKind.LANE_LATE_SIGNAL, summary(SignalTiming.DURING, lateMs = 520))))
-        assertEquals("핸들이 먼저 돌고 깜빡이가 늦었어요", momentHeadline(card(ReviewKind.LANE_LATE_SIGNAL, summary(SignalTiming.DURING))))
+        assertEquals("깜빡이를 늦게 켠 것 같아요", momentHeadline(card(ReviewKind.LANE_LATE_SIGNAL, summary(SignalTiming.DURING))))
         assertEquals("깜빡이를 켠 채 23초를 달렸어요",
             momentHeadline(card(ReviewKind.BLINKER_LEFT_ON, summary(onMs = 23_400, onM = 310f))))
         assertEquals("60km/h에서 12km/h로 급하게 섰어요",
@@ -47,6 +47,19 @@ class RecapCardViewTest {
         assertEquals("브레이크를 밟았어요. 급제동인지는 확인하지 못했어요", momentHeadline(card(ReviewKind.BRAKE_UNVERIFIED)))
         assertEquals("핸들이 움직인 순간이에요", momentHeadline(card(ReviewKind.STEERING)))
         assertEquals("급하게 브레이크를 밟았어요", momentHeadline(card(ReviewKind.HARD_BRAKE, summary(min = null, max = null))))
+    }
+    @Test fun onlyInferredLaneHeadlinesAreHedgedWhileDirectSignalsAndConfirmedTurnsStayDefinite() {
+        for (kind in listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_NO_SIGNAL, ReviewKind.LANE_LATE_SIGNAL)) {
+            assertTrue(momentHeadline(card(kind, lead(40f))).endsWith("것 같아요"))
+        }
+        for (kind in listOf(ReviewKind.TURN_SIGNALLED, ReviewKind.TURN_NO_SIGNAL, ReviewKind.TURN_LATE_SIGNAL)) {
+            val confirmed = card(kind, lead(40f), turn = NavigationTurn.RIGHT).copy(navigation = NavigationLabel.CONFIRMED)
+            assertFalse(momentHeadline(confirmed).contains("같아요"))
+        }
+        assertEquals("핸들이 먼저 돌고 깜빡이가 0.5초 늦었어요",
+            momentHeadline(card(ReviewKind.TURN_LATE_SIGNAL, summary(SignalTiming.DURING, lateMs = 520))))
+        assertFalse(momentHeadline(card(ReviewKind.HARD_BRAKE)).contains("같아요"))
+        assertFalse(momentHeadline(card(ReviewKind.BLINKER_LEFT_ON)).contains("같아요"))
     }
 
     @Test fun aiLabelReplacesTheHeadlineOnlyThroughTheLabelArgument() {

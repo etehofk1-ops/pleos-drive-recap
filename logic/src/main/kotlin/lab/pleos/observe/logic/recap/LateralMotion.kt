@@ -11,7 +11,7 @@ import kotlin.math.max
  * Raw steering sign remains unverified; none of these estimates establishes left/right.
  */
 object LateralThresholds {
-    const val STEERING_RATIO = 15.0 // Vehicle-specific ratio/wheelbase are UNVERIFIED.
+    const val STEERING_RATIO = 15.0 // Realtime path only; the delayed window uses LaneWindowPolicy.RATIO (20). Vehicle-specific ratio/wheelbase are UNVERIFIED.
     const val WHEELBASE_M = 2.7
     const val BASELINE_TAU_S = 8.0
     const val FILTER_TAU_S = 0.5

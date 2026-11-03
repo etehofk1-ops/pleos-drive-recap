@@ -12,7 +12,7 @@ import kotlin.math.sqrt
 object LaneWindowPolicy {
     const val SAMPLE_MS = 100L
     const val CAPACITY = 160 // 16s ring: 0.5s past edge + 8s window + 0.5s future edge + scan lag
-    const val RATIO = 20.0 // effective steering ratio (median of per-vehicle estimates)
+    const val RATIO = 20.0 // effective steering ratio for the delayed window (median of per-vehicle estimates); LateralMotion keeps its own realtime constant
     const val WHEELBASE_M = 2.7
     const val EDGE = 5 // 0.5s end-point mean outside the window, on both sides
     const val MIN_SAMPLES = 25 // 2.5s
@@ -110,8 +110,8 @@ private fun windowCard(group: LaneWindowGroup, policy: RecapPolicy): ReviewCard 
     val summary = group.best.copy(startMs=group.startMs,endMs=group.endMs,wallStartMs=group.wallStartMs,
         timing=timing.timing,lateSignalMs=timing.lateMs,signalCoverage=proof.covered,leftSignal=left,rightSignal=right)
     // Unknown signal coverage never becomes an invented absence (classifySegment -> LANE_CHANGE,
-    // hidden). A missing-indicator card additionally needs |lateral| >= 3.5m to be visible
-    // (see visibleReviewCards); the stored card keeps its kind.
+    // hidden). visibleReviewCards applies no additional lateral-displacement floor to a
+    // missing-indicator card; NO_SIGNAL_VISIBLE_METERS is a scoring reference only.
     return classifySegment(summary,policy)!!
 }
 

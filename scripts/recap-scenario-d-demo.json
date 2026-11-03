@@ -1,6 +1,6 @@
 {
   "name": "d-morning-commute-demo",
-  "notes": "0.6.3 영상용 기준74초+속도 대기/HTTP 처리시간. 모든 속도는 정수. 신호 대기60→0은1km/h·250ms(명령 평균1.11m/s²), 급제동60→15는3km/h·100ms(8.33m/s²), 마지막15→0은1km/h·250ms(10/5/0 지점은각1.25초 간격). 실수신 감속/카드 수는 AVD 재확인 필요. 기대: 좋아요1·놓침1·늦음1·급제동1·애매함0, 회전 숨김. caption은 콘솔 출력만.",
+  "notes": "1.9.3 시연 기준 94초+속도 대기/HTTP 처리시간. 모든 속도는 정수. 왼쪽 차선 변경의 첫 조향은 음수, 우회전은 양수. 늦게 켬 차선 변경은 2.8초. 시속 60km에서 깜빡이를 18초 켠 순항 구간 추가. 신호 대기60→0은1km/h·250ms(명령 평균1.11m/s²), 급제동60→15는3km/h·100ms(8.33m/s²), 마지막15→0은1km/h·250ms. 기대 화면 카드: 좋아요1·놓침1·늦음1·켜 둔 채1·급제동1, 회전 숨김. AVD 실수신 결과는 별도 확인 필요. caption은 콘솔 출력만.",
   "steps": [
     {
       "atMs": 0,
@@ -47,7 +47,7 @@
       "atMs": 10000,
       "controls": {
         "speedKph": 60,
-        "steering": 8
+        "steering": -8
       },
       "caption": "첫 번째 차선 변경을 시작합니다."
     },
@@ -55,7 +55,7 @@
       "atMs": 10350,
       "controls": {
         "speedKph": 60,
-        "steering": 15
+        "steering": -15
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -63,7 +63,7 @@
       "atMs": 10700,
       "controls": {
         "speedKph": 60,
-        "steering": 12
+        "steering": -12
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -71,7 +71,7 @@
       "atMs": 11050,
       "controls": {
         "speedKph": 60,
-        "steering": 4
+        "steering": -4
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -79,7 +79,7 @@
       "atMs": 11400,
       "controls": {
         "speedKph": 60,
-        "steering": -6
+        "steering": 6
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -87,7 +87,7 @@
       "atMs": 11750,
       "controls": {
         "speedKph": 60,
-        "steering": -10
+        "steering": 10
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -95,7 +95,7 @@
       "atMs": 12100,
       "controls": {
         "speedKph": 60,
-        "steering": -4
+        "steering": 4
       },
       "caption": "핸들이 중립으로 돌아오는 흐름을 기록합니다."
     },
@@ -191,15 +191,15 @@
       "atMs": 24000,
       "controls": {
         "speedKph": 60,
-        "steering": 7
+        "steering": -7
       },
       "caption": "세 번째 차선 변경을 시작합니다."
     },
     {
-      "atMs": 24350,
+      "atMs": 24400,
       "controls": {
         "speedKph": 60,
-        "steering": 13
+        "steering": -13
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
@@ -212,47 +212,47 @@
       "caption": "핸들을 움직인 뒤에야 깜빡이를 켰어요."
     },
     {
-      "atMs": 24700,
+      "atMs": 24800,
       "controls": {
         "speedKph": 60,
-        "steering": 9
+        "steering": -9
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
     {
-      "atMs": 25050,
+      "atMs": 25200,
       "controls": {
         "speedKph": 60,
-        "steering": 2
+        "steering": -2
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
     {
-      "atMs": 25400,
+      "atMs": 25600,
       "controls": {
         "speedKph": 60,
-        "steering": -7
+        "steering": 7
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
     {
-      "atMs": 25750,
+      "atMs": 26000,
       "controls": {
         "speedKph": 60,
-        "steering": -10
+        "steering": 10
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
     {
-      "atMs": 26100,
+      "atMs": 26400,
       "controls": {
         "speedKph": 60,
-        "steering": -3
+        "steering": 3
       },
       "caption": "깜빡이를 켠 시점과 조향 시작을 비교합니다."
     },
     {
-      "atMs": 26450,
+      "atMs": 26800,
       "controls": {
         "speedKph": 60,
         "steering": 0
@@ -967,12 +967,32 @@
       "controls": {
         "speedKph": 60,
         "steering": 0,
+        "brake": 0,
+        "turnSignal": "Blink left"
+      },
+      "caption": "순항하며 깜빡이를 켠 채 주행하는 구간을 재현합니다."
+    },
+    {
+      "atMs": 79000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0,
+        "brake": 0,
+        "turnSignal": "Off"
+      },
+      "caption": "18초 동안 순항한 뒤 깜빡이를 껐어요."
+    },
+    {
+      "atMs": 81000,
+      "controls": {
+        "speedKph": 60,
+        "steering": 0,
         "brake": 90
       },
       "caption": "브레이크를 유지한 채 단계 급제동을 재현합니다."
     },
     {
-      "atMs": 61100,
+      "atMs": 81100,
       "controls": {
         "speedKph": 57,
         "steering": 0,
@@ -981,7 +1001,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61200,
+      "atMs": 81200,
       "controls": {
         "speedKph": 54,
         "steering": 0,
@@ -990,7 +1010,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61300,
+      "atMs": 81300,
       "controls": {
         "speedKph": 51,
         "steering": 0,
@@ -999,7 +1019,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61400,
+      "atMs": 81400,
       "controls": {
         "speedKph": 48,
         "steering": 0,
@@ -1008,7 +1028,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61500,
+      "atMs": 81500,
       "controls": {
         "speedKph": 45,
         "steering": 0,
@@ -1017,7 +1037,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61600,
+      "atMs": 81600,
       "controls": {
         "speedKph": 42,
         "steering": 0,
@@ -1026,7 +1046,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61700,
+      "atMs": 81700,
       "controls": {
         "speedKph": 39,
         "steering": 0,
@@ -1035,7 +1055,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61800,
+      "atMs": 81800,
       "controls": {
         "speedKph": 36,
         "steering": 0,
@@ -1044,7 +1064,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 61900,
+      "atMs": 81900,
       "controls": {
         "speedKph": 33,
         "steering": 0,
@@ -1053,7 +1073,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62000,
+      "atMs": 82000,
       "controls": {
         "speedKph": 30,
         "steering": 0,
@@ -1062,7 +1082,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62100,
+      "atMs": 82100,
       "controls": {
         "speedKph": 27,
         "steering": 0,
@@ -1071,7 +1091,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62200,
+      "atMs": 82200,
       "controls": {
         "speedKph": 24,
         "steering": 0,
@@ -1080,7 +1100,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62300,
+      "atMs": 82300,
       "controls": {
         "speedKph": 21,
         "steering": 0,
@@ -1089,7 +1109,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62400,
+      "atMs": 82400,
       "controls": {
         "speedKph": 18,
         "steering": 0,
@@ -1098,7 +1118,7 @@
       "caption": "짧고 일정한 간격으로 시속 3km씩 낮춥니다."
     },
     {
-      "atMs": 62500,
+      "atMs": 82500,
       "controls": {
         "speedKph": 15,
         "steering": 0,
@@ -1107,7 +1127,7 @@
       "caption": "시속 15km부터는 다시 완만하게 멈춥니다."
     },
     {
-      "atMs": 62750,
+      "atMs": 82750,
       "controls": {
         "speedKph": 14,
         "steering": 0,
@@ -1116,7 +1136,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 63000,
+      "atMs": 83000,
       "controls": {
         "speedKph": 13,
         "steering": 0,
@@ -1125,7 +1145,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 63250,
+      "atMs": 83250,
       "controls": {
         "speedKph": 12,
         "steering": 0,
@@ -1134,7 +1154,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 63500,
+      "atMs": 83500,
       "controls": {
         "speedKph": 11,
         "steering": 0,
@@ -1143,7 +1163,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 63750,
+      "atMs": 83750,
       "controls": {
         "speedKph": 10,
         "steering": 0,
@@ -1152,7 +1172,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 64000,
+      "atMs": 84000,
       "controls": {
         "speedKph": 9,
         "steering": 0,
@@ -1161,7 +1181,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 64250,
+      "atMs": 84250,
       "controls": {
         "speedKph": 8,
         "steering": 0,
@@ -1170,7 +1190,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 64500,
+      "atMs": 84500,
       "controls": {
         "speedKph": 7,
         "steering": 0,
@@ -1179,7 +1199,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 64750,
+      "atMs": 84750,
       "controls": {
         "speedKph": 6,
         "steering": 0,
@@ -1188,7 +1208,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 65000,
+      "atMs": 85000,
       "controls": {
         "speedKph": 5,
         "steering": 0,
@@ -1197,7 +1217,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 65250,
+      "atMs": 85250,
       "controls": {
         "speedKph": 4,
         "steering": 0,
@@ -1206,7 +1226,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 65500,
+      "atMs": 85500,
       "controls": {
         "speedKph": 3,
         "steering": 0,
@@ -1215,7 +1235,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 65750,
+      "atMs": 85750,
       "controls": {
         "speedKph": 2,
         "steering": 0,
@@ -1224,7 +1244,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 66000,
+      "atMs": 86000,
       "controls": {
         "speedKph": 1,
         "steering": 0,
@@ -1233,7 +1253,7 @@
       "caption": "마지막 정지는 시속 1km씩 천천히 낮춥니다."
     },
     {
-      "atMs": 66250,
+      "atMs": 86250,
       "waitForSpeedKph": {
         "min": 0,
         "max": 0.1,
@@ -1248,7 +1268,7 @@
       "caption": "정지까지 브레이크를 유지해 한 구간으로 묶습니다."
     },
     {
-      "atMs": 68000,
+      "atMs": 88000,
       "controls": {
         "speedKph": 0,
         "steering": 0,
@@ -1257,7 +1277,7 @@
       "caption": "정지한 뒤 브레이크를 풀고 기록을 마무리합니다."
     },
     {
-      "atMs": 70000,
+      "atMs": 90000,
       "controls": {
         "speedKph": 0,
         "steering": 0,
@@ -1266,7 +1286,7 @@
       "caption": "오늘의 순간을 짧은 구간 요약으로 보관합니다."
     },
     {
-      "atMs": 74000,
+      "atMs": 94000,
       "controls": {
         "gear": "P",
         "speedKph": 0,

@@ -11,25 +11,31 @@ data class ReviewCounts(val missing: Int = 0, val late: Int = 0, val good: Int =
 /** [leadSumM]/[leadCount] (1.9.0): 그날 깜빡이를 먼저 켠 차선 변경·회전 카드의 켬 거리(카드와 같은 5m 반올림 값) 합계와 장수.
  * "지난 7일과 비교"의 평균용이다. 카드 id·시각·위치는 없다. 옛 기록은 0/0(거리 없음)으로 읽는다. */
 data class CountDay(val date: String, val counts: ReviewCounts, val leadSumM: Int = 0, val leadCount: Int = 0)
-fun reviewCounts(cards: List<ReviewCard>) = ReviewCounts(
-    cards.count { it.kind == ReviewKind.LANE_NO_SIGNAL }, cards.count { it.kind == ReviewKind.LANE_LATE_SIGNAL },
-    cards.count { it.kind == ReviewKind.LANE_SIGNALLED }, cards.count { it.kind == ReviewKind.HARD_BRAKE },
-    cards.count { it.kind == ReviewKind.TURN_NO_SIGNAL }, cards.count { it.kind == ReviewKind.TURN_LATE_SIGNAL },
-    cards.count { it.kind == ReviewKind.TURN_SIGNALLED }, cards.count { it.kind == ReviewKind.BLINKER_LEFT_ON })
+/** Feedback changes user-facing aggregates only; original rule cards remain stored. */
+fun reviewCounts(cards: List<ReviewCard>): ReviewCounts {
+    val accepted = cards.filter { it.feedback != Feedback.NO }
+    return ReviewCounts(
+        accepted.count { it.kind == ReviewKind.LANE_NO_SIGNAL }, accepted.count { it.kind == ReviewKind.LANE_LATE_SIGNAL },
+        accepted.count { it.kind == ReviewKind.LANE_SIGNALLED }, accepted.count { it.kind == ReviewKind.HARD_BRAKE },
+        accepted.count { it.kind == ReviewKind.TURN_NO_SIGNAL }, accepted.count { it.kind == ReviewKind.TURN_LATE_SIGNAL },
+        accepted.count { it.kind == ReviewKind.TURN_SIGNALLED }, accepted.count { it.kind == ReviewKind.BLINKER_LEFT_ON })
+}
 
 fun countDay(day: DayRecap): CountDay {
-    val leads = day.cards.filter { it.kind == ReviewKind.LANE_SIGNALLED || it.kind == ReviewKind.TURN_SIGNALLED }
+    val leads = day.cards.filter { it.feedback != Feedback.NO &&
+        (it.kind == ReviewKind.LANE_SIGNALLED || it.kind == ReviewKind.TURN_SIGNALLED) }
         .mapNotNull { card -> card.summary.signalLeadMeters?.let(::roundMeters) }
     return CountDay(day.date, reviewCounts(day.cards), leads.sum(), leads.size)
 }
 
 /** Whole-day, rule-only counts. An uncertain hypothesis never inflates a confirmed count. */
 fun recapSummary(cards: List<ReviewCard>): String {
-    val c = reviewCounts(cards)
-    val unsure = visibleReviewCards(cards).count { it.kind == ReviewKind.UNSURE }
+    val accepted = cards.filter { it.feedback != Feedback.NO }
+    val c = reviewCounts(accepted)
+    val unsure = visibleReviewCards(accepted).count { it.kind == ReviewKind.UNSURE }
     val turns = NavigationTurn.values().mapNotNull { turn ->
-        val missing = cards.count { it.kind == ReviewKind.TURN_NO_SIGNAL && it.navigationTurn == turn }
-        val late = cards.count { it.kind == ReviewKind.TURN_LATE_SIGNAL && it.navigationTurn == turn }
+        val missing = accepted.count { it.kind == ReviewKind.TURN_NO_SIGNAL && it.navigationTurn == turn }
+        val late = accepted.count { it.kind == ReviewKind.TURN_LATE_SIGNAL && it.navigationTurn == turn }
         if (missing + late == 0) null else "${when (turn) {
             NavigationTurn.LEFT -> "좌회전"; NavigationTurn.RIGHT -> "우회전"; NavigationTurn.UTURN -> "유턴"
         }} 깜빡이 놓침 $missing · 늦게 켬 $late"

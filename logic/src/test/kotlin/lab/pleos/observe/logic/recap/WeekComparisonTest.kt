@@ -32,6 +32,27 @@ class WeekComparisonTest {
         val d = countDay(DayRecap("2026-10-26", 1_000, 0, listOf(card(ReviewKind.LANE_NO_SIGNAL, "a"))))
         assertEquals(0, d.leadSumM); assertEquals(0, d.leadCount)
     }
+    @Test fun rejectedGoodMomentsLeaveBothLeadAverageAndCollection() {
+        val date = "2026-11-03"
+        val cards = listOf(card(ReviewKind.LANE_SIGNALLED, "a", 100f, Feedback.NO),
+            card(ReviewKind.TURN_SIGNALLED, "b", 30f, Feedback.YES), card(ReviewKind.LANE_SIGNALLED, "c", 40f))
+        val d = countDay(DayRecap(date, cards = cards))
+        assertEquals(70, d.leadSumM); assertEquals(2, d.leadCount)
+        assertEquals(1, d.counts.good); assertEquals(1, d.counts.turnGood)
+        val collected = updateGoodMoments(GoodState(), date, cards)
+        assertEquals(2, collected.total)
+        assertEquals(setOf("b", "c"), goodOrdinals(collected, cards).keys)
+    }
+    @Test fun labelsUseActualOneThreeAndSixDaySamples() {
+        for (n in listOf(1, 3, 6)) {
+            val past = (1..n).map { day("2026-10-${26 - it}", missed = 2, good = 1, leadSum = 30, leadCount = 1) }
+            val c = weekComparison(day("2026-10-26", missed = 1, good = 2, leadSum = 40, leadCount = 1), true, past)
+            assertEquals(n, c.baseDays)
+            assertTrue(c.rows.all { it.text.contains("최근 ${n}일 평균") })
+            assertTrue(c.rows.none { it.text.contains("나아") || it.text.contains("better") })
+        }
+        assertEquals("주행량은 반영하지 않은 횟수예요", NOTE_UNADJUSTED_COUNTS)
+    }
 
     // ---- 코덱: 옛 기록(실제 1.8.0 이하 바이트)도 읽는다 --------------------------------------------
 
@@ -81,14 +102,14 @@ class WeekComparisonTest {
         val today = CountDay("2026-10-26", ReviewCounts(missing = 1, late = 1, turnMissing = 1, turnLate = 0, blinkerOn = 5))
         val past = listOf(day("2026-10-25", missed = 3))
         val c = weekComparison(today, true, past)
-        assertEquals("놓친 순간 3번 · 지난 7일 평균 3번", c.rows[0].text)
+        assertEquals("놓친 순간 3번 · 최근 1일 평균 3번", c.rows[0].text)
     }
 
     @Test fun averageUsesOnlyDaysWithRecordsAndOneDecimal() {
         val past = listOf(day("2026-10-25", missed = 3), day("2026-10-24", missed = 2), day("2026-10-22", missed = 2),
             day("2026-10-21", missed = 3), day("2026-10-20", missed = 2))
         val c = weekComparison(day("2026-10-26", missed = 1), true, past)
-        assertEquals("놓친 순간 1번 · 지난 7일 평균 2.4번", c.rows[0].text)
+        assertEquals("놓친 순간 1번 · 최근 5일 평균 2.4번", c.rows[0].text)
         assertTrue(c.rows[0].better)
         assertEquals(5, c.baseDays)
         assertEquals("지난 7일 중 주행한 5일 기준", c.basis)
@@ -97,13 +118,13 @@ class WeekComparisonTest {
     @Test fun daysWithoutDrivingAreNotInTheAverage() {
         // 기록 없는 날(10-24, 10-23)은 목록에 없다. 0으로 채워 평균을 깎지 않는다.
         val c = weekComparison(day("2026-10-26", missed = 4), true, listOf(day("2026-10-25", missed = 2), day("2026-10-22", missed = 2)))
-        assertEquals("놓친 순간 4번 · 지난 7일 평균 2번", c.rows[0].text)
+        assertEquals("놓친 순간 4번 · 최근 2일 평균 2번", c.rows[0].text)
         assertEquals(2, c.baseDays)
     }
 
     @Test fun todayIsNeverInsideItsOwnBaseline() {
         val c = weekComparison(day("2026-10-26", missed = 9), true, listOf(day("2026-10-26", missed = 9), day("2026-10-25", missed = 3)))
-        assertEquals("놓친 순간 9번 · 지난 7일 평균 3번", c.rows[0].text)
+        assertEquals("놓친 순간 9번 · 최근 1일 평균 3번", c.rows[0].text)
         assertEquals(1, c.baseDays)
     }
 
@@ -127,11 +148,11 @@ class WeekComparisonTest {
         val past = listOf(day("2026-10-25", leadSum = 112, leadCount = 4), day("2026-10-24", leadSum = 0, leadCount = 0))
         val earlier = weekComparison(day("2026-10-26", leadSum = 120, leadCount = 3), true, past)
         val row = earlier.rows.single { it.text.startsWith("켬 거리") }
-        assertEquals("켬 거리 평균 40m · 지난 7일 평균 28m보다 12m 일찍", row.text)
+        assertEquals("켬 거리 평균 40m · 최근 1일 평균 28m보다 12m 일찍", row.text)
         assertTrue(row.better)
         val shorter = weekComparison(day("2026-10-26", leadSum = 60, leadCount = 3), true, past)
         val plain = shorter.rows.single { it.text.startsWith("켬 거리") }
-        assertEquals("켬 거리 평균 20m · 지난 7일 평균 28m", plain.text)
+        assertEquals("켬 거리 평균 20m · 최근 1일 평균 28m", plain.text)
         assertFalse(plain.better)
     }
 
@@ -139,7 +160,7 @@ class WeekComparisonTest {
         // 하루 1장(100m) + 하루 3장(합 90m): 카드 평균 47.5 → 48. 날 평균의 평균(65)이 아니다.
         val past = listOf(day("2026-10-25", leadSum = 100, leadCount = 1), day("2026-10-24", leadSum = 90, leadCount = 3))
         val row = weekComparison(day("2026-10-26", leadSum = 50, leadCount = 1), true, past).rows.single { it.text.startsWith("켬 거리") }
-        assertEquals("켬 거리 평균 50m · 지난 7일 평균 48m보다 2m 일찍", row.text)
+        assertEquals("켬 거리 평균 50m · 최근 2일 평균 48m보다 2m 일찍", row.text)
     }
 
     @Test fun leadRowIsOmittedWhenEitherSideHasNoDistance() {
@@ -153,13 +174,13 @@ class WeekComparisonTest {
         val past = listOf(day("2026-10-25", missed = 2, good = 3, leadSum = 120, leadCount = 4))
         val c = weekComparison(day("2026-10-26", missed = 1, good = 5, leadSum = 160, leadCount = 4), true, past)
         assertTrue(c.rows[0].text.startsWith("놓친 순간")); assertTrue(c.rows[1].text.startsWith("켬 거리")); assertTrue(c.rows[2].text.startsWith("잘한 순간"))
-        assertEquals("잘한 순간 5번 · 지난 7일 평균 3번", c.rows[2].text)
+        assertEquals("잘한 순간 5번 · 최근 1일 평균 3번", c.rows[2].text)
     }
 
     @Test fun goodMomentsCountTurnsToo() {
         val today = CountDay("2026-10-26", ReviewCounts(good = 2, turnGood = 1))
         val c = weekComparison(today, true, listOf(day("2026-10-25", good = 1)))
-        assertEquals("잘한 순간 3번 · 지난 7일 평균 1번", c.rows.last().text)
+        assertEquals("잘한 순간 3번 · 최근 1일 평균 1번", c.rows.last().text)
     }
 
     @Test fun withoutPastDaysOnlyOneCalmLineIsShown() {

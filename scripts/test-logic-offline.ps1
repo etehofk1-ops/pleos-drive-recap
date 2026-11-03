@@ -42,6 +42,6 @@ $jvmArgs = @("-Djava.io.tmpdir=$tempDir", "-Duser.home=$outputDir")
 if ($LASTEXITCODE -ne 0) { throw "Kotlin compile failed: $LASTEXITCODE" }
 $resources = Join-Path $workspace 'logic\src\test\resources'
 & $javaExe @jvmArgs -cp "$testJar$([IO.Path]::PathSeparator)$classPath$([IO.Path]::PathSeparator)$resources" `
-    org.junit.runner.JUnitCore @testClasses 2>&1 |
+    (Join-Path $PSScriptRoot 'OfflineJUnitRunner.java') @testClasses 2>&1 |
     Tee-Object -FilePath (Join-Path $outputDir 'junit-result.txt')
 if ($LASTEXITCODE -ne 0) { throw "JUnit failed: $LASTEXITCODE" }
