@@ -91,4 +91,10 @@ class DrivingStateTest {
         val uncertain = classifySegment(s.copy(speedMissing = true))!!
         assertEquals(listOf(uncertain), visibleReviewCards(listOf(uncertain)))
     }
+    @Test fun missingSignalVisibilityHasNoAdditionalThreePointFiveMeterFloor() {
+        val summary = SegmentSummary(0, 3000, 0, -12f, 9f, -1, 1, 15f, 15f, false, SignalTiming.NONE, true,
+            lateral = LateralSummary(displacementM = 2.6))
+        val card = ReviewCard("low-displacement", 0, ReviewKind.LANE_NO_SIGNAL, ReviewKind.LANE_NO_SIGNAL, summary)
+        assertEquals(listOf(card), visibleReviewCards(listOf(card)))
+    }
 }

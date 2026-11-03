@@ -194,9 +194,9 @@ test("scenario C uses two boundary-speed maneuvers and restores Park", async () 
   assert.ok(f.writes.some(x => x.query.speed === "35" && x.query.steering === "-32"));
 });
 
-test("demo D covers 74 seconds and every step carries a Korean single-line caption", () => {
+test("demo D covers 94 seconds and every step carries a Korean single-line caption", () => {
   const d = scenarios[3], plan = surface().api.preflight(d);
-  assert.equal(d.steps[0].atMs, 0); assert.equal(d.steps.at(-1).atMs, 74000);
+  assert.equal(d.steps[0].atMs, 0); assert.equal(d.steps.at(-1).atMs, 94000);
   assert.equal(d.steps[0].controls.gear, "P"); assert.equal(d.steps.at(-1).controls.gear, "P");
   assert.ok(d.steps.every(s => typeof s.caption === "string" && /[가-힣]/.test(s.caption) && !/[\r\n]/.test(s.caption)));
   assert.deepEqual(Array.from(plan.steps, s => s.caption), d.steps.map(s => s.caption));
@@ -207,6 +207,21 @@ test("demo captions are logged once per step and never enter the HTTP contract",
   assert.deepEqual(captions.map(args => args.slice(1)), d.steps.map(s => [s.atMs, s.caption]));
   assert.ok(f.writes.every(x => !Object.hasOwn(x.query, "caption")));
   assert.equal(f.state.gear, "Park"); assert.equal(f.context.fetch, f.transport);
+});
+
+test("demo D holds a straight 60 kph cruise with signal on for 18 seconds and consistent left/right signs", async () => {
+  const d = scenarios[3];
+  assert.equal(d.steps.find(s => s.atMs === 10000).controls.steering, -8);
+  assert.equal(d.steps.find(s => s.atMs === 24000).controls.steering, -7);
+  assert.equal(d.steps.find(s => s.atMs === 50000).controls.steering, 20);
+  assert.equal(d.steps.find(s => s.atMs === 26800).controls.steering, 0);
+  const f = surface(); await f.api.run(d);
+  const on = f.writes.filter(x => x.query.mode === "BlinkLeft").at(-1);
+  const off = f.writes.find(x => x.at > on.at && x.query.mode === "Off");
+  assert.equal(off.at - on.at, 18000);
+  const controls = f.writes.filter(x => x.path === "/vehicle/controls" && x.at >= on.at && x.at < off.at);
+  assert.ok(controls.length > 0);
+  assert.ok(controls.every(x => x.query.speed === "60" && x.query.steering === "0" && x.query.brake === "0"));
 });
 test("demo D separates gentle signal-stop from one staged hard-brake episode", async () => {
   const f = surface(); await f.api.run(scenarios[3]);

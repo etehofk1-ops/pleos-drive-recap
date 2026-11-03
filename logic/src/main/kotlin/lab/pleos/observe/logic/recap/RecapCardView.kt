@@ -59,20 +59,21 @@ private fun hedgedHeadline(card: ReviewCard): String = when (card.candidate) {
     else -> "핸들이 움직인 순간이에요"
 }
 
-/** 카드 윗부분 큰 제목. 사람 말 한 문장, 2줄 안쪽. [aiLabel]은 AI가 받아들여진 라벨일 때만 넘긴다. */
+/** 카드 윗부분 큰 제목. 사람 말 한 문장, 화면 폭에 맞게 줄바꿈. [aiLabel]은 AI가 받아들여진 라벨일 때만 넘긴다. */
 fun momentHeadline(card: ReviewCard, aiLabel: String? = null): String {
     if (aiLabel != null) return "$aiLabel 순간이에요"
     val s = card.summary
     if (card.kind == ReviewKind.UNSURE) return hedgedHeadline(card)
     return when (card.candidate) {
         ReviewKind.LANE_SIGNALLED, ReviewKind.TURN_SIGNALLED -> {
-            val action = if (card.candidate == ReviewKind.LANE_SIGNALLED) "차선을 바꿨어요" else turnVerb(card.navigationTurn)
+            val action = if (card.candidate == ReviewKind.LANE_SIGNALLED) "차선을 바꾼 것 같아요" else turnVerb(card.navigationTurn)
             val lead = s.signalLeadMeters
             if (lead == null) "깜빡이를 켜고 $action" else "깜빡이를 켜고 ${roundMeters(lead)}m 뒤에 $action"
         }
-        ReviewKind.LANE_NO_SIGNAL -> "깜빡이 없이 차선을 바꿨어요"
+        ReviewKind.LANE_NO_SIGNAL -> "깜빡이 없이 차선을 바꾼 것 같아요"
         ReviewKind.TURN_NO_SIGNAL -> "깜빡이 없이 ${turnVerb(card.navigationTurn)}"
-        ReviewKind.LANE_LATE_SIGNAL, ReviewKind.TURN_LATE_SIGNAL ->
+        ReviewKind.LANE_LATE_SIGNAL -> "깜빡이를 ${s.lateSignalMs?.let { "${seconds1(it)}초 " } ?: ""}늦게 켠 것 같아요"
+        ReviewKind.TURN_LATE_SIGNAL ->
             "핸들이 먼저 돌고 깜빡이가 ${s.lateSignalMs?.let { "${seconds1(it)}초 " } ?: ""}늦었어요"
         ReviewKind.BLINKER_LEFT_ON -> s.blinkerOnMs?.let { "깜빡이를 켠 채 ${(it / 1_000f).roundToInt()}초를 달렸어요" } ?: "깜빡이를 켠 채 달렸어요"
         ReviewKind.HARD_BRAKE -> {

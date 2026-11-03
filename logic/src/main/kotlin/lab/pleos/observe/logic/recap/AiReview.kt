@@ -82,6 +82,14 @@ fun templateRecap(hasCards: Boolean): String = if (hasCards)
     "오늘 기록에서 짚어볼 순간을 모았어요. 정차한 지금 깜빡이 사용과 감속 구간을 차분히 살펴보세요."
 else "오늘은 기록된 복기 후보가 없어요. 다음 기록도 정차한 뒤 천천히 살펴보세요."
 
+/** Same quantity-free prose policy as ai-proxy/contract.mjs, including cached responses. */
+fun quantityFreeText(text: String): Boolean {
+    if (Regex("\\p{N}").containsMatchIn(text)) return false
+    val claims = text.replace(Regex("한\\s*번\\s*(?=(?:더\\s*)?(?:차분히\\s*)?(?:살펴(?:보|봐)|돌아(?:보|봐)|확인해\\s*(?:보|봐)))"), "")
+    return !Regex("(?<![가-힣])(?!이번)(?:한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉|열|스무|스물|서른|마흔|쉰|예순|일흔|여든|아흔|[영공일이삼사오육칠팔구십백천만억조]+)+\\s*(?:번|회|건|개|차례|킬로미터|미터|km|m|초|분|시간|일간)", RegexOption.IGNORE_CASE).containsMatchIn(claims)
+}
+
 fun validGeneratedRecap(result: GeneratedRecap?): Boolean = result != null && result.text.length in 8..700 &&
     result.text.any { it in '가'..'힣' } && result.model.length in 1..100 && result.patterns.size <= 4 &&
-    result.patterns.all { it.length in 1..160 } && !result.text.contains(Regex("(?i)Bearer|sk[-_]|api[_ -]?key"))
+    result.patterns.all { it.length in 1..160 && quantityFreeText(it) } && quantityFreeText(result.text) &&
+    !result.text.contains(Regex("(?i)Bearer|sk[-_]|api[_ -]?key"))

@@ -53,16 +53,18 @@ export function recentPatterns(input) {
   return Object.keys(messages).filter(key => input.today.filter(x => x.kind === kind[key]).length * input.recentDays.length >
     input.recentDays.reduce((sum, day) => sum + day.counts[key], 0)).map(key => messages[key]);
 }
+// Generated prose carries no quantities. Counts/distances/times belong to code-rendered UI.
+export function quantityFreeText(text) {
+  if (/\p{N}/u.test(text)) return false;
+  // A stationary invitation is not an event count.
+  const claims = text.replace(/한\s*번\s*(?=(?:더\s*)?(?:차분히\s*)?(?:살펴(?:보|봐)|돌아(?:보|봐)|확인해\s*(?:보|봐)))/gu, "");
+  return !/(?<![가-힣])(?!이번)(?:한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉|열|스무|스물|서른|마흔|쉰|예순|일흔|여든|아흔|[영공일이삼사오육칠팔구십백천만억조]+)+\s*(?:번|회|건|개|차례|킬로미터|미터|km|m|초|분|시간|일간)/iu.test(claims);
+}
 export function safeText(text, input, secrets = []) {
   if (typeof text !== "string" || text.length < 8 || text.length > 700 || !/[가-힣]/u.test(text)) return false;
   if (secrets.some(k => k && text.includes(k)) || /Bearer|sk[-_]|api[_ -]?key/i.test(text)) return false;
   if (/안전(?:해|하|합|을 보장)|사고(?:가 없|를 예방)|위법|불법|법규|법적|벌금|과태료|운전\s*중|주행\s*중|운전할 때|주행할 때|다음 운전|주행하세요|차선을 바꾸세요/.test(text)) return false;
   const sentences = text.split(/[.!?]+/u).map(s => s.trim()).filter(Boolean);
   if (sentences.length < 2 || sentences.length > 3) return false;
-  const numbers = new Set(JSON.stringify(input).match(/\d+/g) || []);
-  if ((text.match(/\d+/g) || []).some(n => !numbers.has(n))) return false;
-  // "한 번 살펴보세요" is a stationary review invitation, not an invented event count.
-  const claims = text.replace(/한\s*번\s*(?=(?:더\s*)?(?:차분히\s*)?(?:살펴(?:보|봐)|돌아(?:보|봐)|확인해\s*(?:보|봐)))/gu, "");
-  if (/(?:한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\s*(?:번|회|건|일간|시간|초)/u.test(claims)) return false;
-  return true;
+  return quantityFreeText(text);
 }

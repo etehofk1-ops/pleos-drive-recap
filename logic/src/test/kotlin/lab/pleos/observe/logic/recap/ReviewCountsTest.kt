@@ -16,6 +16,32 @@ class ReviewCountsTest {
         val merged = mergeReviewCards(listOf(c), listOf(c.copy(decelerationMps2 = 4f)))
         assertEquals(1, reviewCounts(merged).hardBrake)
     }
+    @Test fun noFeedbackExcludesEveryCountKindWhileYesAndNoneRemain() {
+        val kinds = listOf(ReviewKind.LANE_NO_SIGNAL, ReviewKind.LANE_LATE_SIGNAL, ReviewKind.LANE_SIGNALLED,
+            ReviewKind.HARD_BRAKE, ReviewKind.TURN_NO_SIGNAL, ReviewKind.TURN_LATE_SIGNAL,
+            ReviewKind.TURN_SIGNALLED, ReviewKind.BLINKER_LEFT_ON)
+        val cards = kinds.flatMap { kind -> Feedback.values().map { card(kind).copy(feedback = it) } }
+        assertEquals(ReviewCounts(2, 2, 2, 2, 2, 2, 2, 2), reviewCounts(cards))
+    }
+    @Test fun rejectingMissedMomentUpdatesGlanceAndPersistedWeeklyCountWithoutChangingRule() {
+        val date = "2026-11-03"
+        val original = DayRecap(date, cards = listOf(card(ReviewKind.LANE_NO_SIGNAL)))
+        val rejected = applyFeedback(original, "x", Feedback.NO)
+        val accepted = applyFeedback(rejected, "x", Feedback.YES)
+        val unanswered = applyFeedback(rejected, "x", Feedback.NONE)
+        assertEquals(1, reviewCounts(original.cards).missing)
+        assertEquals(0, reviewCounts(rejected.cards).missing)
+        assertEquals(1, recapGlance(reviewCounts(original.cards)).missed)
+        assertEquals(0, recapGlance(reviewCounts(rejected.cards)).missed)
+        val stored = CountCodec.decode(CountCodec.encode(countDay(rejected)))
+        val baseline = listOf(CountDay("2026-11-02", ReviewCounts(missing = 1)))
+        assertEquals("놓친 순간 0번 · 최근 1일 평균 1번", weekComparison(stored, true, baseline).rows.first().text)
+        assertEquals(0, relativeCounts(listOf(stored), "2026-11-04").single().counts.missing)
+        assertEquals(1, countDay(accepted).counts.missing)
+        assertEquals(1, countDay(unanswered).counts.missing)
+        assertEquals(original.cards.single().copy(feedback = Feedback.NO), rejected.cards.single())
+        assertEquals(1, visibleReviewCards(rejected.cards).size)
+    }
     @Test fun sevenDayRetentionAndTwoDayRawRetentionStayDifferent() {
         assertTrue(retainedCountDate("2026-10-17", "2026-10-23")); assertFalse(retainedDate("2026-10-17", "2026-10-23"))
         assertFalse(retainedCountDate("2026-10-16", "2026-10-23")); assertFalse(retainedCountDate("2026-10-24", "2026-10-23"))

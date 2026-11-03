@@ -67,7 +67,7 @@ export function createProviders(config, fetchImpl = fetch) {
         if (remaining <= 0 || signal?.aborted) unavailable();
         return jsonRequest(`${config.baseUrl}/chat/completions`, {
         model, messages: [
-          { role: "system", content: "정차 후 읽는 한국어 운전 복기 문장을 JSON {text,patterns}로 쓰세요. text는 비난 없는 코칭 톤의 2~3문장입니다. 숫자는 입력에 있는 숫자만 쓰고 가능하면 숫자를 쓰지 마세요. 안전 단정·사고 예방 보장·법률 판단·운전 중 행동 지시·다음 운전 행동 지시는 금지합니다. 정차한 지금 기록을 살펴보는 제안만 하세요. UNSURE를 사실로 단정하지 마세요. 패턴은 allowedPatterns에서만 고르고 데이터가 부족하면 []입니다. 추론과 설명을 출력하지 마세요." },
+          { role: "system", content: "정차 후 읽는 한국어 운전 복기 문장을 JSON {text,patterns}로 쓰세요. text는 비난 없는 코칭 톤의 2~3문장입니다. 숫자와 수량 표현(한글 수사 포함 횟수·거리·시간)은 쓰지 마세요. 건수와 측정값은 앱이 고정 문구로 따로 표시합니다. 안전 단정·사고 예방 보장·법률 판단·운전 중 행동 지시·다음 운전 행동 지시는 금지합니다. 정차한 지금 기록을 살펴보는 제안만 하세요. UNSURE를 사실로 단정하지 마세요. 패턴은 allowedPatterns에서만 고르고 데이터가 부족하면 []입니다. 추론과 설명을 출력하지 마세요." },
           { role: "user", content: JSON.stringify({ ...input, allowedPatterns: patterns }) }
         ], ...(config.provider === "openai" ? { max_completion_tokens: config.maxTokens } : { max_tokens: config.maxTokens }),
         // Claude measured this option on Go/DeepSeek (2026-10-23); never send it to other models.

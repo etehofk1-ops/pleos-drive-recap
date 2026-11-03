@@ -64,18 +64,18 @@ test('local secrets and dev notes are excluded but a secret file in submission s
 test('default final check fails when no APK exists', () => {
   const r = run(fixture(), []); assert.equal(r.code, 1); assert.match(r.output, /Exactly one signed release APK/);
 });
-function mockApkTools(root, { debug = false, version = '25', debugCertificate = false } = {}) {
+function mockApkTools(root, { debug = false, version = '27', versionName = '1.9.3', debugCertificate = false } = {}) {
   const apk = join(root, 'apk', '시연팀_오운복_release.apk');
   writeFileSync(apk, 'fixture only - not an actual APK');
   const aapt = join(root, '.local', 'aapt.cmd'), signer = join(root, '.local', 'signer.cmd');
   writeFileSync(aapt, '@echo off\r\necho package: name=\'lab.pleos.observe\' versionCode=\'' + version +
-    '\' versionName=\'1.9.1\'\r\n' + (debug ? 'echo application-debuggable\r\n' : '') + 'exit /b 0\r\n');
+    '\' versionName=\'' + versionName + '\'\r\n' + (debug ? 'echo application-debuggable\r\n' : '') + 'exit /b 0\r\n');
   writeFileSync(signer, '@echo off\r\necho Signer #1 certificate DN: CN=' + (debugCertificate ? 'Android Debug' : 'Submission') + '\r\nexit /b 0\r\n');
   return ['-Aapt2Path', aapt, '-ApkSignerPath', signer];
 }
 test('mock tool responses exercise version and non-debug checks, not real APK validation', () => {
   const valid = fixture(); const r = run(valid, mockApkTools(valid)); assert.equal(r.code, 0, r.output);
-  for (const option of [{ debug: true }, { version: '11' }, { debugCertificate: true }]) {
+  for (const option of [{ debug: true }, { version: '26' }, { versionName: '1.9.2' }, { debugCertificate: true }]) {
     const root = fixture(); assert.equal(run(root, mockApkTools(root, option)).code, 1);
   }
 });

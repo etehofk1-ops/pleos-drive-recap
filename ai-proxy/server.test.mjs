@@ -135,6 +135,24 @@ test("recent patterns require two observed days and cannot be invented by genera
   const f = await fixture(t, async () => Response.json({ model: "deepseek-v4.1-flash", choices: [{ message: { content: JSON.stringify({ text, patterns: [...patterns, "invented trend"] }) } }] }));
   const res = await f.post("/summarize", input); assert.equal(res.status, 200); assert.deepEqual((await res.json()).patterns, patterns);
 });
+
+test("an hour bucket cannot authorize a fabricated event count", async t => {
+  const input = { today: [{ kind: "HARD_BRAKE", hourBucket: 18, speedBand: "mid", indicator: "none" }], recentDays: [] };
+  const bad = "오늘 급제동 18번 기록이 있어요. 정차한 지금 기록을 살펴보세요.";
+  assert.equal(safeText(bad, input), false);
+  const f = await fixture(t, async () => Response.json({ model: "fixture", choices: [{ message: { content: JSON.stringify({ text: bad, patterns: [] }) } }] }));
+  assert.equal((await f.post("/summarize", input)).status, 503);
+  assert.equal(f.calls.length, 1);
+  assert.equal(safeText(text, input), true);
+});
+
+test("generated prose forbids quantities in every supported unit even when input contains the number", () => {
+  for (const quantity of ["18번", "18 회", "18건", "18개", "18차례", "18m", "18 미터", "18초", "18분", "18km",
+    "1번", "1.5초", "１회", "①건", "두 번", "세 개", "스물한 차례", "십팔 번", "삼십미터", "두 분", "일회", "삼분", "오미터"]) {
+    assert.equal(safeText(`오늘 기록에 ${quantity} 표시가 있어요. 정차 후 확인해 보세요.`, summary()), false, quantity);
+  }
+  assert.equal(safeText("이번 기록에 감속 구간이 있어요. 정차한 지금 한 번 살펴보세요.", summary()), true);
+});
 test("invalid Jev distribution or answer shape is unavailable", async t => {
   for (const output of [{ ...classification(), model: "invalid key model" }, { model: "jev-preview", answers: { kind: { type: "choice", choice: "차선 변경", probabilities: {} } } }]) {
     const f = await fixture(t, async () => Response.json(output)); assert.equal((await f.post("/classify", sample())).status, 503);

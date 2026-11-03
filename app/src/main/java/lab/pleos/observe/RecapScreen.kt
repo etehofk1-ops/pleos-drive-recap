@@ -273,7 +273,7 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
         addView(text("후보 ${total}개 · 규칙 애매함 ${unsure}개", 24f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(8) })
     }
 
-    /** 1.9.0 "지난 7일과 비교". 좋아진 줄만 파랑 굵게, 나머지는 숫자만. 기록이 모자라면 한 줄 안내만. */
+    /** Counts and lead distances only; highlighting does not establish driving improvement. */
     fun comparisonCard(compare: WeekComparison): View = cardBox(32, 28).apply {
         tag = "week-compare"
         addView(text("지난 7일과 비교", 24f, p.textSecondary))
@@ -292,6 +292,7 @@ class RecapPainter(private val ctx: Context, private val width: VehicleWidth, pr
             addView(line, LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(14); bottomMargin = dp(14) })
         }
         addView(text(compare.basis, 22f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(2) })
+        addView(VehicleParagraph(ctx, NOTE_UNADJUSTED_COUNTS, 20f, p.textSecondary), LinearLayout.LayoutParams(-1, -2).apply { topMargin = dp(6) })
     }
 
     fun messageCard(message: String, patterns: List<String>, status: String, pending: Boolean, fill: Boolean, onRetry: (() -> Unit)?): View =
