@@ -211,8 +211,8 @@ test("demo captions are logged once per step and never enter the HTTP contract",
 
 test("demo D holds a straight 60 kph cruise with signal on for 18 seconds and consistent left/right signs", async () => {
   const d = scenarios[3];
-  assert.equal(d.steps.find(s => s.atMs === 10000).controls.steering, -8);
-  assert.equal(d.steps.find(s => s.atMs === 24000).controls.steering, -7);
+  assert.equal(d.steps.find(s => s.atMs === 10000).controls.steering, -12);
+  assert.equal(d.steps.find(s => s.atMs === 24000).controls.steering, -10);
   assert.equal(d.steps.find(s => s.atMs === 50000).controls.steering, 20);
   assert.equal(d.steps.find(s => s.atMs === 26800).controls.steering, 0);
   const f = surface(); await f.api.run(d);
