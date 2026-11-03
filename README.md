@@ -4,7 +4,7 @@
 
 **오운복 — 운전 중에는 화면 없이 깜빡이·핸들·브레이크 신호만 기록하고, 차를 세우면 오늘 놓친 깜빡이와 급제동 같은 순간을 근거와 함께 한 장씩 돌아보게 해 주는 차량 앱**
 
-Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌려드립니다. 현재 버전은 **1.9.2 (versionCode 26)** 입니다.
+Pleos Connect(AAOS) 앱입니다. 점수 대신 "내가 몰랐던 순간"을 돌려드립니다. 현재 버전은 **1.9.3 (versionCode 27)** 입니다.
 
 ## 실행 방법
 
@@ -21,19 +21,19 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 
 ## 테스트 환경 및 필요한 설정
 
-- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을 확인했습니다.
+- **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을, 1.9.3 release 설치·실행·기록과 바뀐 카드 문구 표시를 확인했습니다.
 - **시나리오 재생**: ADB forward 후 `127.0.0.1:8088` Console, `scripts/recap-replay.js`.
 - **AI 보조는 선택 기능이며 기본값은 꺼짐**입니다. 홈의 `AI 보조` 타일로 켤 수 있고, 켜면 로컬 중계 서버(`ai-proxy/`, PC `127.0.0.1:8787` = AVD `10.0.2.2:8787`)가 필요하고, 서버가 없거나 끄면 규칙 판정과 기본 문구로 동작합니다.
 - 소스 빌드: Windows, JBR 17 이상, Node 20 이상. minSdk 28 / targetSdk 35 / compileSdk 36, Kotlin 2.2.20, AGP 8.13.0, Gradle 8.14.3.
 
 ## APK 위치
 
-**`apk/김승주_오운복_release.apk`** — 1.9.2 (versionCode 26), 서명된 release APK. 제출 방법은 [공식 안내](https://appdevchallenge.auto-hmg.io/guide/submission)를 따랐습니다.
+**`apk/김승주_오운복_release.apk`** — 1.9.3 (versionCode 27), 서명된 release APK. 제출 방법은 [공식 안내](https://appdevchallenge.auto-hmg.io/guide/submission)를 따랐습니다.
 
 ## 검증 요약
 
-- **단위·재생 시험**: `:logic:test` 443개 중 439개 통과, 실패 0. 4개는 실주행 자료 재생·보고서 생성용이라 환경 변수(`RECAP_REAL_DIR` 등)로 켤 때만 돕니다.
-- **구동 안정성**(AVD, release): 1.9.1에서 30분 연속 주행 크래시 0, 메모리 증가 없음(화면 28~31MB·기록 20~23MB), CPU 평균 약 0.8%, 콜드 스타트 0.54~0.64초, 홈·프로세스 종료 뒤 복기 화면 복원. [자세히](docs/RUNTIME.md)
+- **단위·재생 시험**: `:logic:test` 451개 중 447개 통과, 실패 0(1.9.3). 4개는 실주행 자료 재생·보고서 생성용이라 환경 변수(`RECAP_REAL_DIR` 등)로 켤 때만 돕니다.
+- **구동 안정성**(AVD, release): 1.9.1에서 30분 연속 주행 크래시 0, 메모리 증가 없음(화면 28~31MB·기록 20~23MB), CPU 평균 약 0.8%. 1.9.2에서 콜드 스타트 0.47~0.50초(469/496/498ms), 홈에 다녀오거나 화면 프로세스가 종료된 뒤에도 보던 카드 복원. [자세히](docs/RUNTIME.md)
 - **차선 변경 정확도**(공개 실주행 74분·차량 27대): 엄격한 자이로 확인 규칙(오통과 0.8%)으로 51장 중 29장(57%) 확인, 확인 규칙 탐지율(약 78%, 실주행 자이로에 차선 변경 모양을 얹어 잰 값)로 보정한 정밀도 약 70%(95% 구간 약 50~90%). 재현율은 현대 32건 중 25건(78%, 문턱을 정한 자료), 기아 28건 중 16건(57%, 검증용). 실차 검증이 아닌 공개 자료 기준입니다. [근거와 한계](docs/ACCURACY.md)
 - 변경 이력은 [CHANGELOG](CHANGELOG.md)에 있습니다.
 
@@ -75,7 +75,7 @@ DriveRecorderService (foreground)                      MainActivity
 
 | 모듈 | 역할 |
 |---|---|
-| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 443개(따로 켜야 도는 실주행 자료·보고서용 4개 포함)가 여기에 있습니다. |
+| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 451개(따로 켜야 도는 실주행 자료·보고서용 4개 포함)가 여기에 있습니다. |
 | `app/src/main` | SDK 연결, 기록 서비스, 저장, 화면. 판단은 하지 않고 `logic`에 신호를 넘깁니다. |
 | `app/src/debug` | 신호 탐침·관찰 게임·모의 내비 등 개발 도구. release APK에는 들어가지 않습니다. |
 | `ai-proxy/` | 선택형 로컬 AI 중계(Node, 외부 패키지 없음). 키는 이 서버에만 있습니다. |
@@ -105,7 +105,7 @@ release 앱에서 `AI 서버 설정`으로 기본 주소를 확인·저장합니
 
 1. P·속도 0으로 정차한 상태(화면 안내 "정차 후 사용")에서 권한 승인/기록 시작. 깜빡이·브레이크·조향의 GET 또는 notify로 `초기 신호 준비됨`을 확인하고 3초 이상 기다립니다.
 2. PC 브라우저(Chrome·Edge)로 `http://127.0.0.1:8088` Console을 열고 F12 → Console 탭에 `scripts/recap-replay.js` 전체를 붙여넣습니다(브라우저가 붙여넣기 허용을 물으면 안내대로 허용). 이어서 `await driveRecapReplay.runFile()`을 입력하면 파일 선택 창이 열리고, 저장소의 `scripts/recap-scenario-d-demo.json`을 고릅니다. 파일 선택 창을 쓸 수 없으면 JSON 내용을 `await driveRecapReplay.run(<JSON 객체>)`로 직접 넘겨도 같습니다.
-3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→급제동→P입니다. 주행 약 74초(화면 집계 73~74초)+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
+3. 출발→정상/놓침/늦은 차선 변경→신호 대기→저속 우회전→깜빡이를 켠 채 순항(18초)→급제동→P입니다. 주행 약 94초+속도 대기/HTTP 비용이 걸립니다. caption은 콘솔 출력만이며 소수 속도는 preflight가 정수로 바꾸고 알립니다. 실행 중 Console을 직접 조작하지 않습니다.
 4. D에서는 화면이 가려져야 합니다. P 복귀 후 복기 기대는 잘한 순간 1·놓친 순간 1·늦게 켬 1·급제동 1, 카드 4·애매함 0입니다. 저속 회전은 숨깁니다. 문장은 준비 중→AI 문장 또는 기본 문구입니다. 켜 둔 채 주행·내비 회전 카드는 시연 영상에서 볼 수 있습니다(모의 내비가 든 시나리오 H·F는 개발용 debug 빌드와 `scripts/demo-navi-feed.ps1`이 필요합니다).
 5. `await driveRecapReplay.stop()`은 0·중립·Off·P 복원을 시도합니다. 실패 시 Console에서 상태를 확인합니다. 서버 중지/AI OFF로 규칙 폴백도 확인합니다.
 
