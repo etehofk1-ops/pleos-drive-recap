@@ -73,9 +73,10 @@ class SignalLeadTest {
     @Test fun speedSilenceLongerThanTheFreshWindowHidesTheDistance() {
         val f = Feed(); f.ready(); f.signal(4_100, Indicator.LEFT)
         f.advance(4_150); f.nextTick = 1_000_000 // 이후 속도 표본 없이 Tick만
-        for (t in 4_150L..9_000 step 50) f.put(DriveInput.Tick(t, 1_000_000 + t))
-        f.put(DriveInput.Speed(9_000, 1_009_000, 15f))
-        assertNull(lead(f, 8_000).signalLeadMeters)
+        // 1.9.4: the fresh window is 5s, so the silence before the manoeuvre (4.0s..10.0s) must exceed it.
+        for (t in 4_150L..10_500 step 50) f.put(DriveInput.Tick(t, 1_000_000 + t))
+        f.put(DriveInput.Speed(10_500, 1_010_500, 15f))
+        assertNull(lead(f, 10_000).signalLeadMeters)
     }
     @Test fun unknownSpeedAtTheMomentOfSwitchingOnHidesTheDistance() {
         val f = Feed(null); f.ready(); f.signal(4_100, Indicator.LEFT); f.speed(5_000, 15f); f.tick(9_000)

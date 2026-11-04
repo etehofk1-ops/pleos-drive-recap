@@ -141,9 +141,9 @@ class DelayedLaneWindowTest {
             assertTrue(state.candidates.size <= LaneWindowPolicy.CANDIDATE_CAPACITY)
         }
     }
-    @Test fun steeringAngleIsAStepHeldBetweenOnChangeCallbacksNeverInterpolated() {
+    @Test fun steeringAngleIsAStepHeldWhenNoSteeringCallbackArrives() {
         var state = DelayedLaneState()
-        // Angle callbacks only at 0, 350 and 700ms; the 10Hz grid must hold the previous value in between.
+        // Angle changes only reach the grid through Tick inputs here (no steering callback), so the 10Hz grid holds them as steps.
         val updates = mapOf(0L to 0f, 350L to 10f, 700L to -10f)
         var angle = 0f
         for (t in 0L..1_000 step 50) {
@@ -156,5 +156,76 @@ class DelayedLaneWindowTest {
         assertEquals(-10f, byTime.getValue(800L), 0f)
         assertEquals(20.0 * 10 * PI / 180 / (LaneWindowPolicy.RATIO * LaneWindowPolicy.WHEELBASE_M),
             state.points.first { it.atMs == 500L }.yaw, 1e-12)
+    }
+
+    // ---- 1.9.4: 1Hz steering with 3s skip -> linear ramp over the last <=1s ----
+    /** lanewin.py throttle(): 1s ticks, 0.1 degree quantisation, skip when the same value was delivered <=3s ago. */
+    private fun throttled(angleAt: (Long) -> Float, endMs: Long): List<Pair<Long, Float>> {
+        val out = mutableListOf<Pair<Long, Float>>(); var last: Pair<Long, Float>? = null
+        for (t in 0L..endMs step 1_000) {
+            val v = Math.round(angleAt(t) / 0.1f) * 0.1f
+            if (last == null || v != last.second || t - last.first > 3_000) { out += t to v; last = t to v }
+        }
+        return out
+    }
+    private fun feed(callbacks: List<Pair<Long, Float>>, endMs: Long, asSteering: Boolean, kph: Float = 60f,
+        stepEvery: Long = 100): Pair<DelayedLaneState, List<ReviewCard>> {
+        var state = DelayedLaneState(); val cards = mutableListOf<ReviewCard>(); var angle = 0f
+        val byTime = callbacks.toMap()
+        for (t in 0L..endMs step stepEvery) {
+            val cb = byTime[t]; if (cb != null) angle = cb
+            val input: DriveInput = if (cb != null && asSteering) DriveInput.Steering(t, t, cb) else DriveInput.Tick(t, t)
+            val step = delayedLaneStep(state, input, angle, kph / 3.6f, DriveGear.DRIVE)
+            state = step.state; cards += step.cards
+        }
+        cards += delayedLaneStep(state, DriveInput.Finish(endMs + 50, endMs + 50), angle, kph / 3.6f, DriveGear.DRIVE).cards
+        return state to cards
+    }
+    @Test fun aLaneChangeSampledAtOneHertzIsFoundWithTheRampButNotWithHeldSteps() {
+        // A quick 3.0s / 2.8m lane change at 100 km/h: held 1Hz steps lose it, the ramp keeps its shape (found by a
+        // sweep of speed, width, period and phase; most gentler synthetic waves are found either way).
+        val wave = { t: Long -> LaneWave.angleDeg(t - 12_000, 100f, 1, 3_000, 2.8) }
+        val callbacks = throttled(wave, 30_000)
+        val held = feed(callbacks, 30_000, asSteering = false, kph = 100f).second
+        val ramp = feed(callbacks, 30_000, asSteering = true, kph = 100f).second
+        assertTrue("held steps found ${held.size}", held.isEmpty())
+        assertEquals(1, ramp.size)
+        assertTrue(ramp.single().summary.startMs in 11_500L..13_500L)
+    }
+    @Test fun silentSecondsKeepTheValueAndOnlyTheLastSecondBeforeTheCallbackBecomesARamp() {
+        // Callback 0deg at 5s, nothing for 4s (value unchanged), then 8deg at 9s: 8.0..9.0s ramps, 5.0..8.0s stays flat.
+        val (state, _) = feed(listOf(0L to 0f, 5_000L to 0f, 9_000L to 8f), 9_500, asSteering = true)
+        val byTime = state.points.associate { it.atMs to it.angle }
+        for (t in 5_000L..8_000L step 100) assertEquals("t=$t", 0f, byTime.getValue(t), 0f)
+        assertEquals(0.8f, byTime.getValue(8_100L), 1e-4f)
+        assertEquals(4f, byTime.getValue(8_500L), 1e-4f)
+        assertEquals(8f, byTime.getValue(9_000L), 1e-4f)
+        assertEquals(8f, byTime.getValue(9_400L), 0f)
+        assertEquals(9_000L, state.lastAngleMs)
+    }
+    @Test fun aCallbackBurstOnlyRampsOverItsOwnGap() {
+        // Previous callback 300ms ago: the ramp starts there, not one second back.
+        val (state, _) = feed(listOf(0L to 0f, 4_000L to 2f, 4_300L to 5f), 4_600, asSteering = true)
+        val byTime = state.points.associate { it.atMs to it.angle }
+        assertEquals(2f, byTime.getValue(4_000L), 0f)
+        assertEquals(3f, byTime.getValue(4_100L), 1e-4f); assertEquals(4f, byTime.getValue(4_200L), 1e-4f)
+        assertEquals(5f, byTime.getValue(4_300L), 1e-4f)
+    }
+    @Test fun denseSteeringInputGivesTheSameCardsWithOrWithoutTheRamp() {
+        val wave = { t: Long -> LaneWave.angleDeg(t - 12_000, 60f) }
+        val callbacks = (0L..30_000 step 100).map { it to wave(it) }
+        val held = feed(callbacks, 30_000, asSteering = false)
+        val ramp = feed(callbacks, 30_000, asSteering = true)
+        assertEquals(1, held.second.size)
+        // Cards are confirmed one second later with the ramp, so wall-clock fields may differ; the event itself may not.
+        fun key(c: ReviewCard) = listOf(c.kind, c.summary.startMs, c.summary.endMs, c.summary.lateral, c.summary.timing)
+        assertEquals(held.second.map(::key), ramp.second.map(::key))
+        assertEquals(held.first.points, ramp.first.points)
+    }
+    @Test fun theRampedTailIsNeverScannedBeforeItCanStillChange() {
+        // The newest ten grid points may still be rewritten, so the scan stays at least 10 starts behind the 1.9.3 position.
+        val (state, _) = feed(listOf(0L to 0f), 20_000, asSteering = true)
+        val last = state.points.last().seq
+        assertTrue(state.nextScan <= last - (LaneWindowPolicy.MAX_SAMPLES + LaneWindowPolicy.EDGE - 1 + LaneWindowPolicy.RAMP_POINTS) + LaneWindowPolicy.SCAN_STEP)
     }
 }

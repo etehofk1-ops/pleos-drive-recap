@@ -18,7 +18,7 @@ object RecapThresholds {
     const val CURVE_MIN_MS = 8_000L
     const val MAX_SEGMENT_MS = 60_000L
     const val SIGNAL_LOOKBACK_MS = 3_000L
-    const val SPEED_FRESH_MS = 3_000L
+    const val SPEED_FRESH_MS = 5_000L
     const val MAX_CLOCK_GAP_MS = 5_000L
     // Different callback threads can enqueue just after a main-thread tick. Not sensor silence.
     const val CALLBACK_REORDER_MS = 250L

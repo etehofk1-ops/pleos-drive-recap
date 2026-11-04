@@ -56,10 +56,13 @@ class RecapScenarioTest {
     @Test fun actualScenarioAProducesGoodMissingLateBrakeAndNormalTurn() {
         val cards = scenario("a", false)
         // W16c: the scripted 350ms-step shapes are 2.45s long. The first starts inside the 3.5s warm-up
-        // after D, the third is shorter than the 2.5s minimum window; only the middle one is a window.
-        assertEquals(3, cards.size)
-        assertEquals(2, visibleReviewCards(cards).size)
+        // after D; only the middle one was a window. 1.9.4: a new steering value ramps from the previous one
+        // over the callback gap (<=1s) instead of stepping, which stretches the third shape past the 2.5s
+        // minimum window, so the late-signal lane is now found as well.
+        assertEquals(4, cards.size)
+        assertEquals(3, visibleReviewCards(cards).size)
         assertEquals(1, cards.count { it.kind == ReviewKind.LANE_NO_SIGNAL })
+        assertEquals(1, cards.count { it.kind == ReviewKind.LANE_LATE_SIGNAL })
         assertEquals(1, cards.count { it.kind == ReviewKind.HARD_BRAKE })
         assertEquals(1, cards.count { it.kind == ReviewKind.TURN })
     }
@@ -106,9 +109,10 @@ class RecapScenarioTest {
     }
     @Test fun demoDAlsoProducesOneNearNineBrakeWithoutPeriodicSpeedNotifications() {
         val cards = scenario("d-demo", false, periodicSpeed = false)
-        // Speed expires after 3s without a packet: missing-lane and long-cruise evidence is absent.
-        // The extended late-signal lane now completes before expiry; brake measurement is unchanged.
-        assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_LATE_SIGNAL, ReviewKind.HARD_BRAKE), visibleReviewCards(cards).map { it.kind })
+        // Speed expires after 5s without a packet (1.9.4; was 3s, which dropped the missing-lane card here):
+        // the 1.9.4 freshness window covers the 3s ON_CHANGE skip plus a 1s tick, so the missed-indicator lane
+        // is measured again. Brake measurement is unchanged.
+        assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_NO_SIGNAL, ReviewKind.LANE_LATE_SIGNAL, ReviewKind.HARD_BRAKE), visibleReviewCards(cards).map { it.kind })
         assertFalse(cards.any { it.kind == ReviewKind.UNSURE })
         val brake = cards.single { it.kind == ReviewKind.HARD_BRAKE }
         assertTrue(brake.decelerationMps2!! in 8f..10f)

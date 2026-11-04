@@ -51,7 +51,10 @@ object LaneWindowPolicy {
     const val NAV_CAPACITY = 64
     const val NAV_KEEP_MS = 30_000L
     const val CANDIDATE_CAPACITY = 512
+    /** 1.9.4: a new steering value rewrites at most the last second of the grid as a ramp. */
+    const val RAMP_POINTS = 10
 }
+private const val RAMP_MAX_MS = LaneWindowPolicy.RAMP_POINTS * LaneWindowPolicy.SAMPLE_MS
 
 data class LanePoint(val seq: Long, val atMs: Long, val angle: Float, val speed: Float, val yaw: Double)
 data class LaneSignal(val atMs: Long, val value: Indicator?)
@@ -66,7 +69,9 @@ data class DelayedLaneState(val points: List<LanePoint> = emptyList(),
     val feedAt: Long? = null, val heldAngle: Float? = null, val heldSpeed: Float? = null,
     val pending: LaneWindowGroup? = null, val candidates: List<LaneWindowGroup> = emptyList(),
     /** Receipt times of fresh "turn ahead within 80m" navigation hints (bounded, last 30s). */
-    val nearTurns: List<Long> = emptyList())
+    val nearTurns: List<Long> = emptyList(),
+    /** Receipt time of the previous steering callback (even an unchanged one); start of the 1.9.4 ramp. */
+    val lastAngleMs: Long? = null)
 data class DelayedLaneStep(val state: DelayedLaneState, val cards: List<ReviewCard>)
 
 internal fun signalProof(history: List<LaneSignal>, start: Long, end: Long): LaneSignalProof {
@@ -268,6 +273,23 @@ fun delayedLaneStep(previous: DelayedLaneState, input: DriveInput, angle: Float?
     if (valid && points.lastOrNull()?.atMs == at) {
         val old=points.last(); points[points.lastIndex]=old.copy(angle=angle!!,speed=speed!!,yaw=yawOf(speed,angle))
     }
+    // 1.9.4: the SDK delivers steering at ~1Hz and skips unchanged values for 3s. A held step then distorts the
+    // shape, so a new value rewrites the grid points of the last <=1s as a linear ramp from the previous held
+    // value (silent time means "value unchanged", hence the ramp never spans more than 1s). Dense input only
+    // ramps over its own short gap. Speed stays a held step.
+    val steeringCallback = input is DriveInput.Steering
+    val before = previous.heldAngle
+    if (!gap && valid && steeringCallback && before != null && angle!! != before) {
+        val rampStart = max(previous.lastAngleMs ?: (at - RAMP_MAX_MS), at - RAMP_MAX_MS)
+        val span = (at - rampStart).toDouble()
+        if (span > 0) for (i in points.indices) {
+            val p = points[i]
+            if (p.atMs <= rampStart || p.atMs > at) continue
+            val a = if (p.atMs == at) angle else (before + (angle - before) * ((p.atMs - rampStart) / span)).toFloat()
+            points[i] = p.copy(angle = a, yaw = yawOf(p.speed, a))
+        }
+    }
+    val lastAngleMs = if (steeringCallback && valid && !gap) at else previous.lastAngleMs
     val last = points.lastOrNull()?.seq ?: -1
     val lower = points.firstOrNull()?.seq ?: 0
     fun point(index: Long): LanePoint? = points.getOrNull((index-lower).toInt())
@@ -275,7 +297,8 @@ fun delayedLaneStep(previous: DelayedLaneState, input: DriveInput, angle: Float?
     val candidates = previous.candidates.toMutableList()
     previous.pending?.let { candidates += it } // compatibility for pure unit-state builders
     val cards = mutableListOf<ReviewCard>()
-    val maxStart = if (finish) last else last - (LaneWindowPolicy.MAX_SAMPLES + LaneWindowPolicy.EDGE - 1)
+    // 1.9.4: the newest <=10 points can still be rewritten by the next steering callback, so scan 1s later (not at Finish).
+    val maxStart = if (finish) last else last - (LaneWindowPolicy.MAX_SAMPLES + LaneWindowPolicy.EDGE - 1 + LaneWindowPolicy.RAMP_POINTS)
     if (!gap) while (scan <= maxStart) {
         evaluateStart(scan, ::point, signals, nearTurns, input, candidates)
         scan += LaneWindowPolicy.SCAN_STEP
@@ -302,5 +325,5 @@ fun delayedLaneStep(previous: DelayedLaneState, input: DriveInput, angle: Float?
         return DelayedLaneStep(DelayedLaneState(signals=signals,feedAt=at,nearTurns=nearTurns),cards)
     }
     return DelayedLaneStep(DelayedLaneState(points,signals,first,next,seq,scan,at,angle,speed,
-        candidates=candidates,nearTurns=nearTurns),cards)
+        candidates=candidates,nearTurns=nearTurns,lastAngleMs=lastAngleMs),cards)
 }
