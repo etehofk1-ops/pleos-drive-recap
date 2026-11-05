@@ -74,6 +74,15 @@ class DelayedLaneWindowTest {
         val late=signalProof(history,12_000,15_000)
         assertFalse(late.rightBefore); assertEquals(12_500L,late.rightDuring)
     }
+    @Test fun blinkerOffExactlyOnTheThreeSecondGraceEdge() {
+        val start = 20_000L
+        fun proof(offAt: Long) = signalProof(listOf(LaneSignal(0, Indicator.OFF), LaneSignal(5_000, Indicator.LEFT),
+            LaneSignal(offAt, Indicator.OFF)), start, start + 3_000)
+        val tooLate = proof(start - RecapThresholds.SIGNAL_LOOKBACK_MS - 1) // Off received 3001ms before the window
+        assertFalse(tooLate.leftBefore); assertTrue(tooLate.covered); assertNull(tooLate.leftDuring)
+        assertTrue(proof(start - RecapThresholds.SIGNAL_LOOKBACK_MS).leftBefore) // exactly 3000ms: still "signalled"
+        assertTrue(proof(start - 2_999).leftBefore)
+    }
     @Test fun incompleteLaneSignalEvidenceIsNotAVisibleWarning() {
         val good=flush(4.0,2.0)
         assertTrue(visibleReviewCards(listOf(good.copy(kind=ReviewKind.UNSURE,candidate=ReviewKind.LANE_CHANGE,
