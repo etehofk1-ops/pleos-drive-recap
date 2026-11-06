@@ -32,7 +32,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 
 ## 검증 요약
 
-- **단위·재생 시험**: `:logic:test` 456개 중 452개 통과, 실패 0(1.9.4). 4개는 실주행 자료 재생·합성 주행 측정용이라 환경 변수(`RECAP_REAL_DIR`·`RECAP_REAL_CSV`·`RECAP_TRACE_SPEC`·`RECAP_SIM`)로 켤 때만 돕니다.
+- **단위·재생 시험**: `:logic:test` 459개 중 455개 통과, 실패 0(1.9.4). 4개는 실주행 자료 재생·합성 주행 측정용이라 환경 변수(`RECAP_REAL_DIR`·`RECAP_REAL_CSV`·`RECAP_TRACE_SPEC`·`RECAP_SIM`)로 켤 때만 돕니다.
 - **구동 안정성**(AVD, release): 1.9.1에서 30분 연속 주행 크래시 0, 메모리 증가 없음(화면 28.3~31.1MB·기록 19.5~23.2MB), CPU 평균 약 0.8%. 1.9.2에서 콜드 스타트 0.47~0.50초(469/496/498ms), 홈에 다녀오거나 화면 프로세스가 종료된 뒤에도 보던 카드 복원. [자세히](docs/RUNTIME.md)
 - **차선 변경 정확도**(공개 실주행 74분·차량 27대): 엄격한 자이로 확인 규칙(오통과 0.8%)으로 51장 중 29장(57%) 확인, 확인 규칙 탐지율(약 78%, 실주행 자이로에 차선 변경 모양을 얹어 잰 값)로 보정한 정밀도 약 70%(95% 구간 약 50~90%). 재현율은 현대 32건 중 25건(78%, 문턱을 정한 자료), 기아 28건 중 16건(57%, 검증용). 정밀도와 이 재현율은 1.9.3 판정기로 잰 값이며, 같은 입력에서 1.9.4는 현대 26/32·기아 16/28입니다. 운영사무국이 안내한 차량 SDK 전달 방식(1초 간격, 3초 안 같은 값 생략)으로 핸들 신호를 줄여 재생하면 1.9.4 재현율은 현대 22/32(69%)·기아 18/28(64%)로, 1.9.3(17/32·15/28)보다 높습니다. 실차 검증이 아닌 공개 자료 기준입니다. [근거와 한계](docs/ACCURACY.md)
 - 변경 이력은 [CHANGELOG](CHANGELOG.md)에 있습니다.
@@ -75,7 +75,7 @@ DriveRecorderService (foreground)                      MainActivity
 
 | 모듈 | 역할 |
 |---|---|
-| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 456개(따로 켜야 도는 실주행 자료·합성 주행 측정용 4개 포함)가 여기에 있습니다. |
+| `logic/` (순수 Kotlin, Android 의존 없음) | 판단 규칙 전부: `RecapEngine`(사건 판정), `BlinkerLead`·`DelayedLaneWindow`·`LateralMotion`(깜빡이 선후·차선 변경 창), `NavigationFusion`(내비 융합), `RecapCardView`·`RecapText`(카드 문구), `WeekComparison`·`GoodMoments`. 단위·재생 시험 459개(따로 켜야 도는 실주행 자료·합성 주행 측정용 4개 포함)가 여기에 있습니다. |
 | `app/src/main` | SDK 연결, 기록 서비스, 저장, 화면. 판단은 하지 않고 `logic`에 신호를 넘깁니다. |
 | `app/src/debug` | 신호 탐침·관찰 게임·모의 내비 등 개발 도구. release APK에는 들어가지 않습니다. |
 | `ai-proxy/` | 선택형 로컬 AI 중계(Node, 외부 패키지 없음). 키는 이 서버에만 있습니다. |
