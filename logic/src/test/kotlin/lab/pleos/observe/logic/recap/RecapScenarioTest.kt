@@ -6,9 +6,11 @@ import java.io.File
 
 class RecapScenarioTest {
     /** The controlled fixtures contain flat scalar controls only; Node separately validates their full JSON. */
-    private fun scenario(name: String, demo: Boolean, periodicSpeed: Boolean = true, mirrorLeftLanes: Boolean = false): List<ReviewCard> {
+    private fun scenario(name: String, demo: Boolean, periodicSpeed: Boolean = true, mirrorLeftLanes: Boolean = false,
+                         receiptDelay: (Long, List<Pair<String, String>>) -> Long = { _, _ -> 0L },
+                         rewrite: (String) -> String = { it }): List<ReviewCard> {
         val directory = listOf(File("scripts"), File("../scripts")).first { File(it, "recap-scenario-$name.json").isFile }
-        val json = File(directory, "recap-scenario-$name.json").readText()
+        val json = File(directory, "recap-scenario-$name.json").readText().let(rewrite)
         val records = Regex("\\{\\s*\"atMs\"\\s*:\\s*(\\d+),\\s*(?:\"waitForSpeedKph\"\\s*:\\s*\\{[^}]*},\\s*)?\"controls\"\\s*:\\s*\\{([^}]*)}\\s*(?:,\\s*\"caption\"\\s*:\\s*\"[^\"\\r\\n]*\")?\\s*}").findAll(json).map {
             it.groupValues[1].toLong() to Regex("\"(\\w+)\"\\s*:\\s*(?:\"([^\"]*)\"|(-?[0-9.]+))").findAll(it.groupValues[2]).map { field ->
                 field.groupValues[1] to (field.groupValues[2].ifEmpty { field.groupValues[3] })
@@ -17,6 +19,9 @@ class RecapScenarioTest {
         require(records.isNotEmpty())
         require(records.size == Regex("\"atMs\"\\s*:").findAll(json).count()) { "Unparsed scenario step" }
         require(records.zipWithNext().all { (a, b) -> a.first <= b.first }) { "Unordered scenario steps" }
+        // Receipt time = scripted time + per-step delay; order must be preserved (the app sees callbacks in order).
+        val received = records.map { (time, fields) -> Triple(time, time + receiptDelay(time, fields), fields) }
+        require(received.zipWithNext().all { (a, b) -> a.second <= b.second }) { "Delay reordered scenario steps" }
         var state = RecapEngineState()
         val cards = mutableListOf<ReviewCard>()
         val policy = RecapPolicy(demoMissingSpeed = demo)
@@ -26,7 +31,7 @@ class RecapScenarioTest {
             val merged = mergeReviewCards(cards, next.cards); cards.clear(); cards += merged
         }
         var cursor = 0L
-        records.forEach { (time, fields) ->
+        received.forEach { (nominal, time, fields) ->
             while (cursor < time) {
                 if (periodicSpeed) put(DriveInput.Speed(cursor, 1_000_000 + cursor, speedMps))
                 put(DriveInput.Tick(cursor, 1_000_000 + cursor))
@@ -37,7 +42,7 @@ class RecapScenarioTest {
                 when (key) {
                     "gear" -> put(DriveInput.Gear(time, wall, if (value == "P") DriveGear.PARK else DriveGear.DRIVE))
                     "steering" -> {
-                        val mirror = mirrorLeftLanes && (time in 10_000L..12_450L || time in 24_000L..26_800L)
+                        val mirror = mirrorLeftLanes && (nominal in 10_000L..12_450L || nominal in 24_000L..26_800L)
                         put(DriveInput.Steering(time, wall, -value.toFloat() * if (mirror) -1 else 1)) // Console / SDK inversion, never labelled L/R
                     }
                     "turnSignal" -> put(DriveInput.Signal(time, wall, when (value) { "Off" -> Indicator.OFF; "Blink left" -> Indicator.LEFT; else -> Indicator.RIGHT }))
@@ -116,5 +121,28 @@ class RecapScenarioTest {
         assertFalse(cards.any { it.kind == ReviewKind.UNSURE })
         val brake = cards.single { it.kind == ReviewKind.HARD_BRAKE }
         assertTrue(brake.decelerationMps2!! in 8f..10f)
+    }
+    // 1.9.4 boundary: the demo scenario's turn-signal Off (12.6s) sits 4.4s before the second lane change; the
+    // original 13.5s sat on the 3s grace edge and flipped under emulator HTTP latency.
+    private fun delayedD(rewrite: (String) -> String = { it }) = scenario("d-demo", false,
+        receiptDelay = { time, fields ->
+            val keys = fields.map { it.first }
+            when {
+                "turnSignal" in keys && fields.any { it.first == "turnSignal" && it.second == "Off" } -> 400L
+                "steering" in keys && time >= 17_000L -> 450L
+                else -> 300L
+            }
+        }, rewrite = rewrite)
+    @Test fun demoDKeepsFiveVisibleCardsAndTheMissedMomentUnderPerStepReceiptDelay() {
+        val cards = delayedD()
+        assertEquals(5, visibleReviewCards(cards).size)
+        assertEquals(listOf(ReviewKind.LANE_SIGNALLED, ReviewKind.LANE_NO_SIGNAL, ReviewKind.LANE_LATE_SIGNAL,
+            ReviewKind.BLINKER_LEFT_ON, ReviewKind.HARD_BRAKE), visibleReviewCards(chronologicalCards(cards)).map { it.kind })
+        assertEquals(1, cards.count { it.kind == ReviewKind.LANE_NO_SIGNAL }) // missed moment (lane change without signal)
+    }
+    @Test fun demoDWithTheOldOffTimeLosesTheMissedMomentSoTheBoundaryIsReallyCaught() {
+        val old = delayedD { it.replace(Regex("\"atMs\"\\s*:\\s*12600\\b"), "\"atMs\": 13500") }
+        assertEquals(0, old.count { it.kind == ReviewKind.LANE_NO_SIGNAL })
+        assertTrue(old.count { it.kind == ReviewKind.LANE_SIGNALLED } >= 2) // the missed lane change became a "good" one
     }
 }
