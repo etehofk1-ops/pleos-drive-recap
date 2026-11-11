@@ -154,6 +154,12 @@ Copy-Item -LiteralPath .\app\build\outputs\apk\release\app-release.apk -Destinat
 - AI ON은 허용한 요약 특징만 로컬 중계/제공자에 보냅니다. 정확한 시각은 시간대, 과거 날짜는 상대값으로 축소하며 위치·VIN·경로·원시 시계열을 보내지 않습니다. 외부 공급자 처리 정책은 별도 확인 대상입니다.
 - 서버는 키를 응답/파일/로그에 남기지 않습니다. 실제 키·서명 재료는 저장소에 넣지 않습니다. release 로그는 원시 차량 값/Debug 숫자를 숨깁니다.
 
+## 데이터 출처
+
+- `logic/src/test/resources/replay/comma2k19_example1.csv`: comma.ai 공개 데이터셋 [comma2k19](https://github.com/commaai/comma2k19)(MIT License, Copyright comma.ai) 한 구간에서 조향·속도·브레이크·깜빡이 신호와 시각만 뽑아 바꾼 재생용 자료입니다. 영상·위치는 넣지 않았습니다.
+- 정확도 평가([docs/ACCURACY.md](docs/ACCURACY.md))에 쓴 [commaCarSegments](https://huggingface.co/datasets/commaai/commaCarSegments)(MIT)는 저장소에 넣지 않았고, `scripts/realdata/`의 평가 스크립트만 있습니다.
+- `avd_g_*.csv`는 Pleos 에뮬레이터에서 직접 만든 모의 주행 기록입니다.
+
 ## 알려진 한계
 
 - 정확도는 공개 주행 자료 기준이며 Pleos 실차로 확인하지 않았습니다. 차선 변경 카드는 신호 패턴에 따른 **추정**이고 실제 차선 이동·안전성·법규 준수를 확정하지 않습니다. 근거와 한계는 [docs/ACCURACY.md](docs/ACCURACY.md).
