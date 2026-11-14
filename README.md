@@ -22,6 +22,7 @@ $adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 ## 테스트 환경 및 필요한 설정
 
 - **에뮬레이터**: Pleos Connect v2.1 (`Pleos_Connect_v2_1`), API 34, x86_64. 이 환경에서 1.9.2 release 설치·실행·기록·시나리오 재생을, 1.9.3 release 설치·실행·기록과 바뀐 카드 문구 표시, 시나리오 D 재생(카드 5장)을 확인했습니다. 1.9.4 release APK는 버전과 서명 인증서(1.9.3과 같음)를 확인하고 시나리오 D를 10회 재생해 매번 카드 5장을 확인했습니다. 1.9.4의 조향 경사가 차선 변경 시작을 0.5초가량 당겨, 시나리오 D의 깜빡이 끄기를 12.6초로 옮겨 "꺼진 뒤 3초" 판정 경계에서 떼어 두었습니다. 시나리오 G는 debug 빌드로 2바퀴(바퀴마다 6장)를 재생했습니다(회전 카드에 필요한 모의 내비 입력은 debug에만 있습니다).
+- **화면 규격**: 에뮬레이터 화면 2560×1440 px, 160 dpi, 가로 방향(AVD 설정 `hw.lcd.width=2560`, `hw.lcd.height=1440`, `hw.lcd.density=160`).
 - **시나리오 재생**: ADB forward 후 `127.0.0.1:8088` Console, `scripts/recap-replay.js`.
 - **AI 보조는 선택 기능이며 기본값은 꺼짐**입니다. 홈의 `AI 보조` 타일로 켤 수 있고, 켜면 로컬 중계 서버(`ai-proxy/`, PC `127.0.0.1:8787` = AVD `10.0.2.2:8787`)가 필요하고, 서버가 없거나 끄면 규칙 판정과 기본 문구로 동작합니다.
 - 소스 빌드: Windows, JBR 17 이상, Node 20 이상. minSdk 28 / targetSdk 35 / compileSdk 36, Kotlin 2.2.20, AGP 8.13.0, Gradle 8.14.3.
